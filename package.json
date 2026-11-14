@@ -1,0 +1,42 @@
+{
+  "name": "rimbaguard-ai",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24 <25", "npm": ">=11" },
+  "scripts": {
+    "dev": "nuxt dev --host 127.0.0.1",
+    "build": "nuxt build",
+    "preview": "node .output/server/index.mjs",
+    "postinstall": "nuxt prepare",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:smoke": "node scripts/smoke-foundation.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:prepare": "node scripts/prepare-e2e-account.mjs",
+    "check:services": "node scripts/check-services.mjs",
+    "check:reporting": "node scripts/check-services.mjs --reporting"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.0",
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.80.0",
+    "leaflet": "^1.9.4",
+    "nuxt": "^4.0.0",
+    "sharp": "^0.34.0",
+    "vue": "^3.5.0",
+    "vue-router": "^5.4.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/node": "^24.0.0",
+    "@types/leaflet": "^1.9.0",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "vitest": "^4.0.0",
+    "vue-tsc": "^3.1.0"
+  }
+}

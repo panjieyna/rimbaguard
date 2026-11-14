@@ -1,0 +1,51 @@
+import type { UserRole } from '../../shared/types/domain'
+
+interface AuthProviderFailure { name?: string; status?: number; code?: string }
+
+export interface SafeAuthFailure {
+  statusCode: number
+  code: string
+  message: string
+}
+
+const accountExistsCodes = new Set(['user_already_exists', 'email_exists'])
+
+export function isExistingRegistration(error: AuthProviderFailure): boolean {
+  return typeof error.code === 'string' && accountExistsCodes.has(error.code)
+}
+
+/** Never reflect the provider message, URL, submitted email, or credential. */
+export function safeAuthFailure(error: AuthProviderFailure, operation: 'login' | 'register' | 'logout'): SafeAuthFailure {
+  if (error.status === 429 || error.code === 'over_email_send_rate_limit' || error.code === 'over_request_rate_limit') {
+    return { statusCode: 429, code: 'AUTH_RATE_LIMITED', message: 'Terlalu banyak percobaan autentikasi. Tunggu beberapa saat lalu coba lagi.' }
+  }
+  if (operation === 'login' && error.code === 'email_not_confirmed') {
+    return { statusCode: 403, code: 'EMAIL_CONFIRMATION_REQUIRED', message: 'Konfirmasikan alamat email melalui tautan yang diterima sebelum masuk.' }
+  }
+  if (operation === 'login' && (error.code === 'invalid_credentials' || error.status === 401 || error.code === 'user_banned')) {
+    return { statusCode: 401, code: 'INVALID_CREDENTIALS', message: 'Email atau kata sandi tidak sesuai.' }
+  }
+  if (operation === 'register' && error.code === 'weak_password') {
+    return { statusCode: 422, code: 'PASSWORD_REQUIREMENTS', message: 'Kata sandi belum memenuhi persyaratan keamanan layanan. Gunakan kata sandi yang lebih kuat.' }
+  }
+  if (error.code === 'captcha_failed') {
+    return { statusCode: 422, code: 'AUTH_VERIFICATION_REQUIRED', message: 'Layanan memerlukan verifikasi tambahan. Hubungi pengelola untuk menyelesaikan konfigurasi autentikasi.' }
+  }
+  if (operation === 'register' && (error.code === 'signup_disabled' || error.code === 'email_provider_disabled')) {
+    return { statusCode: 503, code: 'REGISTRATION_UNAVAILABLE', message: 'Pendaftaran belum tersedia. Silakan coba kembali setelah layanan diaktifkan.' }
+  }
+  return { statusCode: 503, code: 'AUTH_UNAVAILABLE', message: 'Layanan autentikasi belum dapat dihubungi. Silakan coba kembali.' }
+}
+
+/** A return path is an application route, never a URL, API endpoint, or login loop. */
+export function safeAuthRedirect(role: UserRole, requested?: unknown): string {
+  if (role === 'admin') return '/admin/dashboard'
+  if (typeof requested !== 'string' || requested.length > 1_024 || !requested.startsWith('/') || requested.startsWith('//') || /[\u0000-\u0020\u007f\\]/u.test(requested)) return '/reports'
+  try {
+    const url = new URL(requested, 'https://rimbaguard.invalid')
+    if (url.origin !== 'https://rimbaguard.invalid' || url.hash) return '/reports'
+    const allowed = /^(?:\/|\/report|\/reports(?:\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?|\/map|\/about)$/u
+    return allowed.test(url.pathname) ? `${url.pathname}${url.search}` : '/reports'
+  }
+  catch { return '/reports' }
+}

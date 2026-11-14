@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');
+}
+
+@theme {
+  --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+  --color-forest-900: #173D32;
+  --color-forest-700: #285C48;
+  --color-forest-500: #4B8065;
+  --color-sage-100: #EAF0E9;
+  --color-warm-white: #FAFAF7;
+  --color-charcoal: #242B28;
+  --color-muted: #737B76;
+  --color-line: #E5E8E3;
+  --color-alert-red: #C64C45;
+  --color-alert-amber: #C38B35;
+  --color-success: #3D805B;
+}
+
+@layer base {
+  html { color-scheme: light; scroll-behavior: smooth; }
+  body { @apply m-0 bg-warm-white font-sans text-charcoal antialiased; }
+  button, input, select, textarea { font: inherit; }
+  button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
+  :focus-visible { outline: 3px solid #285C48; outline-offset: 4px; }
+  button:disabled { cursor: not-allowed; }
+  ::selection { background: #EAF0E9; color: #173D32; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+}
+
+@layer components {
+  .page-container { @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10; }
+  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.14em] text-forest-700; }
+  .body-copy { @apply text-base leading-7 text-charcoal/80; }
+  .text-link { @apply font-medium text-forest-700 underline decoration-forest-500/40 underline-offset-4 hover:decoration-forest-700; }
+  .button-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-forest-900 px-5 py-3 text-sm font-medium text-white hover:bg-forest-700 active:bg-forest-900 disabled:opacity-50; }
+  .button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-medium text-forest-900 hover:bg-sage-100 active:bg-white disabled:opacity-50; }
+  .form-label { @apply mb-2 block text-sm font-medium text-charcoal; }
+  .form-input { @apply block min-h-12 w-full rounded-lg border border-charcoal/25 bg-white px-3.5 py-3 text-base text-charcoal placeholder:text-charcoal/50 disabled:bg-sage-100; }
+  .form-input[aria-invalid="true"] { @apply border-alert-red; }
+  .form-error { @apply mt-2 text-sm leading-5 text-[#9D302B]; }
+  .form-hint { @apply mt-2 text-sm leading-5 text-charcoal/75; }
+  .notice { @apply rounded-lg border border-line bg-sage-100/60 px-5 py-4 text-sm leading-6 text-charcoal; }
+}
