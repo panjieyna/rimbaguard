@@ -297,16 +297,36 @@ Carry-over to Phase 6:
 
 ## Phase 6 — integrated QA and deployment preparation
 
-- [ ] Run the full citizen-to-officer flow using real Supabase persistence and Gemini success or an explicit persisted provider failure; verify records survive reload and new sessions.
-- [ ] Run adversarial API/RLS/storage checks for anonymous access, cross-user access, forged role/status/results, object-path abuse, revoked/expired sessions, CSRF, duplicate submissions, and rate limiting across server instances.
+- [x] Run the full citizen-to-officer flow using real Supabase persistence and Gemini success or an explicit persisted provider failure; verify records survive reload and new sessions.
+- [x] Run adversarial API/RLS/storage checks for anonymous access, cross-user access, forged role/status/results, object-path abuse, revoked/expired sessions, CSRF, duplicate submissions, and rate limiting across server instances.
 - [ ] Exercise database outage, missing configuration, AI outage, empty map/statistics/charts, slow network, tile failure, invalid evidence, and denied geolocation without fabricated fallbacks.
 - [ ] Test keyboard navigation, labels, focus, contrast, touch map operation, and layouts at 375, 768, 1280, and 1440 px. Provide a usable report list/detail alternative to map-only navigation.
-- [ ] Optimize actual bottlenecks: lazy-load Leaflet/charts, bound queries, use appropriate indexes, avoid private-response caching, size images responsibly, and inspect generated browser assets for secrets.
-- [ ] Finalize README, architecture and API documentation, migration/setup instructions, admin provisioning, scoring rationale/version, service failure behavior, and a clearly labeled simulation-only competition demo script.
+- [x] Optimize actual bottlenecks: lazy-load Leaflet/charts, bound queries, use appropriate indexes, avoid private-response caching, size images responsibly, and inspect generated browser assets for secrets.
+- [x] Finalize README, architecture and API documentation, migration/setup instructions, admin provisioning, scoring rationale/version, service failure behavior, and a clearly labeled simulation-only competition demo script.
 - [ ] Prepare the PRD deployment target: Vercel server runtime plus hosted Supabase. Verify request-duration settings, upload limits, environment validation, scheduled-score refresh support, HTTPS cookies, and auth callback URLs before release.
 - [ ] When deployment access is configured, apply reviewed production migrations, configure secrets in the host secret manager, deploy, and smoke-test the actual public URL. Do not claim deployment based only on a successful local build.
 
 Gate: final type check, relevant unit/integration/security/browser tests, and production build pass. Record the actual commands/results and any untested external dependency. Completion requires the PRD acceptance criteria, including real persistence, enforced permissions, functional responsive flows, and an accessible deployed URL; unresolved critical issues prevent release.
+
+Record (15 November 2026; deployment items excluded at the user's request for now, nothing committed):
+
+| Check | Result |
+|---|---|
+| Citizen-to-officer journey (`tests/e2e/journey.spec.ts`, runs only with `E2E_GEMINI_LIVE=true`) | Passes against hosted Supabase and real Gemini: submission, validated AI result, persisted v1 score (71.25, medium), verification → in progress → resolved, complete audit trail, and the same state after new citizen and officer sessions. Passed again in the final full run. |
+| Adversarial checks (`security.spec.ts`, with `ownership` and `origin`) | Passed on the final security code. Anonymous 401 on every citizen and officer endpoint. Missing, foreign and look-alike origins get 403; a wrong content type 415; a body over 64 KB 413. No public Storage URL serves evidence. A signed-in citizen gets 422 for path traversal, SVG, oversized or forged uploads, 404 for another user's report, and 403 on officer APIs. The database-backed limiter returns 429 with `Retry-After`. Signed-in pages are `private, no-store`. A copied session cookie returns 401 after "sign out everywhere". Duplicate submissions are covered by the idempotency cases in `reporting.spec.ts` (see below). |
+| Degraded operation (`npm.cmd run check:degraded`) | 21/21. A production build with Supabase unreachable keeps serving pages: the API answers `503 DATABASE_UNAVAILABLE` quickly, home and map show "unavailable" messages instead of zeros, login fails fast, and responses and logs contain no credentials. Production refuses to start with incomplete configuration, setup mode or a non-HTTPS URL. AI failure is covered by `analysis-failure.spec.ts`; tile failure and empty states by `priority-map.spec.ts`. |
+| Accessibility and layout (`accessibility.spec.ts`, axe-core WCAG 2.2 A/AA) | 0 violations on 14 public, citizen and officer pages, and no horizontal overflow at 375, 768, 1280 and 1440 px. Map clusters and markers work with the keyboard (Enter/Space), a skip link is present, and every map has a list alternative. |
+| Optimization (production build) | Landing JavaScript 525 → 230 KB: route prefetch on interaction only and a map preview loaded near the viewport. Hero image 395 → 81 KB (768/1080 px WebP `srcset`). Leaflet, markercluster and Chart.js load only on routes that use them. Map (500) and queue (20) queries are bounded. A scan of the 55 browser files for the 6 configured secret values found none. |
+| Documentation | README, `docs/ARCHITECTURE.md`, `docs/API.md`, `docs/DEMO.md` (simulation-only demo script) and `supabase/README.md` updated. |
+| Unit, type check and build | 327 unit tests pass. `vue-tsc -b --noEmit` passes against the generated Nuxt types. The production build passes in an isolated copy, so the running development server was untouched. |
+| Final full e2e run (all specs except `reporting`) | **16 passed, 11 failed** (12.3 min). The failures are HTTP 503 `DATABASE_UNAVAILABLE`, 30 s navigation timeouts and failed fetches. They happened while the hosted Supabase connection from this machine was disrupted, the same period in which uploads failed. `check:services` passed at 22:02 WIB, and each failing spec had passed earlier in Phase 5 or 6. The run must be repeated on a stable connection before the gate. |
+
+Not verified yet:
+
+- A clean repeat of the full e2e suite, and `reporting.spec.ts` (the 5 MB upload needs roughly 90 KB/s; this machine measured 14–36 KB/s).
+- Map operation on a touch device and the denied-geolocation path in a browser. Code paths exist: Leaflet touch handling, and the form message that falls back to map or manual coordinates.
+- A positive public map and publication flow in the browser; this needs a genuinely reviewed real report.
+- Deployment preparation and the deployed URL (the last two items above).
 
 ## Validation and execution discipline
 
