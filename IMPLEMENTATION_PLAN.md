@@ -338,6 +338,28 @@ Use the PRD seven-day timeline as a sequencing target: Day 1 foundation; Day 2 a
 
 The user-supplied `../GUIDEBOOK WEB DEV IT RUSH.pdf` was reviewed as competition reference, not as instructions overriding the user's request. It specifies 20 November 2026 at 23:59 WIB as the deadline (page 5), public deployment availability through 30 November 2026 and preserved public repository commit history (page 3), AI/tool/library disclosure in README and proposal (page 3), and a 3–5 minute YouTube Unlisted demo (page 4). It also requires proposal/declaration PDFs and controlled demo credentials when login is used. The seven-day target therefore maps to 14–20 November. Successful live AI integration must be demonstrated for the competition; explicit AI failure handling alone is insufficient evidence. No external submission/publication has been performed.
 
+## Design refinement requested on 16 November 2026
+
+- [x] Replace the portrait hero with a wide rainforest background and place the white heading, description, and calls to action over the image, following the user's SIGAP screenshot reference. Use a rounded hero and overlapping forest-green capsule header. The locally stored panorama is explicitly labeled as an AI illustration.
+- [x] Use a short Indonesian heading, more readable text, larger form labels and buttons, and clearer spacing while retaining the forest palette and real data states. This user-requested refinement supersedes the original English hero headline; the source PRD is preserved.
+- [x] Separate public-layout sign-out from primary navigation into an accessible account disclosure, preserving the actual logout API, errors, and role-based links. The existing officer account footer remains separate.
+- [x] Inspect the revised background-image composition in desktop and mobile visual previews.
+- [x] Redesign the reporting workflow as a transparent cartoon character using a phone beside three readable vertical steps and a functional report CTA. Keep AI's role preliminary, preserve privacy wording, and use one brief entrance animation with reduced-motion support. Do not use the discarded photographic character concept.
+- [x] Refine that section to follow the user's latest illustrated reference: add a separate forest environment, camera/analysis/clipboard icons, a quiet first-step highlight, a privacy strip, and one grouped information strip. Keep the character asset transparent; avoid unverified encryption or environmental-impact claims. Inspect desktop and mobile compositions visually; automated test work remains deferred at the user's request.
+- [x] Apply the subsequent cleanup: remove the first-step highlight and white icon treatment so all three steps share the same background; remove visible AI-asset captions and simulation-counting commentary from the homepage. Retain accurate privacy and AI-function information, actual data filtering, and asset provenance in repository documentation. Decorative images have empty alt text and no dangling caption references. Test-file work remains deferred.
+- [x] Give `/login` and `/register` a shared split-screen authentication layout: a forest image and inverted brand at left, readable Inter form at right, compact stacked composition on mobile, working home/about links, and a reusable show/hide password control. The same login serves citizen and officer entry; existing API calls, role-aware redirects, `next`, field validation, and email-confirmation state remain intact. Visual inspection covers 320, 375, 768, 1280 and 1440 px; no test files were edited or suites run for this design pass.
+- [x] Resume automated checks after the user requested test updates. Replace obsolete photo-ratio/alt-caption assertions with backdrop containment and real navigation checks; cover uniform workflow backgrounds, decorative image loading, reduced motion, split-screen authentication, keyboard password controls, and the account control in the homepage capsule.
+
+Design regression record, 16 November 2026:
+
+- `npm.cmd run test`: 327 unit tests pass across 20 files.
+- Isolated type check and production build: pass; the preview's generated type files were preserved.
+- Playwright collects 42 tests across 15 files. The selected 32 tests across `public`, `auth-layout`, `accessibility`, `account-navigation`, `origin`, `confirmation`, `ownership`, and `session-refresh` all pass against the dedicated simulation-mode server and hosted Supabase. No skips in this selected group. Real QA sessions, email-token callback without sending email, cookie rotation, and denied cross-user access remain verified after the redesign.
+- This run creates no reports and invokes no Gemini inference. The other 10 collected tests (upload, paid/live AI journey, officer workflow, security/rate-limit scenarios and priority-map coverage) were not rerun for this bounded design regression; the selected results do not certify the entire suite or complete Phase 6.
+- `npm.cmd run test:e2e:ui` now provides the focused public/authentication/account/accessibility regression command. Keep the ordinary preview stopped while its dedicated test server uses port 3000; retained fixture requirements and explicit skips are documented in README.
+
+This is a bounded design refinement. It does not mark the remaining Phase 6 release and deployment gates complete.
+
 ## External setup needed before live phase gates
 
 | Dependency | Required setup | Needed by |

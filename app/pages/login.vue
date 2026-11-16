@@ -2,6 +2,7 @@
 import { loginSchema } from '#shared/schemas/auth'
 import type { SessionUser } from '../../shared/types/domain'
 import { getFieldErrors, readApiError } from '~/utils/api-error'
+definePageMeta({ layout: 'auth' })
 useSeoMeta({ title: 'Masuk — RimbaGuard AI', robots: 'noindex' })
 const route = useRoute()
 const { data: session, refresh } = await useAuth()
@@ -30,19 +31,17 @@ async function submit() {
 </script>
 
 <template>
-  <section class="page-container py-14 sm:py-20">
-    <div class="mx-auto max-w-md">
+  <section aria-labelledby="login-title">
       <p class="eyebrow">Selamat datang kembali</p>
-      <h1 class="mt-4 text-4xl font-semibold tracking-tight text-forest-900">Masuk ke RimbaGuard.</h1>
-      <p class="mt-4 body-copy">Kirim laporan dan ikuti perkembangan pemeriksaannya melalui akun Anda.</p>
+      <h1 id="login-title" class="mt-3 text-[2rem] leading-tight font-semibold tracking-[-0.025em] text-forest-900 sm:text-[2.25rem]">Masuk ke RimbaGuard.</h1>
+      <p class="mt-4 text-base leading-7 text-charcoal/80">Kirim laporan dan ikuti perkembangan pemeriksaannya melalui akun Anda.</p>
       <p v-if="route.query.registered" role="status" class="notice mt-6">Akun siap digunakan. Silakan masuk.</p>
       <form class="mt-8 space-y-5" novalidate :aria-busy="pending || !ready" @submit.prevent="submit">
-        <div><label for="email" class="form-label">Email</label><input id="email" v-model="form.email" class="form-input" type="email" autocomplete="email" inputmode="email" required :aria-invalid="Boolean(fields.email)" :aria-describedby="fields.email ? 'email-error' : undefined"><p v-if="fields.email" id="email-error" class="form-error">{{ fields.email[0] }}</p></div>
-        <div><label for="password" class="form-label">Kata sandi</label><input id="password" v-model="form.password" class="form-input" type="password" autocomplete="current-password" required :aria-invalid="Boolean(fields.password)" :aria-describedby="fields.password ? 'password-error' : undefined"><p v-if="fields.password" id="password-error" class="form-error">{{ fields.password[0] }}</p></div>
+        <div><label for="email" class="form-label">Email</label><input id="email" v-model="form.email" class="form-input min-h-13" type="email" autocomplete="email" inputmode="email" required :aria-invalid="Boolean(fields.email)" :aria-describedby="fields.email ? 'email-error' : undefined"><p v-if="fields.email" id="email-error" class="form-error">{{ fields.email[0] }}</p></div>
+        <div><label for="password" class="form-label">Kata sandi</label><UiPasswordInput id="password" v-model="form.password" autocomplete="current-password" :invalid="Boolean(fields.password)" :described-by="fields.password ? 'password-error' : undefined" /><p v-if="fields.password" id="password-error" class="form-error">{{ fields.password[0] }}</p></div>
         <p v-if="message" role="alert" class="form-error">{{ message }}</p>
-        <button type="submit" class="button-primary w-full" :disabled="pending || !ready">{{ pending ? 'Memeriksa akun…' : 'Masuk' }}</button>
+        <button type="submit" class="button-primary min-h-13 w-full font-semibold" :disabled="pending || !ready">{{ pending ? 'Memeriksa akun…' : 'Masuk' }}</button>
       </form>
-      <p class="mt-7 text-sm text-charcoal/80">Belum memiliki akun? <NuxtLink to="/register" class="text-link">Daftar</NuxtLink></p>
-    </div>
+      <p class="mt-7 border-t border-line pt-6 text-base leading-7 text-charcoal/80">Belum memiliki akun? <NuxtLink to="/register" class="text-link inline-flex min-h-11 items-center">Daftar</NuxtLink></p>
   </section>
 </template>

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import sharp from 'sharp'
 
 // The complete citizen-to-officer path through the real UI, Supabase and
@@ -54,7 +55,7 @@ test('a report travels from the citizen through AI analysis to an officer resolu
   await expect(outcome.first()).toBeVisible({ timeout: 120_000 })
   await page.reload()
   await expect(page.locator('header').getByText(/^(Menunggu verifikasi|Analisis gagal)$/)).toBeVisible({ timeout: 30_000 })
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 
   // 2. An officer reviews, responds and resolves it.
@@ -82,6 +83,6 @@ test('a report travels from the citizen through AI analysis to an officer resolu
   await page.reload()
   await expect(page.getByText('Status: Terverifikasi')).toBeVisible({ timeout: 30_000 })
   await expect(page.getByRole('heading', { name: title })).toBeVisible()
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 })

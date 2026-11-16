@@ -68,7 +68,7 @@ test('public pages meet automated WCAG 2.2 AA checks and fit every width', async
   test.setTimeout(180_000)
   await page.route('https://tile.openstreetmap.org/**', route => route.abort())
   const problems = [
-    ...await audit(page, '/', settled('Protecting Our Forests Starts With Awareness.')),
+    ...await audit(page, '/', settled('Bersama menjaga hutan kita.')),
     ...await audit(page, '/map', settled('Peta laporan masyarakat')),
     ...await audit(page, '/about', async p => { await expect(p.locator('h1')).toBeVisible({ timeout: 30_000 }) }),
     ...await audit(page, '/login', settled('Masuk ke RimbaGuard.')),
@@ -85,7 +85,9 @@ test('citizen pages meet automated WCAG 2.2 AA checks and fit every width', asyn
   await login(page, process.env.E2E_EMAIL!, process.env.E2E_PASSWORD!)
   const problems = [
     ...await audit(page, '/reports', settled(/laporan dapat diakses/)),
-    ...await audit(page, '/report', settled('Akun ini menggunakan mode simulasi.')),
+    // Read-only accessibility checks also run against the ordinary dev server;
+    // the form, rather than the optional simulation banner, marks readiness.
+    ...await audit(page, '/report', async p => { await expect(p.getByRole('textbox', { name: 'Judul laporan', exact: true })).toBeVisible({ timeout: 30_000 }) }),
     ...await audit(page, `/reports/${reportId}`, settled('Riwayat perkembangan')),
   ]
   expect(problems).toEqual([])

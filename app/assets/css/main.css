@@ -25,7 +25,7 @@
 
 @layer base {
   html { color-scheme: light; scroll-behavior: smooth; }
-  body { @apply m-0 bg-warm-white font-sans text-charcoal antialiased; }
+  body { @apply m-0 bg-warm-white font-sans text-base leading-relaxed text-charcoal antialiased; }
   button, input, select, textarea { font: inherit; }
   button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
   :focus-visible { outline: 3px solid #285C48; outline-offset: 4px; }
@@ -36,12 +36,12 @@
 
 @layer components {
   .page-container { @apply mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-10; }
-  .eyebrow { @apply text-xs font-semibold uppercase tracking-[0.14em] text-forest-700; }
-  .body-copy { @apply text-base leading-7 text-charcoal/80; }
+  .eyebrow { @apply text-sm leading-6 font-semibold uppercase tracking-[0.1em] text-forest-700; }
+  .body-copy { @apply text-base leading-7 text-charcoal/85 sm:text-lg sm:leading-8; }
   .text-link { @apply font-medium text-forest-700 underline decoration-forest-500/40 underline-offset-4 hover:decoration-forest-700; }
-  .button-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-forest-900 px-5 py-3 text-sm font-medium text-white hover:bg-forest-700 active:bg-forest-900 disabled:opacity-50; }
-  .button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-sm font-medium text-forest-900 hover:bg-sage-100 active:bg-white disabled:opacity-50; }
-  .form-label { @apply mb-2 block text-sm font-medium text-charcoal; }
+  .button-primary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-forest-900 px-5 py-3 text-base leading-6 font-medium text-white hover:bg-forest-700 active:bg-forest-900 disabled:opacity-50; }
+  .button-secondary { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-line bg-white px-5 py-3 text-base leading-6 font-medium text-forest-900 hover:bg-sage-100 active:bg-white disabled:opacity-50; }
+  .form-label { @apply mb-2 block text-base leading-6 font-medium text-charcoal; }
   .form-input { @apply block min-h-12 w-full rounded-lg border border-charcoal/25 bg-white px-3.5 py-3 text-base text-charcoal placeholder:text-charcoal/50 disabled:bg-sage-100; }
   .form-input[aria-invalid="true"] { @apply border-alert-red; }
   .form-error { @apply mt-2 text-sm leading-5 text-[#9D302B]; }

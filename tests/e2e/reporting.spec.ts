@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import sharp from 'sharp'
 import { createHash, randomUUID } from 'node:crypto'
 import type { UploadAuthorizedResponse } from '../../shared/types/report-api'
@@ -193,7 +194,7 @@ test('real private report upload persists, can be corrected, and requires a sess
     method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...body, expectedRevision: revision }),
   })).status, { reportId, body: requestBody!, revision: detail.report.revision })
   expect(staleCorrection).toBe(409)
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
   expect(await page.evaluate(async id => (await fetch(`/api/reports/${id}`)).status, reportId)).toBe(401)
   await page.goto(`/reports/${reportId}`)

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync } from 'node:fs'
 import type { Database } from '../../shared/types/database'
@@ -200,6 +201,6 @@ test('officers review, respond and audit reports while reporters see only what i
   await expect(page.getByRole('heading', { name: 'Petugas meminta informasi tambahan' })).toHaveCount(0)
   const resubmitted = await database.from('reports').select('status').eq('id', second.id).single()
   expect(resubmitted.data?.status).toBe('pending_analysis')
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 })

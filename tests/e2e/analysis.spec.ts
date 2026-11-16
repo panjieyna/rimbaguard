@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync } from 'node:fs'
 import { threatAnalysisSchema } from '../../shared/schemas/ai'
@@ -109,6 +110,6 @@ test('real Gemini retry persists validated output and concurrent requests reuse 
     if (!stored.error && typeof stored.count === 'number') successes = stored.count
   } catch { /* No raw provider/database detail in logs. */ }
   expect(successes).toBe(1)
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 })

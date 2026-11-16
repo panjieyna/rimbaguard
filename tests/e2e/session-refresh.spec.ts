@@ -1,4 +1,5 @@
 import { expect, test, type BrowserContext, type Cookie } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import { combineChunks, createChunks, stringFromBase64URL, stringToBase64URL } from '@supabase/ssr'
 
 const configured = Boolean(process.env.E2E_EMAIL && process.env.E2E_PASSWORD && process.env.RIMBAGUARD_TEST_USER_ID)
@@ -95,6 +96,6 @@ test('SSR refresh returns rotated HttpOnly auth cookies to the browser', async (
   expect(refreshed.cookies.every(cookie => cookie.httpOnly)).toBe(true)
   const session = await page.evaluate(async () => (await fetch('/api/auth/session')).json())
   expect(session.user?.id === process.env.RIMBAGUARD_TEST_USER_ID && session.simulationMode === true).toBe(true)
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/)
 })

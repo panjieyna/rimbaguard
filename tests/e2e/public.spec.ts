@@ -1,20 +1,76 @@
 import { expect, test } from '@playwright/test'
 
-for (const width of [375, 768, 1280, 1440]) {
+for (const width of [320, 375, 768, 1280, 1440]) {
   test(`landing and navigation work at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 })
     await page.goto('/')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Protecting Our Forests Starts With Awareness.')
-    await expect(page.getByAltText('Vegetasi hutan tropis yang rapat di lereng Gunung Lempuyang, Bali')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Bersama menjaga hutan kita.')
+    const hero = page.getByRole('region', { name: 'Bersama menjaga hutan kita.' })
+    const panorama = hero.locator('img')
+    await expect(panorama).toBeVisible()
+    await expect.poll(() => panorama.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
+    await expect(panorama).toHaveAttribute('alt', '')
+    // The image is a full-width backdrop. The copy and real CTA must sit
+    // within it on phones as well as desktops; a portrait ratio is valid here.
+    const photoBounds = await panorama.boundingBox()
+    expect(photoBounds!.width).toBeGreaterThan(width * 0.9)
+    for (const content of [hero.getByRole('heading', { level: 1 }), hero.getByRole('link', { name: 'Laporkan ancaman', exact: true })]) {
+      const bounds = await content.boundingBox()
+      expect(bounds!.x).toBeGreaterThanOrEqual(photoBounds!.x)
+      expect(bounds!.y).toBeGreaterThanOrEqual(photoBounds!.y)
+      expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(photoBounds!.x + photoBounds!.width + 1)
+      expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(photoBounds!.y + photoBounds!.height + 1)
+    }
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    const menu = page.getByRole('button', { name: 'Menu', exact: true })
+    if (await menu.isVisible()) await expect(menu).toBeEnabled()
     await page.screenshot({ path: `test-results/landing-${width}.png`, fullPage: true })
-    if (width < 1024) await page.getByRole('button', { name: 'Menu', exact: true }).click()
+    if (await menu.isVisible()) await menu.click()
     await page.getByRole('navigation', { name: 'Navigasi utama' }).getByRole('link', { name: 'Tentang', exact: true }).click()
     await expect(page).toHaveURL(/\/about$/)
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Dari kepedulian')
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
 }
+
+for (const width of [375, 1440]) {
+  test(`reporting workflow explains three consistent steps and opens reporting at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/')
+    const workflow = page.getByRole('region', { name: /Dari ponsel Anda/ })
+    await workflow.scrollIntoViewIfNeeded()
+    const steps = workflow.getByRole('list', { name: 'Tahapan pelaporan RimbaGuard' }).getByRole('listitem')
+    await expect(steps).toHaveCount(3)
+    await expect(steps.getByRole('heading', { level: 3 })).toHaveText([
+      /Kirim pengamatan Anda/, /AI membantu analisis awal/, /Petugas meninjau laporan/,
+    ])
+    for (const image of await workflow.locator('img').all()) {
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)
+    }
+    const backgrounds = await steps.evaluateAll(elements => elements.map(element => ({
+      row: getComputedStyle(element).backgroundColor,
+      icon: getComputedStyle(element.querySelector('svg')!.parentElement!).backgroundColor,
+    })))
+    expect(new Set(backgrounds.map(item => item.row)).size).toBe(1)
+    expect(new Set(backgrounds.map(item => item.icon)).size).toBe(1)
+    await expect(page.getByText(/Ilustrasi AI|Ilustrasi hutan tropis|Data simulasi tidak dihitung/i)).toHaveCount(0)
+    await expect(workflow.getByText('Foto dan lokasi rinci Anda disimpan privat.')).toBeVisible()
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+    await workflow.getByRole('link', { name: 'Mulai buat laporan', exact: true }).click()
+    await expect(page).toHaveURL(/\/login\?next=/)
+  })
+}
+
+test('workflow respects reduced motion without hiding its content', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  const workflow = page.getByRole('region', { name: /Dari ponsel Anda/ })
+  await workflow.scrollIntoViewIfNeeded()
+  await expect(workflow.getByRole('link', { name: 'Mulai buat laporan', exact: true })).toBeVisible()
+  const character = workflow.locator('img').last()
+  await expect(character).toBeVisible()
+  expect(await character.evaluate(element => getComputedStyle(element).animationName)).toBe('none')
+})
 
 test('keyboard can skip navigation', async ({ page }) => {
   await page.goto('/')

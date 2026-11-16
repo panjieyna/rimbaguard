@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync } from 'node:fs'
 import { analysisFailureMessage } from '../../shared/constants/analysis'
@@ -44,6 +45,6 @@ test('an actual persisted AI failure remains visible after reload without fabric
   expect(detail.report.isSimulation === true && detail.report.status === 'analysis_failed').toBe(true)
   expect(detail.analyses.some((analysis: { analysisStatus: string; errorCode: string }) => analysis.analysisStatus === 'failed' && analysis.errorCode === code)).toBe(true)
   expect(invoked).toBe(false)
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 })

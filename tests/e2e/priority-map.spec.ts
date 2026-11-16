@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { logoutFromAccount } from './helpers/account'
 import { createClient } from '@supabase/supabase-js'
 import { existsSync } from 'node:fs'
 import type { Database } from '../../shared/types/database'
@@ -104,7 +105,7 @@ test('a citizen cannot open the officer map or read priority details', async ({ 
   const response = await page.goto('/admin/map')
   expect(response?.status()).toBe(403)
   await page.goto('/reports')
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 })
 
