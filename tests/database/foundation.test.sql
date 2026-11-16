@@ -182,7 +182,7 @@ select extensions.throws_ok($$
   select public.admin_change_report_status(
     '20000000-0000-4000-8000-000000000001',
     '10000000-0000-4000-8000-000000000003', 1, 'in_progress', null)
-$$, '40001', 'report_revision_conflict', 'Stale revisions cannot overwrite human decisions');
+$$, 'PT409', 'report_revision_conflict', 'Stale revisions cannot overwrite human decisions');
 select extensions.throws_ok($$
   select public.admin_change_report_status(
     '20000000-0000-4000-8000-000000000001',

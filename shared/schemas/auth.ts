@@ -26,3 +26,8 @@ export const loginSchema = z.strictObject({
     .min(1, 'Masukkan kata sandi.')
     .max(128, 'Kata sandi maksimal 128 karakter.'),
 })
+
+/** 'global' signs the account out on every device. */
+export const logoutSchema = z.strictObject({
+  scope: z.enum(['local', 'global']).default('local'),
+})

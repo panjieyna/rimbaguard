@@ -6,7 +6,7 @@ export function throwReportDatabaseError(error: DatabaseFailure): never {
   if (['PGRST202', 'PGRST204', 'PGRST205', '42P01', '42883'].includes(error.code ?? '')) {
     throw apiError(503, 'SCHEMA_UNAVAILABLE', 'Skema pelaporan belum tersedia. Hubungkan migrasi Fase 2 sebelum mencoba lagi.')
   }
-  if (error.code === '40001') throw apiError(409, 'REPORT_CONFLICT', 'Laporan atau unggahan sedang diperbarui. Muat ulang lalu coba lagi.')
+  if (['PT409', '40001'].includes(error.code ?? '')) throw apiError(409, 'REPORT_CONFLICT', 'Laporan atau unggahan sedang diperbarui. Muat ulang lalu coba lagi.')
   if (error.code === 'P0002') throw apiError(404, 'REPORT_NOT_FOUND', 'Laporan atau bukti tidak ditemukan.')
   if (error.code === '42501') throw apiError(403, 'REPORT_FORBIDDEN', 'Anda tidak memiliki izin untuk tindakan ini.')
   if (['idempotency_payload_conflict', 'idempotency_key_reused'].includes(error.message ?? '')) {

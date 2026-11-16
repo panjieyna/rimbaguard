@@ -22,6 +22,7 @@ const pending = ref(false)
 const locating = ref(false)
 const progress = ref('')
 const ready = ref(false)
+const analysisIntent = useAnalysisIntent()
 const evidencePath = ref(props.initial?.evidencePath ?? '')
 let submissionKey = ''
 let authorizedUpload: UploadAuthorization | null = null
@@ -87,30 +88,39 @@ async function submit() {
   try {
     if (file.value && !evidencePath.value) {
       progress.value = 'Menyiapkan unggahan…'
-      authorizedUpload ??= await $fetch<UploadAuthorization>('/api/uploads/authorize', { method: 'POST', body: { fileName: file.value.name, mimeType: file.value.type, size: file.value.size } })
+      authorizedUpload ??= await $fetch<UploadAuthorization>('/api/uploads/authorize', { method: 'POST', retry: 0, timeout: 30_000, body: { fileName: file.value.name, mimeType: file.value.type, size: file.value.size } })
       if (!uploadFinished) {
         progress.value = 'Mengunggah foto…'
-        const response = await fetch(authorizedUpload.signedUrl, { method: 'PUT', headers: { 'content-type': file.value.type, 'x-upsert': 'false' }, body: file.value })
+        let response: Response
+        try {
+          response = await fetch(authorizedUpload.signedUrl, { method: 'PUT', headers: { 'content-type': file.value.type, 'x-upsert': 'false' }, body: file.value, signal: AbortSignal.timeout(60_000) })
+        }
+        catch {
+          authorizedUpload = null
+          throw new Error('UPLOAD_FAILED')
+        }
         if (!response.ok) { authorizedUpload = null; throw new Error('UPLOAD_FAILED') }
         uploadFinished = true
       }
       progress.value = 'Memeriksa foto…'
-      const finalized = await $fetch<{ evidencePath: string }>('/api/uploads/finalize', { method: 'POST', body: { uploadId: authorizedUpload.uploadId } })
+      const finalized = await $fetch<{ evidencePath: string }>('/api/uploads/finalize', { method: 'POST', retry: 0, timeout: 45_000, body: { uploadId: authorizedUpload.uploadId } })
       evidencePath.value = finalized.evidencePath
     }
     progress.value = 'Menyimpan laporan…'
     const body = { ...validated.data, evidencePath: evidencePath.value }
     if (props.initial) {
-      const result = await $fetch<{ report: ReportDetail }>(`/api/reports/${props.initial.id}`, { method: 'PATCH', body: { ...body, expectedRevision: props.initial.revision } })
+      const result = await $fetch<{ report: ReportDetail }>(`/api/reports/${props.initial.id}`, { method: 'PATCH', retry: 0, timeout: 45_000, body: { ...body, expectedRevision: props.initial.revision } })
+      analysisIntent.value = { reportId: result.report.id, revision: result.report.revision }
       emit('saved', result.report.id)
     }
     else {
-      const result = await $fetch<ReportCreateResponse>('/api/reports', { method: 'POST', headers: { 'Idempotency-Key': submissionKey || crypto.randomUUID() }, body })
+      const result = await $fetch<ReportCreateResponse>('/api/reports', { method: 'POST', retry: 0, timeout: 45_000, headers: { 'Idempotency-Key': submissionKey || crypto.randomUUID() }, body })
+      analysisIntent.value = { reportId: result.report.id, revision: result.report.revision }
       emit('saved', result.report.id)
     }
   }
   catch (error) {
-    const failure = readApiError(error, 'Laporan belum tersimpan. Isian Anda tetap tersedia; silakan coba lagi.')
+    const failure = readApiError(error, 'Penyimpanan laporan belum dapat dikonfirmasi. Isian Anda tetap tersedia; silakan coba lagi.')
     message.value = failure.message; fields.value = failure.fields
     if (failure.code === 'EVIDENCE_EXPIRED' && file.value) { evidencePath.value = ''; authorizedUpload = null; uploadFinished = false }
   }

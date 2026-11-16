@@ -63,7 +63,8 @@ test('SSR refresh returns rotated HttpOnly auth cookies to the browser', async (
     }
   }, { email: process.env.E2E_EMAIL!, password: process.env.E2E_PASSWORD! })
   await page.getByRole('button', { name: 'Masuk', exact: true }).click()
-  await expect(page).toHaveURL(/\/reports$/)
+  // Login makes several hosted round trips; match the other specs' allowance.
+  await expect(page).toHaveURL(/\/reports$/, { timeout: 30_000 })
   const identity = await page.evaluate(async () => (await fetch('/api/auth/session')).json())
   expect(identity.simulationMode === true && identity.user?.id === process.env.RIMBAGUARD_TEST_USER_ID).toBe(true)
 

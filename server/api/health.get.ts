@@ -7,7 +7,7 @@ export default defineEventHandler(() => {
     mode: environment.mode,
     services: {
       supabase: environment.mode === 'configured' ? 'configured' : 'unavailable',
-      gemini: environment.geminiApiKey && environment.geminiModel ? 'configured' : 'unavailable',
+      gemini: environment.geminiApiKey ? 'configured' : 'unavailable',
     },
   }
 })

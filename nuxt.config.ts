@@ -8,6 +8,10 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   vite: { plugins: [tailwindcss()] },
   typescript: { strict: true },
+  // Prefetch a route's code when a link is touched, hovered or focused, not
+  // merely visible: every page links to /map, whose map libraries would
+  // otherwise download on phones that never open the map.
+  experimental: { defaults: { nuxtLink: { prefetchOn: { visibility: false, interaction: true } } } },
   runtimeConfig: {
     supabaseUrl: '',
     supabaseAnonKey: '',
@@ -31,5 +35,6 @@ export default defineNuxtConfig({
     '/api/**': { headers: { 'cache-control': 'no-store' } },
     '/admin/**': { headers: { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex, nofollow' } },
     '/reports/**': { headers: { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex, nofollow' } },
+    '/report': { headers: { 'cache-control': 'private, no-store', 'x-robots-tag': 'noindex, nofollow' } },
   },
 })

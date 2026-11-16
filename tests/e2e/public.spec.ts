@@ -60,5 +60,5 @@ test('public map provides a map and a privacy-safe list or empty state', async (
   await expect(page.getByRole('heading', { name: 'Peta laporan masyarakat' })).toBeVisible()
   await expect(page.getByRole('region', { name: 'Peta lokasi laporan' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Laporan publik', exact: true })).toBeVisible()
-  await expect(page.getByText('Peta berbasis laporan insiden; tidak menampilkan deteksi deforestasi atau pemantauan satelit langsung.')).toBeVisible()
+  await expect(page.getByText('Peta berbasis laporan insiden; tidak menampilkan deteksi deforestasi, batas kawasan, atau pemantauan satelit langsung.')).toBeVisible()
 })

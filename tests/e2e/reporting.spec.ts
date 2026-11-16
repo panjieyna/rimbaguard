@@ -7,9 +7,29 @@ const configured = Boolean(process.env.E2E_EMAIL && process.env.E2E_PASSWORD && 
 
 test('real private report upload persists, can be corrected, and requires a session', async ({ page, context }) => {
   test.skip(!configured, 'Requires a dedicated, server-designated simulation account in ignored .env.e2e.')
-  test.setTimeout(120_000)
+  test.setTimeout(180_000)
   const clientErrors: string[] = []
   page.on('pageerror', error => clientErrors.push(error.message.replace(/https?:\/\/\S+/g, '[url]')))
+  const uploadActivity: string[] = []
+  page.on('response', response => {
+    const path = new URL(response.url()).pathname
+    if (path.includes('/storage/v1/object/upload/sign/')) uploadActivity.push(`storage:${response.status()}`)
+    else if (path === '/api/uploads/finalize') uploadActivity.push(`finalize:${response.status()}`)
+  })
+  page.on('requestfailed', request => {
+    if (new URL(request.url()).pathname.includes('/storage/v1/object/upload/sign/')) {
+      const failure = request.failure()?.errorText || ''
+      uploadActivity.push(/^net::[A-Z_]+$/.test(failure) ? failure : 'storage-request-failed')
+    }
+  })
+  // An unavailable basemap must not block point selection or report submission.
+  await page.route('https://tile.openstreetmap.org/**', route => route.abort())
+  // Keep this reporting regression focused on a real persisted report during
+  // an analysis outage. Live Gemini persistence is exercised separately.
+  await page.route('**/api/reports/*/analyze', route => route.fulfill({
+    status: 503, contentType: 'application/json',
+    body: JSON.stringify({ data: { error: { code: 'AI_PROVIDER_UNAVAILABLE', message: 'Analisis sementara tidak tersedia. Laporan tetap tersimpan.' } } }),
+  }))
   await page.goto('/login')
   await expect(page.getByRole('button', { name: 'Masuk', exact: true })).toBeEnabled()
   // Evaluate arguments are kept out of locator call logs; tracing is disabled.
@@ -22,8 +42,10 @@ test('real private report upload persists, can be corrected, and requires a sess
     }
     setValue('email', email); setValue('password', password)
   }, { email: process.env.E2E_EMAIL!, password: process.env.E2E_PASSWORD! })
+  const loginResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/api/auth/login' && response.request().method() === 'POST', { timeout: 40_000 })
   await page.getByRole('button', { name: 'Masuk', exact: true }).click()
-  await expect(page).toHaveURL(/\/reports$/)
+  expect((await loginResponse).status()).toBe(200)
+  await expect(page).toHaveURL(/\/reports$/, { timeout: 30_000 })
   const cookies = await context.cookies()
   const authCookies = cookies.filter(cookie => cookie.name.startsWith('sb-') && cookie.name.includes('auth-token'))
   expect(authCookies.length).toBeGreaterThan(0)
@@ -43,6 +65,7 @@ test('real private report upload persists, can be corrected, and requires a sess
   await page.getByLabel('Waktu kejadian', { exact: true }).fill('2020-01-01T07:00')
   expect(clientErrors).toEqual([])
   await page.getByRole('region', { name: 'Peta lokasi laporan' }).locator('.leaflet-control-zoom-in').waitFor()
+  await expect(page.getByText('Peta dasar belum dapat dimuat.', { exact: false })).toBeVisible()
   await page.getByRole('region', { name: 'Peta lokasi laporan' }).click({ position: { x: 240, y: 180 } })
   const pickedPoint = await page.evaluate(() => {
     const latitude = (document.getElementById('latitude') as HTMLInputElement).value
@@ -79,11 +102,15 @@ test('real private report upload persists, can be corrected, and requires a sess
     else await route.continue()
   })
   await page.getByRole('button', { name: 'Kirim laporan', exact: true }).click()
-  await expect(page.getByRole('alert')).toContainText('Laporan belum tersimpan')
+  await expect(page.getByRole('alert')).toContainText('Penyimpanan laporan belum dapat dikonfirmasi', { timeout: 40_000 })
   expect(failedUpload).toBe(true)
   expect(submissionKey === undefined).toBe(true)
   await expect(page.getByLabel('Judul laporan', { exact: true })).toHaveValue('[SIMULASI] Pengujian pelaporan privat')
   const authorizationResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/api/uploads/authorize' && response.ok())
+  // Allow the full-size direct upload and server image verification to finish
+  // before measuring the following creation request.
+  const finalizationResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/api/uploads/finalize' && response.request().method() === 'POST', { timeout: 100_000 }).catch(() => null)
+  const creationResponse = page.waitForResponse(response => new URL(response.url()).pathname === '/api/reports' && response.request().method() === 'POST', { timeout: 145_000 }).catch(() => null)
   let reusableKeySent = false
   page.on('request', request => {
     if (request.method() === 'PUT' && new URL(request.url()).pathname.includes('/storage/v1/object/upload/sign/')) {
@@ -93,6 +120,12 @@ test('real private report upload persists, can be corrected, and requires a sess
   })
   await page.getByRole('button', { name: 'Kirim laporan', exact: true }).click()
   const authorization = await (await authorizationResponse).json() as UploadAuthorizedResponse
+  const finalized = await Promise.race([
+    finalizationResponse,
+    page.getByRole('alert').waitFor({ state: 'visible', timeout: 100_000 }).then(() => null).catch(() => null),
+  ])
+  expect(finalized?.status(), uploadActivity.join(', ')).toBe(200)
+  expect((await creationResponse)?.status()).toBe(201)
   await expect(page).toHaveURL(/\/reports\/[0-9a-f-]+\?submitted=1/, { timeout: 45_000 })
   await page.unroute(uploadRoute)
   expect(reusableKeySent).toBe(false)
@@ -108,23 +141,23 @@ test('real private report upload persists, can be corrected, and requires a sess
   let sealedWriteBlocked = false
   let digestAfterReplay = ''
   try {
-    const original = await fetch(detail.evidenceUrl, { signal: AbortSignal.timeout(15_000) })
+    const original = await fetch(detail.evidenceUrl, { signal: AbortSignal.timeout(30_000) })
     if (original.ok) originalDigest = createHash('sha256').update(Buffer.from(await original.arrayBuffer())).digest('hex')
     // Previously issued incoming tokens must never mutate sealed evidence,
     // even when a malicious client requests an upsert after attachment.
     const replay = await fetch(authorization.signedUrl, {
       method: 'PUT', headers: { 'content-type': 'image/jpeg', 'x-upsert': 'true' },
-      body: fullSizeImage, signal: AbortSignal.timeout(15_000),
+      body: image, signal: AbortSignal.timeout(30_000),
     })
     replayBlocked = !replay.ok
     const sealedTarget = new URL(authorization.signedUrl)
     sealedTarget.pathname = sealedTarget.pathname.replace(`/incoming/${authorization.uploadId}.jpg`, `/sealed/${authorization.uploadId}.jpg`)
     const sealedWrite = await fetch(sealedTarget, {
       method: 'PUT', headers: { 'content-type': 'image/jpeg', 'x-upsert': 'true' },
-      body: fullSizeImage, signal: AbortSignal.timeout(15_000),
+      body: image, signal: AbortSignal.timeout(30_000),
     })
     sealedWriteBlocked = !sealedWrite.ok
-    const after = await fetch(detail.evidenceUrl, { cache: 'no-store', signal: AbortSignal.timeout(15_000) })
+    const after = await fetch(detail.evidenceUrl, { cache: 'no-store', signal: AbortSignal.timeout(30_000) })
     if (after.ok) digestAfterReplay = createHash('sha256').update(Buffer.from(await after.arrayBuffer())).digest('hex')
   }
   catch { /* Keep signed URLs out of test errors and request call logs. */ }
@@ -155,13 +188,13 @@ test('real private report upload persists, can be corrected, and requires a sess
   await page.getByRole('button', { name: 'Perbaiki informasi' }).click()
   await page.getByLabel('Judul laporan', { exact: true }).fill('[SIMULASI] Informasi laporan diperbaiki')
   await page.getByRole('button', { name: 'Simpan perbaikan' }).click()
-  await expect(page.getByRole('heading', { name: '[SIMULASI] Informasi laporan diperbaiki' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '[SIMULASI] Informasi laporan diperbaiki' })).toBeVisible({ timeout: 30_000 })
   const staleCorrection = await page.evaluate(async ({ reportId, body, revision }) => (await fetch(`/api/reports/${reportId}`, {
     method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ...body, expectedRevision: revision }),
   })).status, { reportId, body: requestBody!, revision: detail.report.revision })
   expect(staleCorrection).toBe(409)
   await page.getByRole('button', { name: 'Keluar', exact: true }).click()
-  await expect(page).toHaveURL(/\/$/)
+  await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
   expect(await page.evaluate(async id => (await fetch(`/api/reports/${id}`)).status, reportId)).toBe(401)
   await page.goto(`/reports/${reportId}`)
   await expect(page).toHaveURL(/\/login\?next=/)

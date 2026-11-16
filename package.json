@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24 <25", "npm": ">=11" },
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11"
+  },
   "scripts": {
     "dev": "nuxt dev --host 127.0.0.1",
     "build": "nuxt build",
@@ -15,14 +18,18 @@
     "test:smoke": "node scripts/smoke-foundation.mjs",
     "test:e2e": "playwright test",
     "test:e2e:prepare": "node scripts/prepare-e2e-account.mjs",
+    "test:e2e:prepare-officer": "node scripts/prepare-e2e-officer.mjs",
     "check:services": "node scripts/check-services.mjs",
-    "check:reporting": "node scripts/check-services.mjs --reporting"
+    "check:reporting": "node scripts/check-services.mjs --reporting",
+    "check:degraded": "node scripts/check-degraded.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.80.0",
+    "chart.js": "4.5.1",
     "leaflet": "^1.9.4",
+    "leaflet.markercluster": "1.5.3",
     "nuxt": "^4.0.0",
     "sharp": "^0.34.0",
     "vue": "^3.5.0",
@@ -30,10 +37,12 @@
     "zod": "^4.0.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@playwright/test": "^1.56.0",
     "@tailwindcss/vite": "^4.1.0",
-    "@types/node": "^24.0.0",
     "@types/leaflet": "^1.9.0",
+    "@types/leaflet.markercluster": "1.5.6",
+    "@types/node": "^24.0.0",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
     "vitest": "^4.0.0",

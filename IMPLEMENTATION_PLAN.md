@@ -14,15 +14,15 @@ This document tracks implementation and verification. A checked phase means its 
 - [x] Review requirements and security architecture independently before setting the implementation sequence.
 - [x] Create this phased checklist with acceptance gates and explicit product assumptions.
 - [x] Phase 1: project foundation.
-- [ ] Phase 2: public application and persisted reporting.
-- [ ] Phase 3: AI integration.
-- [ ] Phase 4: threat intelligence and maps.
-- [ ] Phase 5: administration and response workflow.
+- [x] Phase 2: public application and persisted reporting.
+- [x] Phase 3: AI integration.
+- [x] Phase 4: threat intelligence and maps.
+- [x] Phase 5: administration and response workflow.
 - [ ] Phase 6: integrated QA and deployment preparation.
 
 Available: Node.js `24.21.0`, npm `11.19.0` through `npm.cmd`, Git `2.55.0.windows.5`, and Bun. Use npm and one `package-lock.json`; do not mix package managers. PowerShell blocks `npm.ps1`, so use `npm.cmd` without changing execution policy. No Supabase CLI or pnpm was found on PATH. Node/package availability does not establish registry connectivity.
 
-Phase 1 is complete. All nine foundation service checks pass, and the supplied Supabase SQL Editor `finish()` result of only `1..47` confirms the 47 foundation assertions passed without a failure diagnostic. Phase 2 UI/API/SQL implementation is written and passes the local checks below. Its separate hosted reporting migration, authenticated persistence/Storage tests, and controlled-email confirmation remain pending, so Phase 2 is not marked complete.
+Phases 1 and 2 are complete. Foundation/reporting/repair SQL results report `1..47`, `1..29`, and `1..10`; all 11 readiness probes and the complete 13-test browser/API suite passed after the hosted repair/restart. A subsequent local-origin regression fix passed 173 unit tests and 12 focused browser/public tests, with isolated full type checking and production build passing without changing the active development types. The user explicitly confirms receiving the registration email, confirming it, and logging in. Phase 3 is complete as of 15 November 2026: with `GEMINI_MODEL=gemini-3.5-flash`, the live Gemini retry/concurrency acceptance test passed and one validated analysis was persisted (see the Phase 3 validation record). Phase 4 is complete as of 15 November 2026: the hosted bundle returned `1..66`, and the scoring, officer map and public map passed live browser/API tests (see the Phase 4 implementation record). Phase 5 is complete as of 15 November 2026: the hosted bundle returned `1..64`, and the officer workflow passed live browser/API tests. The 5 MB upload test awaits a faster connection (see the Phase 5 implementation record). Phase 6 remains open.
 
 ## Product and architecture decisions
 
@@ -81,8 +81,8 @@ Scoring v1 decisions, recorded explicitly because the PRD leaves these details o
 - Use the PRD base severities. Effective category is an officer correction first, otherwise a validated non-uncertain AI category, otherwise the user category; persist the source and avoid treating a category as proof of illegality.
 - Completeness: validated photo 25, description with at least 80 trimmed characters 25, valid coordinates 20, valid incident time 20, location name with at least 3 trimmed characters 10. These are product heuristics for information completeness, not evidence authenticity or scientific risk measures; display the exact rules.
 - Recency boundaries: age through 6 h → 100; over 6 h through 24 h → 85; over 24 h through 72 h → 65; over 72 h through 168 h → 40; older → 20. Reject future incident instants; convert local input correctly to UTC and localize display.
-- Nearby means other real, non-rejected reports with the same effective category, within a configurable 2 km radius and a configurable rolling 7-day incident window. Exclude self and simulated records. Use the PRD count mapping 0/1/2/3+ → 0/40/70/100 and a tested geographic distance calculation. Nearby reports are corroborating submissions, not confirmation of truth.
-- Recalculate on edits, effective category/status eligibility changes, new nearby reports, configuration version changes, and recency boundaries. Update both affected neighborhoods, not only the newest report. Use database-backed dirty/freshness tracking and refresh stale active-report scores before queue sorting; define a deployment-compatible scheduled sweep where available. Preserve input snapshots and past calculations.
+- Nearby means other real, non-rejected reports with the same effective category, within a configurable 2 km radius and a configurable rolling 7-day incident window. Exclude self and simulated records. Use the PRD count mapping 0/1/2/3+ → 0/40/70/100 and a tested geographic distance calculation. Nearby reports are corroborating submissions, not confirmation of truth. (Refined in Phase 4: the window is ±7 days around the subject's incident, and simulation records are counted only with other simulation records; see the Phase 4 implementation record.)
+- Recalculate on edits, effective category/status eligibility changes, new nearby reports, configuration version changes, and recency boundaries. Update both affected neighborhoods, not only the newest report. Use database-backed dirty/freshness tracking and refresh stale active-report scores before queue sorting; define a deployment-compatible scheduled sweep where available. Preserve input snapshots and past calculations. (Implemented in Phase 4 with stored recency boundaries and read-time refresh, so no scheduled sweep is required.)
 
 ## Phase 1 — project foundation
 
@@ -122,13 +122,13 @@ Remaining Phase 1 service gate:
 
 ## Phase 2 — public application and persisted reporting
 
-- [x] Build the editorial landing page with specified hero/CTAs, three-step explanation, database-backed statistics endpoint, footer disclaimer, and `/about`. Missing statistics RPC returns unavailable rather than invented zeros; the embedded map preview remains for Phase 4.
-- [ ] Implement functional login/register/logout, confirmation callback where configured, session refresh/expiry handling, safe return URLs, and role-based redirection.
+- [x] Build the editorial landing page with specified hero/CTAs, three-step explanation, database-backed statistics endpoint, footer disclaimer, and `/about`. Missing statistics RPC returns unavailable rather than invented zeros; the embedded map preview was added in Phase 4.
+- [x] Implement functional login/register/logout, confirmation callback where configured, session refresh/expiry handling, safe return URLs, and role-based redirection.
 - [x] Implement `/report` with shared client/server validation for every required field and the exact threat categories; authenticated browser acceptance remains in the phase gate.
-- [ ] Implement private signed upload authorization/finalization and actionable file-size/type/upload-failure messages.
-- [ ] Implement geolocation only after explicit user action, coordinate display/validation, and a usable client-only Leaflet point picker when GPS fails or permission is denied.
-- [ ] Implement idempotent `POST /api/reports`, owned list/detail/update APIs, `/reports`, and `/reports/[id]`. Persist image reference, coordinates, incident time, and `pending_analysis` before AI exists.
-- [ ] Implement loading, successful submission, empty, unavailable, validation, expired-session, and retryable network states. Preserve form input after failure.
+- [x] Implement private signed upload authorization/finalization and actionable file-size/type/upload-failure messages.
+- [x] Implement geolocation only after explicit user action, coordinate display/validation, and a usable client-only Leaflet point picker when GPS fails or permission is denied.
+- [x] Implement idempotent `POST /api/reports`, owned list/detail/update APIs, `/reports`, and `/reports/[id]`. Persist image reference, coordinates, incident time, and `pending_analysis` before AI exists.
+- [x] Implement loading, successful submission, empty, unavailable, validation, expired-session, and retryable network states. Preserve form input after failure.
 
 Gate: type check, focused tests, and build pass. With real Supabase, register/login/logout, upload valid evidence, submit, refresh, and retrieve the same report and image. Verify the full 5,000,000-byte boundary and direct browser upload using only the scoped signed URL/token, without a project API key. Prove a previously issued upload token cannot overwrite finalized or attached evidence. Verify duplicate retries create one report; reject invalid/future timestamps, invalid coordinates, spoofed/oversized uploads, other-user evidence, unauthorized reads, and client-supplied status/role/score/analysis. Exercise GPS denial and upload failure. AI remains explicitly pending at this phase, not simulated.
 
@@ -142,55 +142,158 @@ Phase 2 implementation record, 14 November 2026:
 
 | Check | Result |
 | --- | --- |
-| Unit suite | 139 tests passed across 8 files, including authentication errors/redirects and real image decoding/normalization. |
-| Type check and production build | Passed after correcting shared-module imports and request/session client reuse. |
+| Unit suite | 173 tests passed across 11 files after adding serialized-Origin validation and development-only canonical-navigation cases to the existing auth, evidence, session, timeout and conflict coverage. |
+| Type check and production build | Both passed after the final application changes: SSR session forwarding, numeric coordinate handling, DOM-ready Leaflet initialization, hydration-safe controls, service timeouts, and conflict mapping. |
 | Configured credential scan | Passed against final `.output/public`: configured server credential values were not found in frontend assets; no values were printed. |
 | Browser public flows | 9 tests passed in local Chrome: 375/768/1280/1440 widths, navigation, keyboard skip, protected-route redirection, strict local form validation, and basic public map/list. Desktop and mobile screenshots inspected. |
-| Browser authenticated report flow | 1 test explicitly skipped: no dedicated simulation account configured in ignored `.env.e2e`. This is not counted as a passed persistence test. The test checks login, HttpOnly sessions, upload, report creation/reload, idempotency, corrections, and logout when configured. |
-| Local reporting database checks | 26 workflow/security cases passed against both complete migrations in isolated PostgreSQL. The complete 29-assertion SQL test sequence also executed/rolled back using local assertion functions; actual hosted pgTAP results are still required. |
-| Hosted reporting readiness | Not ready at latest check: `evidence_uploads` returns `PGRST205`; `platform_statistics` returns `PGRST202`. The user has been asked to apply migration `002` and run its SQL test file. Use `npm.cmd run check:reporting` after applying it. |
-| Real registration/email, signed direct upload/replay, cross-user APIs, and persistence | Pending hosted migration and a controlled test account. No persistent test accounts/reports were created by the agent. |
+| Browser authenticated report flow | Passed in the complete 13-test rerun after the repair/restart. Covers login, nonempty HttpOnly cookies, exactly 5,000,000-byte direct upload without reusable keys, private evidence, persisted reload, duplicate replay, upload-failure recovery, GPS denial, point selection with failed tiles, blocked incoming/sealed token replay with unchanged evidence digest, changed-payload conflict409, forged-field422, simulation exclusion, owner correction, stale-revision409 and logout/protected-route denial. |
+| Session refresh and callback | 2 live tests passed. Generated token exchange establishes the expected identity and HttpOnly cookies; an invalid token redirects to a static error. An expired local session forces real refresh and proves the outer SSR response returns rotated cookies. No email was sent; this does not prove registration SMTP delivery. |
+| Cross-user HTTP isolation | Passed with a second confirmed public QA identity: private report GET 404, foreign PATCH/finalization 403, scoped list, admin denial, foreign-Origin denial, owner data unchanged, and anonymous report/upload 401 after local logout. No incident was created by the reader. |
+| Local reporting database checks | 26 workflow/security cases passed against both complete migrations in isolated PostgreSQL. The complete 29-assertion SQL sequence also executed/rolled back using local assertion functions. |
+| Hosted reporting readiness and pgTAP | All 11 `check:reporting` probes pass. The user reports `1..29` without error from the supplied migration/test bundle. Foundation `1..47` remains separately verified. |
+| Real registration/email | Passed according to the user's explicit confirmation: email received and confirmed, then successful login. No password or email token was requested or logged. |
+| Hosted business-conflict repair | Passed: the user confirms bundle `1..10` and project restart; all 11 readiness probes pass. The complete browser rerun proves the repaired stale-revision request returns HTTP409 and cannot overwrite the correction. |
+| Local conflict-repair validation | Passed: full `001 → 002 → 003` chain, 47 foundation + 29 reporting + 10 conflict assertions. Repair bundle ran twice successfully; fixtures rolled back, intended definitions changed, security metadata/OIDs/owners/ACLs stayed intact, and drifted definitions were rejected atomically. This does not substitute for applying `003` to the hosted project. |
+| HTTP smoke checks | All 9 passed against the running app after the transport and map fixes. |
+| Final full browser/API suite | `npm.cmd run test:e2e`: all 13 passed in one run after hosted migration003 and restart; no skipped cases. Includes public responsive/keyboard flows, real callback, cross-user HTTP isolation, reporting and SSR refresh. |
+| Local-origin regression | Passed: 3 origin cases plus 9 public cases. Loopback GET navigation redirects temporarily to the configured local origin; invalid canonical registration reaches 422 validation without sending email, and foreign/alias/malformed mutation origins remain403. Full isolated type checking/build passed; active development type hashes stayed unchanged. |
 
 Remaining Phase 2 gate:
 
-- [ ] Apply `supabase/migrations/20261114000200_reporting.sql` through SQL Editor or a private database connection.
-- [ ] Run `tests/database/reporting.test.sql` against the configured disposable project and verify all 29 assertions pass.
-- [ ] Configure the exact `/auth/callback` redirect URL, then verify registration and confirmation with an email controlled by the tester.
-- [ ] Run the authenticated reporting browser scenario with a designated simulation account; verify actual private upload/replay, persisted reload/correction, permission denial, and logout.
-- [ ] Verify GPS-denied/manual-location fallback and expired-session/upload failure behavior in the authenticated flow before closing the phase.
+- [x] Apply `supabase/migrations/20261114000200_reporting.sql` through SQL Editor or a private database connection.
+- [x] Run `tests/database/reporting.test.sql` against the configured disposable project and verify all 29 assertions pass.
+- [x] Apply `003` using `supabase/JALANKAN_PERBAIKAN_KONFLIK.sql`, confirm `1..10`, clear old retry loops through a project restart, and re-run conflict REST acceptance.
+- [x] Configure the exact `/auth/callback` redirect URL, then verify registration and confirmation with an email controlled by the tester.
+- [x] Run the authenticated reporting browser scenario with a designated simulation account; verify actual private upload/replay, persisted reload/correction, permission denial, and logout.
+- [x] Verify GPS-denied/manual-location fallback and expired-session/upload failure behavior in the authenticated flow before closing the phase.
 
 ## Phase 3 — AI integration
 
-- [ ] Implement the provider interface and Gemini adapter in `server/services/ai/threat-analysis.ts`; keep the configured model identifier on the server and verify its image/structured-output capability before selection.
-- [ ] Use the stored authorized image and bounded report text. Treat evidence text as untrusted data, not model instructions. Do not send reporter identity or unrelated private fields.
-- [ ] Require the complete PRD JSON output schema, bounded strings/arrays, allowed categories/risk values including `uncertain`, confidence within 0–1, and `needs_human_verification: true`. Validate again with Zod even when using provider structured output. See [Gemini structured output](https://ai.google.dev/gemini-api/docs/structured-output).
-- [ ] Implement authorized, rate-limited `POST /api/reports/:id/analyze`, persisted attempts, concurrency leases, provider timeout, safe error codes, and bounded retries. Never log credentials, signed URLs, full provider responses, or sensitive evidence.
-- [ ] Connect automatic post-submission analysis, result display, explicit failure, and owner/admin retry. A failed request leaves the original report intact and visible to the officer.
-- [ ] Persist all required AI fields and model/prompt/report versions. Explain that confidence is an uncalibrated model self-assessment; do not present AI as deciding legality or contacting officers.
+Incremental slices: provider adapter/strict output tests; atomic claim/complete/fail persistence and rollback tests; authorized API orchestration and current-revision UI; then hosted migration and real Gemini acceptance. Keep public statistics and simulations separate, and keep scoring for Phase 4. A configured key or a rendered analysis panel alone does not complete this phase.
+
+- [x] Implement the provider interface and Gemini adapter in `server/services/ai/threat-analysis.ts`; keep the configured model identifier on the server and verify its image/structured-output capability before selection.
+- [x] Use the stored authorized image and bounded report text. Treat evidence text as untrusted data, not model instructions. Do not send reporter identity or unrelated private fields.
+- [x] Require the complete PRD JSON output schema, bounded strings/arrays, allowed categories/risk values including `uncertain`, confidence within 0–1, and `needs_human_verification: true`. Validate again with Zod even when using provider structured output. See [Gemini structured output](https://ai.google.dev/gemini-api/docs/structured-output).
+- [x] Implement authorized, rate-limited `POST /api/reports/:id/analyze`, persisted attempts, concurrency leases, provider timeout, safe error codes, and bounded retries. Never log credentials, signed URLs, full provider responses, or sensitive evidence.
+- [x] Connect automatic post-submission analysis, result display, explicit failure, and owner/admin retry. A failed request leaves the original report intact and visible to the officer.
+- [x] Show current-revision analysis separately from historical attempts; old results cannot appear as the current assessment after an owner correction. Existing schema/table fields are a foundation, not a connected provider.
+- [x] Persist all required AI fields and model/prompt/report versions. Explain that confidence is an uncalibrated model self-assessment; do not present AI as deciding legality or contacting officers.
 
 Gate: type check, focused tests, and build pass. Exercise a live Gemini result and schema-invalid, timeout, quota/unavailable, interrupted, and concurrent-retry cases. Verify persisted failure, successful retry, and immunity to stale responses after a report edit or human decision. Test doubles belong only in isolated automated tests; they never supply application results.
 
+Phase 3 checkpoint, 15 November 2026:
+
+- Provider adapter, authorized/rate-limited API, current-revision result/history/retry panel, and save-intent-based automatic analysis are written. A crafted GET URL cannot initiate provider usage by itself.
+- All 247 unit tests pass (57 provider cases and 17 orchestration/boundary cases included). Full isolated type check and production build pass while active development type files remain unchanged. Actual Gemini/Supabase/QA credential values were not found in the generated browser assets.
+- Gemini key catalog check passed HTTP200; configured project advertises `gemini-3.8-flash` with generateContent. This is availability/configuration evidence, not a successful AI analysis.
+- Local full SQL chain `001`–`004` passes foundation47/reporting29/conflicts10/analysis44. The single Phase3 bundle ran twice with rollback of fixtures; owner/force denial, active/expired leases, schema validation, atomic audit, cached/idempotent completion and stale/human-decision protection are exercised.
+- Hosted `supabase/JALANKAN_FASE_3.sql` application is confirmed by the user: `1..44` without error. Real provider attempts reached `AI_TIMEOUT` and were persisted, with report status `analysis_failed`, intact report data and retry available. A read-only live browser test passed: error/retry visibility, reload persistence, no fabricated observation, and no automatic paid call from a crafted GET URL.
+- Live success/concurrency test is not passed yet. Its response-order assumption was corrected (either request may win the lease), and fresh pending fixtures prevent prior per-report rate windows from contaminating repeated QA. Actual inference still timed out with the45-second deadline; a documented LOW thinking setting for the configured3.8model did not resolve it. Minimal direct generation probes also timed out on3.8 and3.1FlashLite; a legacy2.5probe returned404. No hidden model fallback was introduced, and no provider-success result is claimed.
+- Final checkpoint checks pass: 247 unit tests, full isolated typecheck/build, and live failure-state browser test. Phase3 remains open for a genuine successful analysis/retry/concurrency acceptance run. User-requested design direction can proceed independently on this stable code checkpoint; Phases4–6 remain unfinished.
+
+Phase 3 validation record, 15 November 2026 (gate passed):
+
+| Check | Result |
+| --- | --- |
+| Root cause of earlier timeouts | Provider-side model availability, not credentials, network or code. Key accepted by the catalog (HTTP 200); a minimal text prompt to `gemini-3.8-flash` timed out at 60 s or returned HTTP 503 `UNAVAILABLE`; `gemini-3.7-flash` returned 503 and `gemini-flash-latest` timed out; `gemini-2.5-flash` returned 404. `gemini-3.5-flash` answered in about 1.7 s. |
+| Model capability before selection | The real `GeminiThreatAnalysisProvider` with a JPEG image, `responseJsonSchema` and Zod validation succeeded on `gemini-3.5-flash` in about 4.9 s (`uncertain`/`uncertain`, `needs_human_verification: true`). The same call on `gemini-3.8-flash` ended in `AI_TIMEOUT` at the 45-second deadline. |
+| Configuration | User set `GEMINI_MODEL=gemini-3.5-flash` in the local `.env` and `.env.example`. `DEFAULT_GEMINI_MODEL` was then changed to `gemini-3.5-flash`, so `thinkingLevel: LOW` is now sent to it; a live adapter call with that setting succeeded in about 2.4 s. This is an explicit server setting, not a hidden fallback. |
+| Live success, retry and concurrency (`tests/e2e/analysis.spec.ts`, `E2E_GEMINI_LIVE=true`) | Passed twice: 19.5 s before the default change (no thinking setting) and 17.9 s after it (with `thinkingLevel: LOW`), each on a fresh simulation fixture. A labeled QA outage was persisted through the real RPCs; the owner retry invoked Gemini; a simultaneous request reused the same attempt; after reload the report is `pending_verification` at the same revision; stored output passes the schema, no raw response is exposed, and exactly one `succeeded` row exists for that revision. |
+| Live failure state (`tests/e2e/analysis-failure.spec.ts`) | Passed (8.2 s): persisted failure, retry visibility and no fabricated output after reload. |
+| Persisted result | Two `succeeded` rows in `ai_analyses`, one per tested report revision. Both have `model_name gemini-3.5-flash`, `prompt_version rimbaguard-threat-v2`, category and risk `uncertain` (the fixture image only reads "SIMULASI PENGUJIAN"), `needs_human_verification true`. |
+| Schema-invalid, timeout, quota/unavailable and interrupted cases | Covered by the 57 provider unit cases; live `AI_TIMEOUT` failures were also persisted earlier. Stale-response and human-decision immunity are covered by the hosted `1..44` analysis SQL suite. |
+| Unit tests, type check and build | After the default change: 247/247 unit tests pass, `nuxt typecheck` exits 0 and `nuxt build` completes (both run in place with the development server stopped). |
+
+Follow-up before the demo/deployment (Phase 6): re-check `gemini-3.5-flash` availability and quota on the hosted environment, since provider-side model availability caused the earlier failures.
+
 ## Phase 4 — threat intelligence and maps
 
-- [ ] Implement and persist scoring v1, component explanations, category-source labels, calculation histories, and recalculation/freshness rules independently of Gemini.
-- [ ] Complete the landing map preview and build `/map` and protected `/admin/map` with Leaflet/OpenStreetMap attribution, client-only loading, clustering, priority colors, and text labels for verification/priority.
-- [ ] Implement bounded/paginated database-backed map queries, category/priority/status/date filters, selectable marker details, and meaningful loading/empty/tile-error states.
-- [ ] Implement the separately allowlisted public map endpoint and safe shareable details; show only published records and clearly label approximate coordinates. Never expose private `/reports/[id]` data through public selection.
-- [ ] Keep the officer map dominant in the desktop layout and usable with touch and mobile filters. Do not add forest boundaries or satellite claims without sourced geospatial data.
+- [x] Implement and persist scoring v1, component explanations, category-source labels, calculation histories, and recalculation/freshness rules independently of Gemini.
+- [x] Complete the landing map preview and build `/map` and protected `/admin/map` with Leaflet/OpenStreetMap attribution, client-only loading, clustering, priority colors, and text labels for verification/priority.
+- [x] Implement bounded/paginated database-backed map queries, category/priority/status/date filters, selectable marker details, and meaningful loading/empty/tile-error states.
+- [x] Implement the separately allowlisted public map endpoint and safe shareable details; show only published records and clearly label approximate coordinates. Never expose private `/reports/[id]` data through public selection.
+- [x] Keep the officer map dominant in the desktop layout and usable with touch and mobile filters. Do not add forest boundaries or satellite claims without sourced geospatial data.
 
 Gate: type check, focused tests, and build pass. Test formula/example, fractional thresholds, completeness criteria, recency boundaries, nearby distance/count/self-exclusion, stale scores, and reciprocal recalculation. Verify database filtering, marker placement, clustering, empty states, and strict public payload fields. Public map tests must prove that unpublished/withdrawn reports and all private data stay inaccessible.
 
+Phase 4 implementation record, 15 November 2026:
+
+- Migration `20261115000500_priority.sql` makes the database the only score calculator. `public.refresh_threat_priorities` is service-only, bounded and serialized by a transaction advisory lock; a busy call returns at once so reads never block. Each calculation marks the previous and current neighborhood when the inputs that define it change, and a report marked again later in the same batch is picked again. An unchanged recalculation updates freshness only, so history grows only when a result changes. Direct `INSERT` on `threat_priorities` is revoked from `service_role`.
+- Refreshes run after report creation, owner correction and a successful AI result (awaited in the API handlers, fail-soft), and before officers read the map or a report detail. Each active report stores its next recency boundary in `priority_recalculate_at`, so reads refresh time-expired scores and no scheduled job is needed. Anonymous public map reads never calculate.
+- `public.admin_map_reports` (role rechecked in SQL) and `public.public_map_reports` (published real reports, field allowlist, coordinates rounded to 0.01°) are service-only. Nuxt validates both projections with Zod, strips unknown keys and re-rounds public coordinates.
+- `/map`, `/admin/map` and the landing preview use `ThreatMap.client.vue`: `leaflet.markercluster` 1.5.3, clusters colored by their highest priority, letter markers (T/S/R/–) with text labels, spiderfied identical points, keyboard selection, tile-error state, WIB date filters bound to the URL, pagination, list alternative and shareable `/map?report=<id>`. Filter fields also have names, so a submit before hydration still applies them. Officer report detail shows the components, the category source, freshness, the v1 rules and the calculation history. Citizens no longer receive priority data, because nearby counts reveal other people's submissions.
+- A dedicated QA officer identity was created with `scripts/prepare-e2e-officer.mjs`; the user granted its admin role in the SQL Editor.
+
+Refinements to the recorded scoring decisions, made during implementation:
+
+- The 7-day window is centred on the subject's incident time (other incident within ±7 days). This is symmetric, so neighborhoods are reciprocal, and it does not decay with wall-clock time.
+- Simulation records do not affect real reports. Instead of being excluded everywhere, nearby counting stays within one data partition: real reports count only real reports, and simulation reports count only simulation reports, so the labeled demo dataset can show corroboration.
+- The effective AI category applies to the current *content* revision (the latest `report_created`/`report_corrected` audit event), because officer status changes also increment `reports.revision`.
+
+| Check | Result |
+| --- | --- |
+| Local SQL chain `001`–`005` (isolated PGlite) | Foundation 47, reporting 29, conflicts 10, analysis 44 and priority 66 assertions pass. The Phase 4 bundle ran twice and the migration re-ran harmlessly; all fixtures rolled back. |
+| Hosted `supabase/JALANKAN_FASE_4.sql` | Confirmed by the user: `finish` returned `1..66` without error. |
+| SQL coverage | PRD example 85.5; fractional thresholds at 44.9999/45/74.9999/75; severity per category; completeness 79 vs 80 characters and 2 vs 3 location characters; inclusive recency boundaries at 6/24/72/168 h and future instants; haversine accuracy at 1.99/2.01 km; nearby self-exclusion, category, 7-day window, rejection and partition; reciprocal recalculation when a report is added, moved or rejected; stale sweep without duplicate history and a new row when recency changes; AI/officer/user category precedence including a status-only revision; admin and public filters, pagination, allowlist, rounding, withdrawal and role denials. |
+| Unit tests | 281 pass, including 34 new cases for filter parsing and WIB ranges, fail-soft refresh, projection allowlists and error mapping, and a contract test that keeps the displayed rules identical to the SQL. |
+| Type check and production build | Pass after the final changes. Built browser assets contain none of the six configured credential values. |
+| Live browser/API (`tests/e2e/priority-map.spec.ts`) | 3 pass against hosted Supabase: public payload allowlist, 422 filters, unpublished simulation report returns 404 and shows "not found", empty and tile-error states, landing preview, no hydration warnings; a citizen gets 403 for the officer map and no priority data; the officer map lists every simulation report with a persisted score, a report's stored components match the formula, identical points cluster and spiderfy, a marker is selectable by keyboard, and database filters return the empty state. |
+| Full e2e regression | All other specs pass: 20 tests in total, including report creation and correction with the new refresh hooks, ownership isolation, session refresh, origin checks and the AI failure state. The paid Gemini success test (`analysis.spec.ts`) was not re-run; it passed earlier on 15 November. |
+| Persisted hosted data | All 7 simulation reports are fresh: severity 40, completeness 100, recency 20, 6 nearby (score 100), total 63, medium, category source "user". 14 calculations exist; rows were added only when a neighbor appeared or a report was corrected. |
+| Visual inspection | `/map` and `/admin/map` at 1440 and 375 px, a spiderfied cluster with a selected marker, and the officer priority panel were inspected from screenshots. |
+
+Not verified with real data: the public map has no positive marker test against hosted data because no real report has been published yet (publication is Phase 5, and simulation reports cannot be published). Positive public filtering, rounding and withdrawal are covered by the SQL suite.
+
+Carry-over to Phase 5:
+
+- The analysis panel treats any revision change as a new report version. After an officer status change it would show the AI result as "before the report changed"; align it with the content revision used by scoring.
+- Admin content corrections must add their audit action to `private.report_content_revision`.
+- Officer publication will populate the public map; add a positive public-map browser test then.
+
 ## Phase 5 — administration and response workflow
 
-- [ ] Protect every admin page and endpoint using server identity/role checks, with route middleware for navigation behavior.
-- [ ] Build `/admin/dashboard`, `/admin/reports`, and `/admin/reports/[id]` with real counts, a paginated priority queue, evidence, AI results, component scores, map context, and histories.
-- [ ] Implement all verification actions, explicit publication review, request-for-information notes, allowed report corrections, and the proposed transactional status matrix.
-- [ ] Store immutable actor/status/note/timestamp events atomically with each important action; show the complete relevant timeline without exposing internal notes to public views.
-- [ ] Add the three required database-backed charts: reports over time, category distribution, and status distribution. Reuse aggregates on `/admin/analytics`; real zero-data states remain empty.
-- [ ] Make `/admin/settings` functional for account/session controls and safe service-status information; keep scoring rules/version visible without adding an unnecessary configuration-management subsystem.
-- [ ] Define statistic meanings in API documentation, including whether verified counts include reports now in progress/resolved. Label counts of submitted location names accurately; do not imply authoritative administrative regions or environmental impact.
+- [x] Protect every admin page and endpoint using server identity/role checks, with route middleware for navigation behavior.
+- [x] Build `/admin/dashboard`, `/admin/reports`, and `/admin/reports/[id]` with real counts, a paginated priority queue, evidence, AI results, component scores, map context, and histories.
+- [x] Implement all verification actions, explicit publication review, request-for-information notes, allowed report corrections, and the proposed transactional status matrix.
+- [x] Store immutable actor/status/note/timestamp events atomically with each important action; show the complete relevant timeline without exposing internal notes to public views.
+- [x] Add the three required database-backed charts: reports over time, category distribution, and status distribution. Reuse aggregates on `/admin/analytics`; real zero-data states remain empty.
+- [x] Make `/admin/settings` functional for account/session controls and safe service-status information; keep scoring rules/version visible without adding an unnecessary configuration-management subsystem.
+- [x] Define statistic meanings in API documentation, including whether verified counts include reports now in progress/resolved. Label counts of submitted location names accurately; do not imply authoritative administrative regions or environmental impact.
 
 Gate: type check, focused tests, and build pass. Complete `pending_verification → verified → in_progress → resolved`, rejection, more-information/correction/resubmission, and manual review after AI failure. Verify invalid transitions, concurrent writes, missing admin role, public role escalation, audit rollback, publication withdrawal, and late AI responses. Confirm dashboard/charts match actual database rows and simulated data is excluded from live totals.
+
+Phase 5 implementation record, 15 November 2026:
+
+- Migration `20261115000600_admin_workflow.sql` adds service-only `admin_report_queue`, `admin_publish_report`, `admin_withdraw_publication`, `admin_set_officer_category`, `admin_add_report_note` and `admin_analytics`. Every RPC rechecks the actor's admin role in SQL. Mutations lock the report, check the expected revision and write their audit event in the same transaction. Status changes keep the tested `admin_change_report_status` matrix. `admin_map_reports` keeps its signature and now shares `private.admin_report_page` with the queue.
+- Publication: only real `verified`/`in_progress`/`resolved` reports. The audit stores the approved wording. Withdrawal needs an internal reason and keeps the summary as a private draft. Internal notes do not change the revision.
+- Nuxt: `/api/admin/{dashboard,reports,reports/:id,reports/:id/status|publication|category|notes,analytics,settings}`. Each handler calls `requireAdmin`, validates strictly with Zod and rate-limits mutations; database outcomes map to fixed Indonesian messages. Logout accepts `scope: 'global'` (all devices). Officers return to allowlisted officer pages after login.
+- Pages use the admin layout (sidebar on desktop, drawer on phones): dashboard (PRD G.1–G.4), queue (G.2), review (H.1–H.5), map, analytics, settings. Charts use Chart.js 4.5.1. Each is a single series in one validated hue (`#287A52`, which passes lightness, chroma and contrast checks), with thin bars, a hairline grid, tooltips, tip labels on ranked bars, wrapped axis labels and a table view. Review actions reload the report before reporting success, so a follow-up action never uses a stale revision.
+- Reporter privacy: `server/utils/report-timeline.ts` hides internal events. A reporter reads a note only when it is a rejection reason, an information request or the approved public summary. The current request or rejection reason is shown prominently on the report page.
+- Phase 4 carry-over fixed: the analysis panel treats an AI result as current while `analysis.reportRevision >= report.contentRevision`, so officer decisions no longer mark it outdated.
+- Statistic meanings are documented in `docs/API.md` and on the analytics page.
+
+| Check | Result |
+| --- | --- |
+| Local SQL chain `001`–`006` (isolated PGlite) | Foundation 47, reporting 29, conflicts 10, analysis 44, priority 66 and admin 64 assertions pass; bundle ran twice; fixtures rolled back. |
+| Hosted `supabase/JALANKAN_FASE_5.sql` | Confirmed by the user: `finish` returned `1..64` without error. |
+| SQL coverage | Full verification chain with audit actor/status/revision; stale revision `PT409`; skipped and final-state transitions; notes required for rejection and information requests; manual review after AI failure; reporter correction returning to analysis; rejection never resolvable; publication eligibility, simulation refusal, summary bounds, update, withdrawal and public-map effect; audit-failure rollback; category correction precedence in scoring; internal note without revision change; queue scopes, ordering and bounds; map behavior on the shared projection; analytics deltas for real vs simulation, statuses, high priority, WIB days and effective categories; citizen actors, officer browser sessions and role escalation denied. |
+| Unit tests | 327 pass, including 46 new cases: action schemas, workflow contract against migrations 001/006, reporter timeline privacy, admin service argument passing, error mapping and secret-free settings, and officer login return paths. |
+| Type check and production build | Pass after the final changes. |
+| Live officer workflow (`tests/e2e/admin-workflow.spec.ts`) | Passes against hosted Supabase: dashboard numbers equal direct database counts (simulation and real); charts render; queue; manual review after an AI failure through verified → in progress → resolved; category correction reflected in the score; internal note with officer name; stale revision 409, invalid transition 422, simulation publication 422, forged field 422; information request; reporter sees the request but no internal note or category reason, corrects the report and it returns to analysis; citizen gets 403 on officer APIs; analytics weekly view, settings and the phone drawer work. |
+| Regression e2e | `priority-map`, `public`, `ownership`, `session-refresh`, `confirmation`, `origin` and `analysis-failure` pass on the final code. `session-refresh` now allows 30 s for the hosted login, like the other specs. Two tests were made independent of retained data: fixture selection and the unverified label follow the actual state. |
+| Visual inspection | Dashboard, queue, review, analytics and settings at 1440 px and the dashboard and review at 375 px were inspected. Clipped chart labels were fixed by wrapping, raw AI failure codes in the officer timeline now show readable messages, and a truncated select option was shortened. |
+
+Not verified in this phase:
+
+- `tests/e2e/reporting.spec.ts` could not complete. Supabase Storage uploads from this machine measured about 36 KB/s (1 MB in 27–28 s), so the 5,000,000-byte evidence upload exceeds the client's 60 s limit. The upload code is unchanged since it passed in Phase 4. Re-run it on a faster connection.
+- The rejection action and publication were exercised in SQL but not in the browser. Simulation data cannot be published, and no real report should be fabricated for a test.
+- Late AI responses after officer decisions rely on the Phase 3 analysis suite.
+
+Carry-over to Phase 6:
+
+- Re-run the complete e2e suite, including `reporting.spec.ts`, on a connection that uploads 5 MB within 60 s.
+- Add a positive public-map and publication browser test once an officer has published a genuinely reviewed real report.
+- Admin content corrections (title, description, location) are not implemented; officers correct the category and ask the reporter for other changes. If they are added, add their audit action to `private.report_content_revision`.
 
 ## Phase 6 — integrated QA and deployment preparation
 
@@ -224,4 +327,4 @@ The user-supplied `../GUIDEBOOK WEB DEV IT RUSH.pdf` was reviewed as competition
 | Hosting | Access to the intended Vercel project, deployment secrets, production URL/callback configuration, and supported score-refresh scheduling or the documented request-driven fallback. | Phase 6 deployment gate. |
 | Content | Licensed forest photograph; official contact information only if supplied. | Public landing page and final content review. |
 
-The user supplied Supabase API configuration, applied the foundation migration, and ran the full foundation SQL tests: nine live service checks and 47 database assertions pass. Phase 2 is now authorized and in progress. Its new transactional reporting/upload migration and separate test suite must be applied and verified before marking that phase complete. Credentials stay in ignored `.env` or the host secret manager.
+The user supplied Supabase configuration and applied migrations `001`–`006`. Hosted SQL results report 47 foundation, 29 reporting, 10 repair, 44 analysis, 66 priority, and 64 officer-workflow assertions passed. Registration/email confirmation/login passed by user confirmation; the Gemini key is present and accepted by the model catalog. With `GEMINI_MODEL=gemini-3.5-flash`, genuine inference succeeds and the live success/retry/concurrency test passed on 15 November 2026; the failure path remains verified with retained simulation reports. Two public QA identities and one QA officer identity (admin role granted by the user in the SQL Editor) remain in ignored `.env.e2e`; simulation data stays outside public totals/maps. Credentials stay in ignored local environment files or the host secret manager. Phases 1–5 are complete; completion of Phase 6 is not claimed.

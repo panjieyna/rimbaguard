@@ -5,6 +5,7 @@ import { requireSession } from '../../utils/auth'
 import { validatedBody, validateInput } from '../../utils/validation'
 import { enforceRateLimit } from '../../utils/rate-limit'
 import { updateReport } from '../../services/report-service'
+import { refreshReportPriority } from '../../services/threat-priority'
 
 export default defineEventHandler(async (event) => {
   const user = await requireSession(event)
@@ -14,5 +15,8 @@ export default defineEventHandler(async (event) => {
   const body = await validatedBody(event, schema)
   const { expectedRevision, ...fields } = body
   const input = validateInput(createReportSchema(), fields)
-  return updateReport(user, id, expectedRevision, input)
+  const result = await updateReport(user, id, expectedRevision, input)
+  // A correction changes the report and both its old and new neighborhoods.
+  await refreshReportPriority(id)
+  return result
 })

@@ -5,4 +5,5 @@
 - Source: https://commons.wikimedia.org/wiki/File:Mount_Lempuyang,_Tropical_forest,_Jungle,_Bali,_Indonesia.jpg
 - License: Creative Commons Attribution 4.0 International, https://creativecommons.org/licenses/by/4.0/
 - Changes: resized to 1440 px width, rotated according to original metadata, metadata removed, compressed to WebP. The page uses a responsive display crop.
+- `lempuyang-forest-768.webp` and `lempuyang-forest-1080.webp` are smaller copies of the same derivative (768 px and 1080 px wide), served to narrower screens through `srcset`. The same license and attribution apply.
 - This is an editorial forest photograph, not evidence of any reported incident. No endorsement by the photographer is implied.

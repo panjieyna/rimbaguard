@@ -34,7 +34,7 @@ watch(() => route.fullPath, () => { menuOpen.value = false })
           <template v-if="session?.user">
             <NuxtLink to="/reports" class="min-h-11 content-center py-2 hover:text-forest-700" active-class="font-semibold text-forest-700">Laporan saya</NuxtLink>
             <NuxtLink v-if="session.user.role === 'admin'" to="/admin/dashboard" class="min-h-11 content-center py-2 hover:text-forest-700">Ruang petugas</NuxtLink>
-            <button type="button" class="min-h-11 py-2 text-left hover:text-forest-700 disabled:opacity-50" :disabled="loggingOut" @click="logout">{{ loggingOut ? 'Keluar…' : 'Keluar' }}</button>
+            <button type="button" class="min-h-11 py-2 text-left hover:text-forest-700 disabled:opacity-50" :disabled="loggingOut || !ready" @click="logout">{{ loggingOut ? 'Keluar…' : 'Keluar' }}</button>
           </template>
           <NuxtLink v-else to="/login" class="min-h-11 content-center py-2 hover:text-forest-700" active-class="font-semibold text-forest-700">Masuk</NuxtLink>
           <NuxtLink to="/report" class="button-primary mt-2 lg:mt-0">Laporkan ancaman <span aria-hidden="true">↗</span></NuxtLink>

@@ -1,4 +1,4 @@
--- Phase 2 verification. Run on the disposable project after migration 002.
+-- Phase 2 verification. Run on the disposable project after migrations 001-003.
 -- Every fixture and temporary object is rolled back.
 begin;
 create extension if not exists pgtap with schema extensions;
@@ -44,7 +44,7 @@ select extensions.is((public.claim_evidence_upload(
   'processing','An upload claim acquires a processing lease');
 select extensions.throws_ok($$
   select public.claim_evidence_upload('31000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000002')
-$$,'40001','upload_processing_conflict','Concurrent upload finalization is serialized');
+$$,'PT409','upload_processing_conflict','Concurrent upload finalization is serialized');
 select extensions.is((public.complete_evidence_upload(
   '31000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001','51000000-0000-4000-8000-000000000001',
   100,'image/jpeg',repeat('a',64))).status::text,'finalized','Validated sealed evidence can be finalized');
@@ -54,7 +54,7 @@ select extensions.is((public.complete_evidence_upload(
 select extensions.throws_ok($$
   select public.complete_evidence_upload('31000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001',
     '51000000-0000-4000-8000-000000000001',101,'image/jpeg',repeat('b',64))
-$$,'40001','upload_completion_conflict','A retry cannot replace finalized evidence metadata');
+$$,'PT409','upload_completion_conflict','A retry cannot replace finalized evidence metadata');
 
 -- Call the mutating RPC exactly once; expanding (rpc()).* can call it per column.
 update rimba_reporting_test_state set report_id = (
@@ -96,7 +96,7 @@ select extensions.is((select count(*) from public.report_updates where report_id
 select extensions.throws_ok($$
   select public.update_owned_report('11000000-0000-4000-8000-000000000001',(select report_id from rimba_reporting_test_state),1,
     (select payload from rimba_reporting_test_state))
-$$,'40001','report_revision_conflict','Stale corrections cannot overwrite a newer revision');
+$$,'PT409','report_revision_conflict','Stale corrections cannot overwrite a newer revision');
 select extensions.is(public.delete_expired_evidence_upload('31000000-0000-4000-8000-000000000001','11000000-0000-4000-8000-000000000001'),
   false,'Cleanup never removes attached evidence');
 

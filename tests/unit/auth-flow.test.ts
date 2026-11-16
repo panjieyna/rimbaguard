@@ -31,6 +31,15 @@ describe('safe authentication results', () => {
 describe('role-based auth redirects', () => {
   it('sends officers to their protected dashboard', () => {
     expect(safeAuthRedirect('admin', '/report')).toBe('/admin/dashboard')
+    expect(safeAuthRedirect('admin', undefined)).toBe('/admin/dashboard')
+  })
+  it('returns officers only to allowlisted officer pages', () => {
+    expect(safeAuthRedirect('admin', '/admin/reports/12345678-1234-4234-8234-123456789abc')).toBe('/admin/reports/12345678-1234-4234-8234-123456789abc')
+    expect(safeAuthRedirect('admin', '/admin/reports?scope=all')).toBe('/admin/reports?scope=all')
+    for (const destination of ['/admin/../api/auth/session', '/admin/reports/not-a-uuid', '//attacker.invalid/admin/map', '/admin/map#x', '/api/admin/map']) {
+      expect(safeAuthRedirect('admin', destination)).toBe('/admin/dashboard')
+    }
+    expect(safeAuthRedirect('public', '/admin/map')).toBe('/reports')
   })
   it('supports an explicit local citizen reporting destination', () => {
     expect(safeAuthRedirect('public', '/report')).toBe('/report')

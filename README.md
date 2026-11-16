@@ -2,7 +2,7 @@
 
 Platform pelaporan ancaman hutan berbasis komunitas, analisis awal AI, prioritas yang dapat dijelaskan, dan verifikasi petugas. Bahasa utama aplikasi: Bahasa Indonesia.
 
-Status: **Fase 1 lulus; verifikasi akhir Fase 2 berlangsung**. Migrasi pelaporan sudah diterapkan dan 29 pengujian SQL lulus menurut hasil SQL Editor pengguna. Login, callback token, pembaruan sesi, unggah privat tepat 5 MB, penyimpanan/daftar/detail/koreksi laporan, serta logout sudah diuji dengan Supabase nyata. Registrasi baru dan penerimaan email konfirmasi pada alamat milik penguji masih perlu diverifikasi sebelum menutup Fase 2. Gemini belum terhubung karena key belum tersedia; aturan prioritas dan verifikasi petugas tetap pada fase berikutnya. Lihat [PRD](PRD.md) dan [checklist implementasi](IMPLEMENTATION_PLAN.md).
+Status: **Fase 1–5 selesai; Fase 6 berjalan**. Fitur utama untuk warga, publik, dan petugas berfungsi terhadap Supabase dan Gemini sungguhan. QA terpadu Fase 6 sudah dilakukan: perjalanan lengkap warga sampai petugas, uji keamanan, uji kegagalan layanan, audit aksesibilitas WCAG 2.2 AA otomatis, pemeriksaan tata letak di empat lebar layar, dan optimasi ukuran halaman. **Aplikasi belum di-deploy**, sehingga belum ada URL publik. Satu uji unggahan 5 MB menunggu koneksi yang lebih cepat. Pengguna mengonfirmasi migrasi hosted `1..44` (Fase 3), `1..66` (Fase 4), dan `1..64` (Fase 5). Lihat [PRD](PRD.md), [checklist implementasi](IMPLEMENTATION_PLAN.md), [arsitektur](docs/ARCHITECTURE.md), [dokumentasi API](docs/API.md), dan [skrip demo](docs/DEMO.md).
 
 ## Menjalankan secara lokal
 
@@ -16,6 +16,8 @@ npm.cmd run dev
 
 Jika `.env` sudah ada, pertahankan isinya; tidak perlu menyalin ulang. Buka `http://localhost:3000`. `RIMBAGUARD_SETUP_MODE=true` mengizinkan development tanpa Supabase dan menampilkan keadaan layanan belum tersedia. Mode ini tidak diterima oleh server production. Font Inter disajikan dari paket lokal, tanpa permintaan font eksternal.
 
+Navigasi GET/HEAD development dari alias loopback `127.0.0.1`/`::1` pada port dan protokol yang sama diarahkan sementara ke origin `NUXT_PUBLIC_APP_URL`. Ini menjaga cookie sesi dan callback pada satu alamat. API mutasi tetap menolak origin asing, alias yang berbeda, origin tidak valid, dan metadata cross-site; production tidak memakai pengalihan ini. Setelah mengubah `.env`, restart server development agar konfigurasi baru terbaca.
+
 ## Menghubungkan Supabase
 
 1. Buat proyek melalui [Supabase Dashboard](https://supabase.com/dashboard). Pilih region yang sesuai pengguna dan simpan password database secara privat.
@@ -28,13 +30,64 @@ Jika `.env` sudah ada, pertahankan isinya; tidak perlu menyalin ulang. Buka `htt
 
 Jangan kirim credential melalui chat. Semua key, termasuk anonymous/publishable project key, digunakan melalui server Nuxt untuk memenuhi instruksi penyimpanan key di server. Nama `NUXT_PUBLIC_SUPABASE_ANON_KEY` dari PRD sengaja diganti dengan nama privat. URL aplikasi saja yang tersedia dalam public runtime config. Credential dapat menggunakan nama `NUXT_SUPABASE_*` pada hosting; lihat `.env.example`.
 
-Saat Supabase sudah diisi lengkap, konfigurasi tersebut diterima tanpa perlu mematikan setup mode pada development. Pada production, hapus atau set `RIMBAGUARD_SETUP_MODE=false`, gunakan HTTPS untuk URL aplikasi dan Supabase, dan siapkan seluruh layanan yang diaktifkan. `GEMINI_API_KEY` serta `GEMINI_MODEL` dipersiapkan sekarang dan dihubungkan pada Fase 3.
+Saat Supabase sudah diisi lengkap, konfigurasi tersebut diterima tanpa perlu mematikan setup mode pada development. Pada production, hapus atau set `RIMBAGUARD_SETUP_MODE=false`, gunakan HTTPS untuk URL aplikasi dan Supabase, dan siapkan seluruh layanan yang diaktifkan. `GEMINI_API_KEY` wajib diisi untuk analisis AI Fase 3, termasuk di secret hosting; `GEMINI_MODEL` opsional dan menimpa model default.
+
+## Perbaikan konflik untuk proyek yang sudah memasang Fase 2
+
+Jalankan **seluruh isi** [JALANKAN_PERBAIKAN_KONFLIK.sql](supabase/JALANKAN_PERBAIKAN_KONFLIK.sql) pada query baru SQL Editor. File tersebut menerapkan migrasi `003` dan 10 pengujian; hasil `finish` yang diharapkan adalah `1..10` tanpa error. Laporan yang sudah tersimpan dipertahankan, dan fixture pengujian dibatalkan sebelum commit. Untuk instalasi baru, terapkan seluruh migrasi sesuai urutan sebelum menjalankan aplikasi atau pengujian REST.
+
+Konflik bisnis sekarang memakai `PT409`. Kode `40001` sebelumnya memicu loop retry pada PostgREST 14; [panduan resmi Supabase](https://supabase.com/kb/troubleshooting/high-cpu-and-infinite-transaction-retries-when-using-custom-error-codes-in-rpc-functions-77326b) menjelaskan perbaikannya. Setelah SQL berhasil, restart proyek lewat Dashboard untuk membersihkan permintaan lama yang sudah terjebak; layanan terputus sementara selama restart. Mengubah fungsi tidak menghentikan loop yang sudah berjalan. Pada proyek ini, perbaikan dan restart sudah dikonfirmasi pengguna, dan pengujian REST konflik telah lulus dengan HTTP `409`.
 
 ## Menyiapkan akses Gemini untuk Fase 3
 
-Buka [halaman API Keys Google AI Studio](https://aistudio.google.com/apikey), masuk dengan akun Google, lalu buat key pada proyek yang Anda miliki. Simpan nilainya hanya pada `GEMINI_API_KEY` di `.env` lokal; jangan kirim melalui chat atau memasukkannya ke kode. Panduan resmi: [pengelolaan key Gemini](https://aistudio.google.com/docs/api-key). Nama `GEMINI_MODEL` akan dipilih setelah kemampuan gambar, structured output, dan ketersediaannya pada proyek diverifikasi. Mengisi key belum berarti integrasi AI sudah dibuat atau diuji.
+Buka [halaman API Keys Google AI Studio](https://aistudio.google.com/apikey), lalu isi `GEMINI_API_KEY` hanya dalam `.env` lokal. Jangan kirim nilainya melalui chat atau memasukkannya ke source. Model default server adalah `gemini-3.5-flash`. Pada 15 November 2026 model ini lulus uji langsung dengan input gambar, structured output, dan pengaturan `thinkingLevel: LOW`. Default sebelumnya, `gemini-3.8-flash`, timeout atau mengembalikan HTTP 503 di sisi Google pada pengujian yang sama. `GEMINI_MODEL` dapat mengubah pilihan tersebut; akses dan kuota aktual tetap perlu diuji ulang sebelum demo. Panduan key: [Google AI Studio](https://aistudio.google.com/docs/api-key).
 
 Untuk menyelesaikan gate autentikasi Fase 2, jalankan aplikasi, buka `/register`, gunakan email yang Anda kuasai, buka tautan konfirmasi, kemudian login. Akun QA yang dibuat melalui Auth Admin dan pengujian callback token tidak membuktikan pengiriman email registrasi. Tidak perlu membuat laporan kejadian untuk pemeriksaan ini.
+
+Pengguna telah mengonfirmasi gate registrasi tersebut lulus pada proyek ini.
+
+## Mengaktifkan penyimpanan analisis Fase 3
+
+Setelah migrasi `001`–`003`, jalankan seluruh isi [JALANKAN_FASE_3.sql](supabase/JALANKAN_FASE_3.sql) pada query baru SQL Editor. Hasil `finish` yang diharapkan: `1..44` tanpa error. File menambahkan transaksi claim/complete/fail, membatasi penulisan analisis ke RPC server, dan membatalkan seluruh fixture uji sebelum commit. Jangan mengulang migrasi fondasi untuk menambah fitur ini.
+
+`POST /api/reports/:id/analyze` menerima hanya `expectedRevision` dan `force` (khusus petugas). Server memeriksa sesi/izin dan membatasi 10 permintaan per pengguna serta 3 per laporan dalam 10 menit. Foto diambil dari bukti sealed yang diizinkan; model menerima foto, judul, deskripsi, dan kategori pilihan pengguna, tanpa identitas atau koordinat. Respons provider dibatasi 64 KB/45 detik dan divalidasi ulang dengan Zod. Tidak ada retry tersembunyi atau hasil pengganti buatan.
+
+HTTP `202` menunjukkan attempt masih diproses. HTTP `200` mengembalikan hasil attempt tersimpan, termasuk `analysisStatus: failed` beserta kode aman jika layanan gagal; kegagalan tidak menghapus laporan. Hasil yang usang/konflik mengembalikan `409` setelah riwayat aman disimpan. Panel memisahkan revisi terbaru dari riwayat dan menyediakan retry. Analisis otomatis hanya dimulai dari state client setelah simpan berhasil, bukan dari parameter URL yang dapat dibuat pihak lain.
+
+Uji Gemini sungguhan ada di `tests/e2e/analysis.spec.ts`, aktif hanya dengan `E2E_GEMINI_LIVE=true`, migrasi `004`, key/kuota, dan fixture simulasi terkontrol. Uji menggunakan kegagalan QA bertanda khusus, lalu retry nyata dan permintaan bersamaan; hanya hasil provider tervalidasi yang dapat menjadi `succeeded`. Keadaan skip tidak dihitung sebagai keberhasilan integrasi.
+
+Hasil verifikasi terakhir (15 November 2026): key diterima katalog model. Timeout sebelumnya berasal dari `gemini-3.8-flash` yang tidak merespons atau mengembalikan HTTP 503 di sisi Google, bukan dari key, jaringan, atau kode. Dengan `gemini-3.5-flash`, `analysis.spec.ts` lulus: kegagalan QA bertanda khusus disimpan, retry memanggil Gemini, permintaan bersamaan memakai attempt yang sama, dan tepat satu hasil `succeeded` tervalidasi tersimpan untuk revisi laporan tersebut. `analysis-failure.spec.ts` juga lulus: pesan error, retry, penyimpanan/reload, dan ketiadaan hasil buatan terbukti. Pergantian model dilakukan secara eksplisit melalui default kode dan `GEMINI_MODEL`, bukan fallback diam-diam.
+
+## Mengaktifkan prioritas dan peta Fase 4
+
+Setelah migrasi `001`–`004`, jalankan seluruh isi [JALANKAN_FASE_4.sql](supabase/JALANKAN_FASE_4.sql) pada query baru SQL Editor. Hasil `finish` yang diharapkan: `1..66` tanpa error. File menambahkan perhitungan skor, penanda kesegaran skor, dan proyeksi peta; fixture uji dibatalkan sebelum commit, dan laporan lama ditandai untuk dihitung ulang oleh aplikasi.
+
+Skor prioritas v1 dihitung hanya oleh database: keparahan × 35% + kelengkapan × 25% + kebaruan × 20% + laporan serupa × 20%. Tinggi ≥ 75, sedang ≥ 45, rendah < 45. Contoh PRD menghasilkan 85,5 (bukan 86,5). Kategori yang dinilai adalah koreksi petugas, lalu kategori AI tervalidasi yang bukan `uncertain`, lalu pilihan pelapor sebagai kategori sementara. Laporan serupa adalah laporan lain yang tidak ditolak, berkategori sama, dalam radius 2 km dan selisih waktu kejadian paling lama 7 hari, pada jenis data yang sama: laporan nyata hanya dihitung bersama laporan nyata, data simulasi hanya bersama data simulasi. Aturan lengkap tampil di detail laporan petugas dan disalin di `shared/constants/scoring.ts`, yang dijaga sama dengan SQL oleh unit test kontrak.
+
+Skor dihitung ulang setelah laporan dibuat, dikoreksi, atau menerima hasil AI, serta sebelum petugas membuka peta atau detail laporan. Perubahan satu laporan ikut menandai lingkungan lama dan barunya. Batas kebaruan (6/24/72/168 jam) tercatat per laporan, sehingga skor kedaluwarsa dihitung ulang saat dibaca petugas; tidak diperlukan job terjadwal. Perhitungan diserialkan dengan advisory lock dan riwayat hanya bertambah saat hasil berubah.
+
+- `/map`: hanya laporan nyata yang dipublikasikan petugas, dengan koordinat dibulatkan 0,01° (sekitar 1 km) dan daftar field yang dibatasi. Tautan `/map?report=<id>` dapat dibagikan; laporan yang belum dipublikasikan tidak dapat dibedakan dari laporan yang tidak ada. Permintaan anonim tidak pernah memicu perhitungan skor.
+- `/admin/map`: semua laporan, termasuk data simulasi bertanda jelas, dengan koordinat persis, status kesegaran skor, filter kategori/prioritas/status/tanggal (WIB)/jenis data, dan tautan ke detail laporan.
+- Skor dan komponennya hanya untuk petugas. Pelapor tidak menerima skor karena jumlah laporan serupa dapat mengungkap aktivitas pelapor lain.
+
+Peta memakai Leaflet, OpenStreetMap, dan `leaflet.markercluster`. Marker memakai huruf (T/S/R/–) selain warna; kelompok berwarna prioritas tertinggi di dalamnya. Peta tidak menggambar batas kawasan hutan atau data satelit.
+
+## Mengaktifkan alur kerja petugas Fase 5
+
+Setelah migrasi `001`–`005`, jalankan seluruh isi [JALANKAN_FASE_5.sql](supabase/JALANKAN_FASE_5.sql) pada query baru SQL Editor. Hasil `finish` yang diharapkan: `1..64` tanpa error. Fixture uji dibatalkan sebelum commit.
+
+Ruang petugas memakai sidebar di desktop dan menu drawer di ponsel:
+
+- `/admin/dashboard`: total laporan, menunggu verifikasi, prioritas tinggi aktif, telah diverifikasi, selesai ditangani, lima laporan aktif teratas, tiga grafik 30 hari, dan tindakan cepat. Data nyata dan simulasi dipilih terpisah dan tidak pernah digabung.
+- `/admin/reports`: antrean berdasarkan skor prioritas. Defaultnya laporan aktif; filter cakupan, kategori, prioritas, dan jenis data tersedia.
+- `/admin/reports/[id]`: bukti, lokasi, analisis AI, komponen skor, audit lengkap dengan nama petugas, serta tindakan berikut:
+  - verifikasi, tolak, minta informasi, tandai ditindaklanjuti, dan tandai selesai, hanya pada transisi yang diizinkan database;
+  - publikasi atau penarikan ringkasan publik, dengan penolakan untuk data simulasi;
+  - koreksi kategori dan catatan internal.
+- `/admin/analytics`: rentang 7 hari sampai 12 bulan, dengan definisi setiap angka.
+- `/admin/settings`: akun, keluar dari perangkat ini atau semua perangkat, keadaan layanan tanpa kunci, dan aturan skor.
+
+Pelapor hanya melihat catatan yang ditujukan kepadanya (alasan penolakan atau permintaan informasi) serta ringkasan publik yang disetujui. Catatan internal, alasan koreksi kategori, alasan penarikan, dan kode kegagalan AI tetap untuk petugas. Setelah melengkapi informasi, laporan kembali dianalisis. Grafik memakai Chart.js dengan tampilan tabel sebagai alternatif aksesibel. Arti setiap statistik dan kontrak endpoint ada di [docs/API.md](docs/API.md).
 
 ## Pemeriksaan
 
@@ -44,14 +97,29 @@ npm.cmd run test
 npm.cmd run build
 npm.cmd run check:services
 npm.cmd run check:reporting
+npm.cmd run check:degraded
 npm.cmd run test:e2e
 ```
+
+`check:degraded` menjalankan hasil build produksi dengan konfigurasi yang sengaja dirusak. Pemeriksaan ini memastikan bahwa:
+- saat database tidak terjangkau, API menjawab 503 dengan cepat dan halaman menampilkan pesan "belum dapat dimuat", bukan angka nol;
+- tidak ada kunci yang bocor ke respons maupun log;
+- produksi menolak berjalan tanpa konfigurasi Supabase, dengan setup mode, atau dengan URL aplikasi non-HTTPS.
+
+Pemeriksaan ini tidak menghubungi project Supabase. Jalankan `npm.cmd run build` terlebih dahulu.
+
+Spesifikasi browser dan API Fase 6:
+- `accessibility.spec.ts`: memindai 14 halaman dengan axe (WCAG 2.0/2.1/2.2 A dan AA), dan memastikan tidak ada scroll horizontal di 375/768/1280/1440 px.
+- `security.spec.ts`: akses anonim, CSRF/origin, tipe konten, ukuran body, header keamanan, bukti privat di Storage, penyalahgunaan unggahan, laporan milik orang lain, rate limit, cache halaman bersesi, dan sesi curian setelah "keluar dari semua perangkat".
+- `journey.spec.ts`: perjalanan lengkap warga, AI, petugas, lalu warga di sesi baru. Uji ini memanggil Gemini sekali, sehingga hanya aktif dengan `E2E_GEMINI_LIVE=true`.
 
 Dengan server development berjalan, jalankan `npm.cmd run test:smoke` dari terminal lain untuk memeriksa halaman SSR, payload konfigurasi/sesi, dan penolakan akses/mutasi yang tidak diizinkan melalui HTTP.
 
 `test:e2e` menjalankan Chrome/Edge lokal tanpa mengunduh browser, menguji navigasi di 375/768/1280/1440 px, keyboard, validasi login/registrasi, proteksi laporan, dan peta publik. Pengujian pelaporan yang menulis data dilewati secara eksplisit jika akun simulasi belum dikonfigurasi; skip bukan bukti alur persistensi sudah lulus.
 
 Untuk menjalankan skenario persistensi browser pada proyek pengujian, gunakan `npm.cmd run test:e2e:prepare`. Perintah tersebut menyiapkan dua akun terkontrol ber-role `public`, tanpa mengirim email atau membuat laporan, lalu menyimpan credential hanya dalam `.env.e2e` yang diabaikan Git. Akun utama memakai `E2E_EMAIL`, `E2E_PASSWORD`, dan `RIMBAGUARD_TEST_USER_ID`; akun pembaca kedua memakai `E2E_READER_EMAIL`, `E2E_READER_PASSWORD`, dan `E2E_READER_USER_ID` untuk memeriksa isolasi antar pengguna. Akun dipertahankan untuk pengujian ulang; script tidak menghapus akun/laporan atau mengubah role.
+
+Uji halaman petugas memakai akun petugas QA terpisah (`E2E_ADMIN_EMAIL`, `E2E_ADMIN_PASSWORD`, `E2E_ADMIN_USER_ID`) yang dibuat dengan `npm.cmd run test:e2e:prepare-officer`. Script hanya membuat akun terkonfirmasi ber-role `public` dan mencetak perintah SQL; role admin tetap diberikan operator melalui SQL Editor sesuai [prosedur admin](supabase/README.md#restricted-first-admin-provisioning). Uji petugas dilewati selama role tersebut belum diberikan. `admin-workflow.spec.ts` membutuhkan dua laporan simulasi yang dapat ditinjau. Fixture diambil dari laporan `pending_analysis` yang diberi gangguan QA berlabel melalui RPC asli (tanpa hasil AI buatan), lalu laporan `analysis_failed` lama, lalu laporan `pending_verification`. Laporan `analysis_failed` terbaru disisakan untuk `analysis-failure.spec.ts`; jalankan `reporting.spec.ts` untuk menambah fixture.
 
 Hentikan server development biasa sebelum menjalankan `test:e2e`; runner memulai server khusus dengan konfigurasi akun simulasi. Pengujian menolak membuat laporan jika sesi server tidak mengonfirmasi mode simulasi. Laporan uji ditandai jelas sebagai simulasi, terlihat hanya oleh pemilik/petugas, serta dikecualikan dari statistik dan peta publik. File credential tidak boleh dibagikan atau dicatat ke log. Pengujian callback membuat token untuk akun QA yang sudah ada tanpa mengirim email; registrasi baru/penerimaan email tetap perlu diuji langsung.
 
@@ -64,7 +132,8 @@ Hentikan server development biasa sebelum menjalankan `test:e2e`; runner memulai
 ## Struktur dan batas keamanan
 
 - `app/`: halaman, layout, komponen, composable, dan middleware navigasi.
-- `server/api/`: autentikasi, unggahan, laporan milik pengguna, statistik dan proyeksi peta publik; seluruh mutasi melalui validasi/izin server.
+- `server/api/`: autentikasi, unggahan, laporan milik pengguna, statistik, proyeksi peta publik, dan peta petugas (`/api/admin/map`); seluruh mutasi melalui validasi/izin server.
+- `server/services/`: alur laporan, analisis AI (`ai/threat-analysis.ts`), permintaan hitung ulang skor serta validasi proyeksi peta (`threat-priority.ts`), dan tindakan serta analitik petugas (`admin-service.ts`).
 - `server/utils/`: konfigurasi privat, pemeriksaan sesi/role, validasi, origin/CSRF, error aman, dan pembatasan permintaan berbasis database.
 - `shared/`: enum, kontrak Zod, dan tipe yang tidak memuat credential.
 - `supabase/`: migrasi, RLS, storage privat, audit, dan pengujian database.
@@ -72,13 +141,13 @@ Hentikan server development biasa sebelum menjalankan `test:e2e`; runner memulai
 
 Perubahan data dibatasi ke API server. Server memvalidasi identitas dan izin sebelum memakai operasi privileged; RLS/grant menolak penulisan tabel sensitif oleh client. Laporan dan bukti privat secara default. Bukti diunggah langsung ke namespace `incoming` dengan signed token, lalu diperiksa berdasarkan bytes/ukuran/format sebenarnya, dinormalisasi, dan disegel di namespace terpisah sebelum dilampirkan pada laporan. Token incoming tidak berwenang menulis bukti sealed.
 
-`/api/health` hanya menunjukkan konfigurasi tersedia/belum tersedia, bukan klaim bahwa koneksi telah diuji. `/api/auth/session` mengembalikan identitas aman atau `null`, tanpa access/refresh token. Semua akses `/api/admin/*` dan `/admin/*` diperiksa di server meskipun halaman admin belum dibuat. Request mutasi API harus menggunakan JSON dan origin aplikasi yang sesuai.
+`/api/health` hanya menunjukkan konfigurasi tersedia/belum tersedia, bukan klaim bahwa koneksi telah diuji. `/api/auth/session` mengembalikan identitas aman atau `null`, tanpa access/refresh token. Semua akses `/api/admin/*` dan `/admin/*` diperiksa di server; fungsi database petugas juga memeriksa ulang role pelaku. Request mutasi API harus menggunakan JSON dan origin aplikasi yang sesuai.
 
 ## Atribusi dan penggunaan AI
 
-Pengembangan dibantu OpenAI Codex untuk perencanaan, implementasi, dan pemeriksaan kode. Ketergantungan terbuka yang digunakan: Nuxt/Vue, Tailwind CSS, Supabase SDK, Zod, Leaflet/OpenStreetMap, Sharp, Vitest, Playwright, serta font Inter melalui Fontsource. Lisensi pihak ketiga mengikuti paket masing-masing. Logo dibuat sebagai SVG. Foto landing Gunung Lempuyang karya Vyacheslav Argenberg menggunakan CC BY 4.0, diperkecil dan dikompresi ke WebP; rincian sumber/lisensi ada di [atribusi foto](public/images/ATTRIBUTION.md). Foto editorial tersebut bukan bukti suatu laporan.
+Pengembangan dibantu OpenAI Codex dan Claude Code (Anthropic) untuk perencanaan, implementasi, dan pemeriksaan kode. Ketergantungan terbuka yang digunakan: Nuxt/Vue, Tailwind CSS, Supabase SDK, Zod, Leaflet/OpenStreetMap, Leaflet.markercluster, Chart.js, Sharp, Vitest, Playwright, axe-core, serta font Inter melalui Fontsource. Lisensi pihak ketiga mengikuti paket masing-masing. Logo dibuat sebagai SVG. Foto landing Gunung Lempuyang karya Vyacheslav Argenberg menggunakan CC BY 4.0, diperkecil dan dikompresi ke WebP; rincian sumber/lisensi ada di [atribusi foto](public/images/ATTRIBUTION.md). Foto editorial tersebut bukan bukti suatu laporan.
 
-Penggunaan coding assistant terpisah dari fitur Gemini di produk. Gemini belum diaktifkan pada Fase 2; laporan baru tetap `pending_analysis` tanpa hasil palsu. Ketika aset, template, library, atau alat AI lain ditambahkan, perbarui atribusi di README dan proposal.
+Penggunaan coding assistant terpisah dari fitur Gemini di produk. Analisis Gemini memakai adapter server Fase 3; hasil hanya ditampilkan setelah lolos validasi dan transaksi penyimpanan. Pada kegagalan layanan, laporan dan riwayat percobaan tetap tersimpan tanpa hasil palsu. Ketika aset, template, library, atau alat AI lain ditambahkan, perbarui atribusi di README dan proposal.
 
 ## Acuan pengumpulan lomba
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ReportDetailResponse } from '../../../shared/types/report-api'
-import { THREAT_CATEGORY_LABELS, REPORT_STATUS_LABELS } from '#shared/constants/domain'
+import { THREAT_CATEGORY_LABELS } from '#shared/constants/domain'
 import { formatReportDate } from '~/utils/dates'
 definePageMeta({ middleware: 'auth' })
 useSeoMeta({ title: 'Detail Laporan — RimbaGuard AI', robots: 'noindex' })
@@ -13,7 +13,7 @@ const ready = ref(false)
 onMounted(() => { ready.value = true })
 const evidenceError = ref(false)
 const canEdit = computed(() => data.value?.canEdit === true)
-async function saved() { editing.value = false; await refresh() }
+async function saved() { await refresh(); editing.value = false }
 </script>
 
 <template>
@@ -24,18 +24,24 @@ async function saved() { editing.value = false; await refresh() }
     <template v-else-if="data">
       <p v-if="route.query.submitted" role="status" class="notice mt-6">Laporan sudah tersimpan. Nomor laporan Anda: <strong>{{ data.report.reportCode }}</strong>.</p>
       <p v-if="data.report.isSimulation" class="notice mt-6 font-medium">Data simulasi untuk pengujian. Laporan ini dikecualikan dari statistik publik dan peta kejadian.</p>
+      <p v-if="data.review" class="notice mt-6">Anda melihat laporan sebagai petugas. <NuxtLink :to="`/admin/reports/${data.report.id}`" class="text-link">Buka halaman tinjauan petugas</NuxtLink> untuk memverifikasi atau menanggapi laporan ini.</p>
+      <section v-if="data.reviewerMessage" class="mt-6 rounded-lg border px-5 py-4" :class="data.reviewerMessage.status === 'rejected' ? 'border-alert-red/40 bg-white' : 'border-alert-amber/50 bg-white'" aria-labelledby="reviewer-message">
+        <h2 id="reviewer-message" class="font-semibold text-forest-900">{{ data.reviewerMessage.status === 'rejected' ? 'Laporan ditolak petugas' : 'Petugas meminta informasi tambahan' }}</h2>
+        <p class="mt-2 whitespace-pre-wrap break-words body-copy">{{ data.reviewerMessage.note }}</p>
+        <p class="mt-2 text-xs text-charcoal/75">{{ formatReportDate(data.reviewerMessage.createdAt) }}<template v-if="data.reviewerMessage.status === 'needs_more_information' && canEdit"> · Pilih "Perbaiki informasi" untuk melengkapi laporan. Laporan akan dianalisis ulang setelah disimpan.</template></p>
+      </section>
       <header class="mt-8 border-b border-line pb-8"><div class="flex flex-wrap items-center gap-4 text-sm"><span class="font-mono text-charcoal/75">{{ data.report.reportCode }}</span><ReportsReportStatus :status="data.report.status" /></div><h1 class="mt-4 max-w-4xl text-3xl font-semibold leading-tight tracking-tight text-forest-900 sm:text-4xl">{{ data.report.title }}</h1><p class="mt-4 body-copy">{{ THREAT_CATEGORY_LABELS[data.report.category] }} · {{ formatReportDate(data.report.incidentTime) }}</p></header>
       <div v-if="editing" class="mt-10 max-w-3xl"><button type="button" class="text-link mb-7 min-h-11" @click="editing = false">Batal memperbaiki</button><ReportsReportForm :initial="data.report" @saved="saved" /></div>
       <div v-else class="mt-9 grid gap-12 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div class="min-w-0 space-y-9">
           <section><h2 class="text-xl font-semibold text-forest-900">Bukti dan pengamatan</h2><img v-show="!evidenceError" :src="data.evidenceUrl" alt="Foto bukti yang dilampirkan pada laporan" class="mt-5 max-h-[520px] w-full rounded-lg border border-line bg-sage-100 object-contain" @error="evidenceError = true" @load="evidenceError = false"><div v-if="evidenceError" class="notice mt-5" role="status">Foto belum dapat dimuat. <button type="button" class="text-link" @click="evidenceError = false; refresh()">Coba kembali</button></div><p class="mt-5 whitespace-pre-wrap break-words body-copy">{{ data.report.description }}</p><p class="form-hint">Foto bersifat privat. Tautan akses sementara diperbarui saat detail dimuat ulang.</p></section>
           <section class="border-t border-line pt-7"><h2 class="text-xl font-semibold text-forest-900">Lokasi kejadian</h2><p class="mt-3 body-copy">{{ data.report.locationName || 'Lokasi tanpa nama' }}</p><p class="mt-2 font-mono text-sm">{{ data.report.latitude }}, {{ data.report.longitude }}</p><ClientOnly><MapLocationMap :model-value="{ latitude: data.report.latitude, longitude: data.report.longitude }" class="mt-5" /><template #fallback><p class="notice mt-5">Memuat peta lokasi…</p></template></ClientOnly><p class="form-hint">Koordinat persis hanya tersedia bagi pemilik laporan dan petugas.</p></section>
-          <section class="border-t border-line pt-7"><h2 class="text-xl font-semibold text-forest-900">Analisis awal</h2><template v-if="data.analyses.length"><div v-for="analysis in data.analyses.slice(0, 1)" :key="analysis.id" class="mt-4"><p class="body-copy">{{ analysis.visualObservation || 'Analisis belum menghasilkan pengamatan yang dapat ditampilkan.' }}</p><p v-if="analysis.reasoningSummary" class="mt-3 body-copy">{{ analysis.reasoningSummary }}</p><p v-if="analysis.recommendation" class="notice mt-4">{{ analysis.recommendation }}</p><p class="form-hint">Analisis merupakan bantuan pemeriksaan awal dan tetap memerlukan verifikasi manusia.</p></div></template><p v-else class="mt-4 body-copy">Belum ada analisis AI. Laporan tetap tersimpan dan dapat diperiksa petugas.</p></section>
-          <section v-if="data.priorities.length" class="border-t border-line pt-7"><h2 class="text-xl font-semibold text-forest-900">Prioritas pemeriksaan</h2><p class="mt-4 body-copy">{{ data.priorities[0]?.explanation }}</p><p class="form-hint">Skor {{ data.priorities[0]?.totalScore }} · Aturan {{ data.priorities[0]?.scoringVersion }}</p></section>
+          <ReportsAnalysisPanel :report="data.report" :analyses="data.analyses" :can-analyze="data.canAnalyze" :can-force-analysis="data.canForceAnalysis" :refresh-report="refresh" />
+          <ReportsPriorityPanel v-if="data.priorityStatus" :priorities="data.priorities" :status="data.priorityStatus" />
         </div>
         <aside class="space-y-8">
           <section><h2 class="text-lg font-semibold text-forest-900">Informasi laporan</h2><dl class="mt-5 space-y-4 text-sm"><div><dt class="text-charcoal/75">Dikirim</dt><dd class="mt-1">{{ formatReportDate(data.report.createdAt) }}</dd></div><div><dt class="text-charcoal/75">Terakhir diperbarui</dt><dd class="mt-1">{{ formatReportDate(data.report.updatedAt) }}</dd></div><div><dt class="text-charcoal/75">Visibilitas</dt><dd class="mt-1">{{ data.report.isPublic ? 'Ringkasan disetujui untuk peta publik' : 'Privat · pemilik dan petugas' }}</dd></div></dl><button v-if="canEdit" type="button" class="button-secondary mt-6 w-full" :disabled="!ready" @click="editing = true">Perbaiki informasi</button><button type="button" class="text-link mt-3 min-h-11 text-sm" :disabled="!ready" @click="refresh()">Perbarui status</button></section>
-          <section class="border-t border-line pt-7"><h2 class="text-lg font-semibold text-forest-900">Riwayat perkembangan</h2><ol v-if="data.updates.length" class="mt-5 space-y-5 border-l border-line pl-4"><li v-for="update in data.updates" :key="update.id"><p class="text-sm font-medium">{{ REPORT_STATUS_LABELS[update.newStatus] }}</p><p class="mt-1 text-xs leading-5 text-charcoal/75">{{ formatReportDate(update.createdAt) }}</p><p v-if="update.note" class="mt-2 text-sm leading-6">{{ update.note }}</p></li></ol><p v-else class="mt-4 form-hint">Belum ada pembaruan.</p></section>
+          <section class="border-t border-line pt-7"><h2 class="text-lg font-semibold text-forest-900">Riwayat perkembangan</h2><ReportsTimeline :updates="data.updates" :officer-view="Boolean(data.review)" /></section>
         </aside>
       </div>
     </template>

@@ -37,15 +37,22 @@ export function safeAuthFailure(error: AuthProviderFailure, operation: 'login' |
   return { statusCode: 503, code: 'AUTH_UNAVAILABLE', message: 'Layanan autentikasi belum dapat dihubungi. Silakan coba kembali.' }
 }
 
-/** A return path is an application route, never a URL, API endpoint, or login loop. */
+const UUID_PATH = '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+const CITIZEN_DESTINATIONS = new RegExp(`^(?:/|/report|/reports(?:${UUID_PATH})?|/map|/about)$`, 'u')
+const OFFICER_DESTINATIONS = new RegExp(`^/admin/(?:dashboard|reports(?:${UUID_PATH})?|map|analytics|settings)$`, 'u')
+
+/**
+ * A return path is an allowlisted application route for the role, never a URL,
+ * API endpoint, or login loop. Officers return to officer pages only.
+ */
 export function safeAuthRedirect(role: UserRole, requested?: unknown): string {
-  if (role === 'admin') return '/admin/dashboard'
-  if (typeof requested !== 'string' || requested.length > 1_024 || !requested.startsWith('/') || requested.startsWith('//') || /[\u0000-\u0020\u007f\\]/u.test(requested)) return '/reports'
+  const fallback = role === 'admin' ? '/admin/dashboard' : '/reports'
+  if (typeof requested !== 'string' || requested.length > 1_024 || !requested.startsWith('/') || requested.startsWith('//') || /[\u0000-\u0020\u007f\\]/u.test(requested)) return fallback
   try {
     const url = new URL(requested, 'https://rimbaguard.invalid')
-    if (url.origin !== 'https://rimbaguard.invalid' || url.hash) return '/reports'
-    const allowed = /^(?:\/|\/report|\/reports(?:\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})?|\/map|\/about)$/u
-    return allowed.test(url.pathname) ? `${url.pathname}${url.search}` : '/reports'
+    if (url.origin !== 'https://rimbaguard.invalid' || url.hash) return fallback
+    const allowed = role === 'admin' ? OFFICER_DESTINATIONS : CITIZEN_DESTINATIONS
+    return allowed.test(url.pathname) ? `${url.pathname}${url.search}` : fallback
   }
-  catch { return '/reports' }
+  catch { return fallback }
 }

@@ -1,8 +1,9 @@
 /**
- * Initial schema-derived types for the foundation and reporting migrations.
+ * Initial schema-derived types for the foundation, reporting, analysis, priority and admin workflow migrations.
  * Handwritten, not generated from a connected database. Regenerate with the
  * Supabase CLI once migrations are applied; database grants remain authoritative.
  */
+import type { CategorySource } from '../constants/scoring'
 import type {
   AiRiskLevel,
   PriorityLevel,
@@ -93,12 +94,15 @@ export type AiAnalysisRow = {
   created_at: string
 }
 
+export type ClaimReportAnalysisResult = { analysis: AiAnalysisRow; claimed: boolean }
+export type FinishReportAnalysisResult = { analysis: AiAnalysisRow; accepted: boolean; reason: string | null }
+
 export type ThreatPriorityRow = {
   id: string
   report_id: string
   report_revision: number
   effective_category: ThreatCategory
-  category_source: 'user' | 'ai' | 'officer'
+  category_source: CategorySource
   threat_severity: number
   evidence_completeness: number
   recency_score: number
@@ -232,9 +236,91 @@ export type Database = {
         Args: { p_actor_id: string; p_report_id: string; p_expected_revision: number; p_payload: Json }
         Returns: ReportRow
       }
+      claim_report_analysis: {
+        Args: {
+          p_report_id: string
+          p_actor_id: string
+          p_expected_revision: number
+          p_model_name: string
+          p_prompt_version: string
+          p_force?: boolean
+        }
+        Returns: ClaimReportAnalysisResult
+      }
+      complete_report_analysis: {
+        Args: { p_analysis_id: string; p_actor_id: string; p_output: Json }
+        Returns: FinishReportAnalysisResult
+      }
+      fail_report_analysis: {
+        Args: { p_analysis_id: string; p_actor_id: string; p_error_code: string }
+        Returns: FinishReportAnalysisResult
+      }
       platform_statistics: {
         Args: Record<PropertyKey, never>
         Returns: { total_reports: number; verified_reports: number; in_progress_reports: number; named_locations: number }[]
+      }
+      refresh_threat_priorities: {
+        Args: { p_report_ids?: string[] | null; p_limit?: number; p_wait?: boolean }
+        Returns: Json
+      }
+      admin_map_reports: {
+        Args: {
+          p_actor_id: string
+          p_category?: ThreatCategory | null
+          p_priority?: string | null
+          p_status?: ReportStatus | null
+          p_from?: string | null
+          p_to?: string | null
+          p_dataset?: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
+      }
+      admin_report_queue: {
+        Args: {
+          p_actor_id: string
+          p_scope?: string
+          p_category?: ThreatCategory | null
+          p_priority?: string | null
+          p_dataset?: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
+      }
+      admin_publish_report: {
+        Args: { p_report_id: string; p_actor_id: string; p_expected_revision: number; p_public_summary: string }
+        Returns: ReportRow
+      }
+      admin_withdraw_publication: {
+        Args: { p_report_id: string; p_actor_id: string; p_expected_revision: number; p_note: string }
+        Returns: ReportRow
+      }
+      admin_set_officer_category: {
+        Args: { p_report_id: string; p_actor_id: string; p_expected_revision: number; p_category: ThreatCategory | null; p_note?: string | null }
+        Returns: ReportRow
+      }
+      admin_add_report_note: {
+        Args: { p_report_id: string; p_actor_id: string; p_note: string }
+        Returns: ReportUpdateRow
+      }
+      admin_analytics: {
+        Args: { p_actor_id: string; p_dataset?: string; p_days?: number }
+        Returns: Json
+      }
+      public_map_reports: {
+        Args: {
+          p_category?: ThreatCategory | null
+          p_priority?: string | null
+          p_status?: ReportStatus | null
+          p_from?: string | null
+          p_to?: string | null
+          p_report_id?: string | null
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: Json
       }
     }
     Enums: {
