@@ -50,7 +50,7 @@ const tipLabelPlugin: Plugin<'bar'> = {
     const { ctx } = instance
     ctx.save()
     ctx.fillStyle = TEXT
-    ctx.font = '600 12px Inter, system-ui, sans-serif'
+    ctx.font = '600 14px "Inter Variable", Inter, system-ui, sans-serif'
     ctx.textBaseline = 'middle'
     instance.getDatasetMeta(0).data.forEach((element, index) => {
       const value = props.values[index] ?? 0
@@ -68,13 +68,13 @@ function config(): ChartConfiguration<'bar'> {
     grace: props.tipLabels && props.horizontal ? '12%' : '5%',
     border: { display: false },
     grid: { color: GRID, lineWidth: 1, drawTicks: false },
-    ticks: { precision: 0, color: TEXT, font: { size: 12, family: 'Inter, system-ui, sans-serif' }, padding: 6 },
+    ticks: { precision: 0, color: TEXT, font: { size: 14, family: 'Inter Variable, Inter, system-ui, sans-serif' }, padding: 8 },
   }
   const categoryAxis = {
     border: { display: false },
     grid: { display: false },
     ticks: {
-      color: TEXT, font: { size: 12, family: 'Inter, system-ui, sans-serif' },
+      color: TEXT, font: { size: 14, family: 'Inter Variable, Inter, system-ui, sans-serif' },
       autoSkip: !props.horizontal, maxRotation: 0, maxTicksLimit: props.horizontal ? undefined : 8,
     },
   }
@@ -97,8 +97,8 @@ function config(): ChartConfiguration<'bar'> {
       indexAxis: props.horizontal ? 'y' : 'x',
       responsive: true,
       maintainAspectRatio: false,
-      animation: { duration: 250 },
-      layout: { padding: { top: props.tipLabels && !props.horizontal ? 18 : 4, right: 8 } },
+      animation: false,
+      layout: { padding: { top: props.tipLabels && !props.horizontal ? 18 : 4, right: 12 } },
       scales: props.horizontal ? { x: valueAxis, y: categoryAxis } : { x: categoryAxis, y: valueAxis },
       plugins: {
         legend: { display: false },
@@ -135,13 +135,13 @@ onBeforeUnmount(() => { chart?.destroy(); chart = undefined })
     <div class="relative w-full" :class="heightClass">
       <canvas ref="canvas" role="img" :aria-label="summary" />
     </div>
-    <details class="mt-3 text-sm">
-      <summary class="min-h-11 cursor-pointer content-center text-forest-700">Lihat data sebagai tabel</summary>
-      <table class="mt-2 w-full text-left">
+    <details class="mt-4 border-t border-line pt-2 text-sm">
+      <summary class="min-h-12 cursor-pointer content-center font-medium text-forest-700">Lihat data sebagai tabel</summary>
+      <table class="mt-2 w-full text-left leading-6">
         <caption class="sr-only">{{ title }}</caption>
-        <thead class="border-b border-line text-xs text-charcoal/75"><tr><th scope="col" class="py-1.5 font-medium">Kelompok</th><th scope="col" class="py-1.5 text-right font-medium">Jumlah</th></tr></thead>
+        <thead class="border-b border-line bg-[#F4F6F2] text-sm text-charcoal/75"><tr><th scope="col" class="px-3 py-3 font-medium">Kelompok</th><th scope="col" class="px-3 py-3 text-right font-medium">Jumlah</th></tr></thead>
         <tbody class="divide-y divide-line tabular-nums">
-          <tr v-for="(label, index) in labels" :key="label"><th scope="row" class="py-1.5 font-normal">{{ label }}</th><td class="py-1.5 text-right">{{ formatter.format(values[index] ?? 0) }}</td></tr>
+          <tr v-for="(label, index) in labels" :key="label"><th scope="row" class="px-3 py-3 font-normal">{{ label }}</th><td class="px-3 py-3 text-right">{{ formatter.format(values[index] ?? 0) }}</td></tr>
         </tbody>
       </table>
     </details>

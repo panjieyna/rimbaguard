@@ -42,17 +42,12 @@ async function goToPage(next: number) { await navigateTo({ path: '/admin/map', q
 </script>
 
 <template>
-  <div class="w-full max-w-[1440px]">
-    <header class="flex flex-wrap items-end justify-between gap-5">
-      <div>
-        <p class="eyebrow">Ruang petugas</p>
-        <h1 class="mt-3 text-3xl font-semibold tracking-tight text-forest-900 sm:text-4xl">Peta prioritas laporan</h1>
-        <p class="mt-3 max-w-3xl body-copy">Semua laporan masuk, termasuk yang belum diverifikasi. Warna dan huruf menunjukkan prioritas pemeriksaan dari aturan skor v1; titik bukan lokasi kejadian yang telah dipastikan.</p>
-      </div>
-      <NuxtLink to="/admin/reports" class="button-secondary">Lihat antrean laporan</NuxtLink>
-    </header>
+  <div class="admin-page">
+    <AdminPageHeader title="Peta prioritas laporan" description="Jelajahi lokasi laporan dan pilih titik untuk melihat informasi awal serta prioritas pemeriksaannya.">
+      <NuxtLink to="/admin/reports" class="button-secondary"><AdminIcon name="reports" class="size-5" />Lihat antrean laporan</NuxtLink>
+    </AdminPageHeader>
 
-    <MapFilters class="mt-7" :statuses="REPORT_STATUSES" :values="filters" show-dataset @apply="applyFilters" />
+    <div class="admin-map-filters"><MapFilters :statuses="REPORT_STATUSES" :values="filters" show-dataset @apply="applyFilters" /></div>
 
     <p v-if="status === 'pending' && !data" role="status" class="notice mt-6">Memuat peta petugas…</p>
     <div v-else-if="error" class="notice mt-6" role="alert">
@@ -64,23 +59,27 @@ async function goToPage(next: number) { await navigateTo({ path: '/admin/map', q
       <p v-else-if="data.refresh.status === 'failed'" role="status" class="notice mt-6">Sebagian skor prioritas belum dapat diperbarui. Laporan bertanda "menunggu pembaruan" memakai perhitungan terakhir.</p>
       <p v-else-if="data.refresh.remaining" role="status" class="notice mt-6">{{ data.refresh.remaining }} skor masih menunggu pembaruan. Muat ulang untuk melanjutkan.</p>
 
-      <div class="mt-6 grid gap-7 xl:grid-cols-[minmax(0,1fr)_380px]">
-        <div class="min-w-0">
+      <div class="grid items-start gap-5 min-[87.5rem]:grid-cols-[minmax(0,1fr)_340px] 2xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div class="admin-panel min-w-0 overflow-hidden">
+          <div class="admin-panel-header"><div><h2 class="admin-section-title">Sebaran laporan</h2><p class="admin-muted mt-1">Pilih titik atau kelompok titik pada peta.</p></div><span class="rounded-full bg-sage-100 px-3 py-1 text-sm font-medium text-forest-700">{{ data.total.toLocaleString('id-ID') }} laporan</span></div>
+          <div class="p-3 sm:p-4">
           <ClientOnly>
-            <MapThreatMap :points="points" :selected-id="selected?.id" label="Peta prioritas laporan petugas" height-class="h-[460px] sm:h-[600px] xl:h-[720px]" @select="select" />
-            <template #fallback><p class="notice h-[460px] sm:h-[600px] xl:h-[720px]">Memuat peta…</p></template>
+            <MapThreatMap :points="points" :selected-id="selected?.id" label="Peta prioritas laporan petugas" height-class="h-[360px] sm:h-[500px] 2xl:h-[640px]" @select="select" />
+            <template #fallback><p class="notice h-[360px] sm:h-[500px] 2xl:h-[640px]">Memuat peta…</p></template>
           </ClientOnly>
           <MapLegend class="mt-4" />
-          <p class="form-hint">Koordinat persis hanya untuk petugas. Laporan berdekatan membantu urutan pemeriksaan dan bukan konfirmasi bahwa kejadian benar terjadi.</p>
+          <p class="mt-4 border-t border-line pt-4 text-sm leading-6 text-charcoal/70">Koordinat persis hanya untuk petugas. Warna menunjukkan prioritas pemeriksaan; laporan yang berdekatan belum memastikan kejadian benar terjadi.</p>
+          </div>
         </div>
 
         <aside class="min-w-0" aria-label="Detail dan daftar laporan">
-          <section v-if="selected" aria-live="polite" class="rounded-lg border border-line bg-white p-5">
+          <section v-if="selected" aria-live="polite" class="admin-panel p-5 sm:p-6">
+            <button type="button" class="mb-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-forest-700 hover:underline" @click="select(null)"><AdminIcon name="chevron-down" class="size-4 rotate-90" />Kembali ke daftar</button>
             <div class="flex flex-wrap items-center gap-2 text-xs"><span class="font-mono text-charcoal/75">{{ selected.reportCode }}</span><span v-if="selected.isSimulation" class="rounded bg-sage-100 px-2 py-0.5 font-semibold text-forest-900">SIMULASI</span><span v-if="selected.isPublic" class="rounded bg-sage-100 px-2 py-0.5 text-forest-900">Dipublikasikan</span></div>
             <h2 class="mt-3 text-lg font-semibold leading-snug text-forest-900">{{ selected.title }}</h2>
             <MapPriorityBadge class="mt-3" :level="selected.priority?.level ?? null" :stale="selected.priority?.stale" />
-            <p v-if="selected.priority" class="mt-1 text-xs text-charcoal/75">Skor {{ selected.priority.totalScore.toLocaleString('id-ID') }} dari 100 · dihitung {{ formatReportDate(selected.priority.calculatedAt) }}</p>
-            <dl class="mt-5 space-y-4 text-sm">
+            <p v-if="selected.priority" class="mt-2 text-sm leading-6 text-charcoal/70">Skor {{ selected.priority.totalScore.toLocaleString('id-ID') }} dari 100 · dihitung {{ formatReportDate(selected.priority.calculatedAt) }}</p>
+            <dl class="mt-5 space-y-4 border-t border-line pt-5 text-base">
               <div><dt class="text-charcoal/75">Kategori ancaman</dt><dd class="mt-1">{{ THREAT_CATEGORY_LABELS[selected.effectiveCategory] }}</dd><dd class="mt-1 text-xs text-charcoal/75">{{ CATEGORY_SOURCE_LABELS[selected.categorySource] }}</dd></div>
               <div><dt class="text-charcoal/75">Status verifikasi</dt><dd class="mt-1"><ReportsReportStatus :status="selected.status" /></dd><dd v-if="UNVERIFIED.has(selected.status)" class="mt-1 text-xs text-charcoal/75">Belum diverifikasi petugas.</dd></div>
               <div><dt class="text-charcoal/75">Waktu kejadian</dt><dd class="mt-1">{{ formatReportDate(selected.incidentTime) }}</dd></div>
@@ -89,24 +88,22 @@ async function goToPage(next: number) { await navigateTo({ path: '/admin/map', q
             </dl>
             <div class="mt-5 flex flex-wrap gap-3">
               <NuxtLink :to="`/admin/reports/${selected.id}`" class="button-primary">Lihat detail</NuxtLink>
-              <button type="button" class="text-link min-h-11 text-sm" @click="select(null)">Kembali ke daftar</button>
             </div>
           </section>
-          <section v-else>
-            <h2 class="text-lg font-semibold text-forest-900">Antrean di peta</h2>
-            <p class="mt-2 text-sm text-charcoal/75" role="status">{{ data.total.toLocaleString('id-ID') }} laporan{{ hasFilters ? ' sesuai filter' : '' }}<template v-if="simulationCount"> · {{ simulationCount }} data simulasi</template> · diurutkan dari skor tertinggi</p>
-            <p v-if="!data.reports.length" class="mt-4 body-copy">{{ hasFilters ? 'Tidak ada laporan yang sesuai filter.' : 'Belum ada laporan masuk.' }}</p>
-            <ul v-else class="mt-3 max-h-[640px] divide-y divide-line overflow-y-auto border-y border-line">
+          <section v-else class="admin-panel overflow-hidden">
+            <div class="admin-panel-header"><div><h2 class="admin-section-title">Antrean di peta</h2><p class="admin-muted mt-1" role="status">{{ data.total.toLocaleString('id-ID') }} laporan{{ hasFilters ? ' sesuai filter' : '' }}<template v-if="simulationCount"> · {{ simulationCount }} data simulasi</template></p><p class="admin-muted">Diurutkan dari skor tertinggi.</p></div></div>
+            <p v-if="!data.reports.length" class="admin-empty">{{ hasFilters ? 'Tidak ada laporan yang sesuai filter.' : 'Belum ada laporan masuk.' }}</p>
+            <ul v-else class="max-h-[620px] divide-y divide-line overflow-y-auto">
               <li v-for="report in data.reports" :key="report.id">
-                <button type="button" class="w-full py-4 text-left hover:text-forest-700" @click="select(report.id)">
+                <button type="button" class="w-full px-5 py-5 text-left hover:bg-sage-100/40 focus-visible:-outline-offset-4 sm:px-6" @click="select(report.id)">
                   <span class="flex flex-wrap items-center gap-2 text-xs"><span class="font-mono text-charcoal/75">{{ report.reportCode }}</span><span v-if="report.isSimulation" class="rounded bg-sage-100 px-1.5 font-semibold text-forest-900">SIMULASI</span></span>
-                  <span class="mt-1 block text-sm font-medium leading-snug">{{ report.title }}</span>
+                  <span class="mt-2 block text-base font-semibold leading-7 text-forest-900">{{ report.title }}</span>
                   <MapPriorityBadge class="mt-2" :level="report.priority?.level ?? null" :stale="report.priority?.stale" />
-                  <span class="mt-2 block text-xs leading-5 text-charcoal/75">{{ THREAT_CATEGORY_LABELS[report.effectiveCategory] }} · {{ formatReportDate(report.incidentTime) }}</span>
+                  <span class="mt-2 block text-sm leading-6 text-charcoal/75">{{ THREAT_CATEGORY_LABELS[report.effectiveCategory] }}</span><span class="mt-1 block text-sm leading-6 text-charcoal/65">{{ formatReportDate(report.incidentTime) }}</span><span class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-forest-700">Lihat di peta<AdminIcon name="chevron-right" class="size-4" /></span>
                 </button>
               </li>
             </ul>
-            <nav v-if="pageCount > 1" class="mt-4 flex items-center justify-between gap-3 text-sm" aria-label="Halaman laporan peta">
+            <nav v-if="pageCount > 1" class="flex flex-wrap items-center justify-between gap-3 border-t border-line p-4 text-sm" aria-label="Halaman laporan peta">
               <button type="button" class="button-secondary px-4" :disabled="page <= 1" @click="goToPage(page - 1)">Sebelumnya</button>
               <span>Halaman {{ page }} dari {{ pageCount }}</span>
               <button type="button" class="button-secondary px-4" :disabled="page >= pageCount" @click="goToPage(page + 1)">Berikutnya</button>
@@ -117,3 +114,16 @@ async function goToPage(next: number) { await navigateTo({ path: '/admin/map', q
     </template>
   </div>
 </template>
+
+<style scoped>
+.admin-map-filters :deep(form) { border-radius: 1rem; padding: 1.25rem; background: white; }
+@media (min-width: 64rem) {
+  .admin-map-filters :deep(form > div:nth-child(2)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .admin-map-filters :deep(form > div:nth-child(2) > div:last-child) {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    border-top: 1px solid var(--color-line);
+    padding-top: 1rem;
+  }
+}
+</style>

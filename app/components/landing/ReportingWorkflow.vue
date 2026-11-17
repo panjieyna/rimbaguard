@@ -79,7 +79,7 @@ onBeforeUnmount(() => observer?.disconnect())
         <div class="relative z-10 lg:col-start-2 lg:row-start-3 lg:pl-4">
           <div class="max-w-md">
             <NuxtLink to="/report" class="button-primary min-h-13 w-full rounded-xl font-semibold">Mulai buat laporan <span aria-hidden="true">↗</span></NuxtLink>
-            <p class="mt-2 flex items-center justify-center gap-2 rounded-xl bg-sage-100/70 px-3 py-2 text-sm leading-6 text-forest-700"><LandingWorkflowIcon name="lock" class="size-4 shrink-0" /><span>Foto dan lokasi rinci Anda disimpan privat.</span></p>
+            <p class="mt-3 flex items-start justify-center gap-2 text-sm leading-6 text-charcoal/70"><LandingWorkflowIcon name="lock" class="mt-1 size-4 shrink-0 text-forest-700" /><span>Foto dan lokasi rinci Anda disimpan privat.</span></p>
           </div>
         </div>
       </div>

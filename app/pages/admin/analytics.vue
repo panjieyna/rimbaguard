@@ -27,56 +27,51 @@ const statuses = computed(() => STATUS_DISPLAY_ORDER.map(item => ({ status: item
 </script>
 
 <template>
-  <div class="max-w-6xl">
-    <header>
-      <p class="eyebrow">Ruang petugas</p>
-      <h1 class="mt-3 text-3xl font-semibold tracking-tight text-forest-900 sm:text-4xl">Analitik laporan</h1>
-      <p class="mt-3 max-w-2xl body-copy">Grafik dihitung langsung dari database. Laporan nyata dan data simulasi tidak pernah digabung.</p>
-    </header>
+  <div class="admin-page">
+    <AdminPageHeader title="Analitik laporan" description="Pahami pola laporan, kategori ancaman, dan perkembangan penanganan dalam satu tampilan." />
 
-    <form role="search" method="get" aria-label="Filter analitik" class="mt-7 flex flex-wrap items-end gap-4 rounded-lg border border-line bg-white p-4" @submit.prevent="apply">
-      <div class="min-w-48 flex-1 sm:flex-none"><label :for="`${id}-days`" class="form-label">Rentang waktu</label><select :id="`${id}-days`" v-model="form.days" name="days" class="form-input"><option v-for="range in ANALYTICS_RANGES" :key="range" :value="String(range)">{{ ANALYTICS_RANGE_LABELS[range] }}</option></select></div>
-      <div class="min-w-48 flex-1 sm:flex-none"><label :for="`${id}-dataset`" class="form-label">Data</label><select :id="`${id}-dataset`" v-model="form.dataset" name="dataset" class="form-input"><option v-for="option in ANALYTICS_DATASETS" :key="option" :value="option">{{ ANALYTICS_DATASET_LABELS[option] }}</option></select></div>
-      <button type="submit" class="button-primary">Terapkan</button>
+    <form role="search" method="get" aria-label="Filter analitik" class="admin-filter-bar flex flex-wrap items-end" @submit.prevent="apply">
+      <div class="mr-auto flex w-full items-center gap-3 pb-1 xl:w-auto xl:pb-3"><span class="flex size-10 items-center justify-center rounded-xl bg-sage-100 text-forest-700"><AdminIcon name="filter" class="size-5" /></span><div><p class="font-semibold text-forest-900">Tampilkan analitik</p><p class="admin-muted">Pilih periode dan sumber laporan.</p></div></div>
+      <div class="min-w-0 flex-[1_1_12rem] xl:w-52 xl:flex-none"><label :for="`${id}-days`" class="form-label">Rentang waktu</label><select :id="`${id}-days`" v-model="form.days" name="days" class="form-input"><option v-for="range in ANALYTICS_RANGES" :key="range" :value="String(range)">{{ ANALYTICS_RANGE_LABELS[range] }}</option></select></div>
+      <div class="min-w-0 flex-[1_1_12rem] xl:w-48 xl:flex-none"><label :for="`${id}-dataset`" class="form-label">Data</label><select :id="`${id}-dataset`" v-model="form.dataset" name="dataset" class="form-input"><option v-for="option in ANALYTICS_DATASETS" :key="option" :value="option">{{ ANALYTICS_DATASET_LABELS[option] }}</option></select></div>
+      <button type="submit" class="button-primary w-full sm:w-auto">Terapkan <AdminIcon name="arrow-right" class="size-4" /></button>
     </form>
     <p v-if="dataset === 'simulation'" class="notice mt-5 font-medium">Menampilkan data simulasi untuk pengujian dan demo, bukan laporan nyata.</p>
 
     <p v-if="status === 'pending' && !data" role="status" class="notice mt-6">Memuat analitik…</p>
     <div v-else-if="error" role="alert" class="notice mt-6"><p>Analitik belum dapat dimuat. Periksa koneksi atau sesi Anda.</p><button type="button" class="text-link mt-3 min-h-11" @click="refresh()">Coba kembali</button></div>
     <template v-else-if="data">
-      <section class="mt-8" aria-labelledby="state-title">
-        <h2 id="state-title" class="text-xl font-semibold text-forest-900">Kondisi saat ini</h2>
-        <p class="mt-1 text-sm text-charcoal/75">Semua laporan pada data ini, tanpa batas tanggal.</p>
-        <dl class="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <AdminStatTile label="Total laporan" :value="data.summary.total" />
-          <AdminStatTile label="Menunggu verifikasi" :value="data.summary.pendingVerification" :hint="`${data.summary.analysisFailed} analisis gagal · ${data.summary.needsMoreInformation} menunggu informasi pelapor`" />
-          <AdminStatTile label="Telah diverifikasi" :value="data.summary.verified" :hint="`Termasuk ${data.summary.inProgress} sedang ditindaklanjuti dan ${data.summary.resolved} selesai`" />
-          <AdminStatTile label="Prioritas tinggi aktif" :value="data.summary.highPriority" :hint="`${data.summary.rejected} laporan ditolak tidak dihitung`" />
+      <section aria-labelledby="state-title">
+        <div class="mb-4 flex flex-wrap items-baseline justify-between gap-2"><h2 id="state-title" class="admin-section-title">Kondisi saat ini</h2><p class="admin-muted">Seluruh laporan pada data ini · tanpa batas tanggal</p></div>
+        <dl class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <AdminStatTile label="Total laporan" :value="data.summary.total" icon="reports" />
+          <AdminStatTile label="Menunggu verifikasi" :value="data.summary.pendingVerification" icon="clock" tone="amber" :hint="`${data.summary.analysisFailed} analisis gagal · ${data.summary.needsMoreInformation} menunggu informasi pelapor`" />
+          <AdminStatTile label="Telah diverifikasi" :value="data.summary.verified" icon="shield" :hint="`Termasuk ${data.summary.inProgress} sedang ditindaklanjuti dan ${data.summary.resolved} selesai`" />
+          <AdminStatTile label="Prioritas tinggi aktif" :value="data.summary.highPriority" icon="alert" tone="red" :hint="`${data.summary.rejected} laporan ditolak dihitung terpisah`" />
         </dl>
       </section>
 
-      <section class="mt-10" aria-labelledby="range-title">
-        <h2 id="range-title" class="text-xl font-semibold text-forest-900">{{ ANALYTICS_RANGE_LABELS[data.range.days] }}</h2>
-        <p class="mt-1 text-sm text-charcoal/75">{{ formatCount(data.rangeTotal) }} laporan dikirim {{ data.range.from }} sampai {{ data.range.to }} (WIB).</p>
-        <p v-if="!data.rangeTotal" class="notice mt-4">Belum ada laporan masuk pada rentang ini, sehingga grafik belum dapat ditampilkan.</p>
+      <section aria-labelledby="range-title">
+        <div class="flex flex-wrap items-end justify-between gap-3"><div><h2 id="range-title" class="admin-section-title">{{ ANALYTICS_RANGE_LABELS[data.range.days] }}</h2><p class="admin-muted mt-1">{{ data.range.from }} – {{ data.range.to }} · WIB</p></div><p class="rounded-full border border-line bg-white px-4 py-2 text-sm text-charcoal/75"><strong class="font-semibold text-forest-900">{{ formatCount(data.rangeTotal) }}</strong> laporan masuk</p></div>
+        <div v-if="!data.rangeTotal" class="admin-panel admin-empty mt-5"><AdminIcon name="analytics" class="mx-auto mb-3 size-8 text-forest-500" /><p class="font-medium text-forest-900">Belum ada laporan pada periode ini.</p><p class="mt-1">Pilih rentang waktu lain untuk melihat perkembangannya.</p></div>
         <div v-else class="mt-5 space-y-5">
-          <div class="min-w-0 rounded-lg border border-line bg-white p-5"><h3 class="text-sm font-semibold">{{ bucketTitle }}</h3><ClientOnly><AdminBarChart class="mt-3" :title="`${bucketTitle}, ${ANALYTICS_RANGE_LABELS[data.range.days]}`" :labels="buckets.map(item => item.label)" :values="buckets.map(item => item.count)" height-class="h-64" /><template #fallback><p class="mt-3 h-64 text-sm text-charcoal/75">Memuat grafik…</p></template></ClientOnly></div>
-          <div class="grid gap-5 lg:grid-cols-2">
-            <div class="min-w-0 rounded-lg border border-line bg-white p-5"><h3 class="text-sm font-semibold">Distribusi kategori ancaman</h3><p class="text-xs text-charcoal/70">Kategori yang dinilai: koreksi petugas, lalu AI, lalu pilihan pelapor.</p><ClientOnly><AdminBarChart class="mt-3" title="Distribusi kategori ancaman" :labels="categories.map(item => THREAT_CATEGORY_LABELS[item.category])" :values="categories.map(item => item.count)" horizontal tip-labels height-class="h-60" /></ClientOnly></div>
-            <div class="min-w-0 rounded-lg border border-line bg-white p-5"><h3 class="text-sm font-semibold">Distribusi status laporan</h3><p class="text-xs text-charcoal/70">Status saat ini dari laporan yang dikirim pada rentang ini.</p><ClientOnly><AdminBarChart class="mt-3" title="Distribusi status laporan" :labels="statuses.map(item => REPORT_STATUS_LABELS[item.status])" :values="statuses.map(item => item.count)" horizontal tip-labels height-class="h-80" /></ClientOnly></div>
+          <div class="admin-panel"><div class="admin-panel-header"><div><h3 class="admin-section-title">{{ bucketTitle }}</h3><p class="admin-muted mt-1">Perkembangan jumlah laporan pada periode pilihan.</p></div><span class="flex items-center gap-2 text-sm text-charcoal/70"><span class="size-2.5 rounded-full bg-[#287A52]" aria-hidden="true" />Jumlah laporan</span></div><div class="p-5 sm:p-6"><ClientOnly><AdminBarChart :title="`${bucketTitle}, ${ANALYTICS_RANGE_LABELS[data.range.days]}`" :labels="buckets.map(item => item.label)" :values="buckets.map(item => item.count)" height-class="h-64 sm:h-72" /><template #fallback><p class="h-64 text-sm text-charcoal/75">Memuat grafik…</p></template></ClientOnly></div></div>
+          <div class="grid gap-5 xl:grid-cols-2">
+            <div class="admin-panel"><div class="admin-panel-header"><div><h3 class="admin-section-title">Kategori ancaman</h3><p class="admin-muted mt-1">Mengikuti penilaian petugas, AI, lalu pelapor.</p></div></div><div class="p-5 sm:p-6"><ClientOnly><AdminBarChart title="Distribusi kategori ancaman" :labels="categories.map(item => THREAT_CATEGORY_LABELS[item.category])" :values="categories.map(item => item.count)" horizontal tip-labels height-class="h-72" /></ClientOnly></div></div>
+            <div class="admin-panel"><div class="admin-panel-header"><div><h3 class="admin-section-title">Status penanganan</h3><p class="admin-muted mt-1">Status terkini dari laporan pada periode ini.</p></div></div><div class="p-5 sm:p-6"><ClientOnly><AdminBarChart title="Distribusi status laporan" :labels="statuses.map(item => REPORT_STATUS_LABELS[item.status])" :values="statuses.map(item => item.count)" horizontal tip-labels height-class="h-96" /></ClientOnly></div></div>
           </div>
         </div>
       </section>
 
-      <section class="mt-10 border-t border-line pt-7 text-sm leading-6 text-charcoal/85" aria-labelledby="definitions-title">
-        <h2 id="definitions-title" class="text-lg font-semibold text-forest-900">Definisi angka</h2>
-        <ul class="mt-3 list-disc space-y-1 pl-5">
+      <details class="admin-panel group">
+        <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 text-base font-semibold text-forest-900 sm:px-6 [&::-webkit-details-marker]:hidden"><span class="flex items-center gap-3"><AdminIcon name="eye" class="size-5 text-forest-500" />Cara membaca angka</span><AdminIcon name="chevron-down" class="size-5 group-open:rotate-180" /></summary>
+        <ul class="list-disc space-y-3 border-t border-line py-5 pr-5 pl-10 text-sm leading-7 text-charcoal/80 sm:pr-6 sm:pl-11">
           <li><strong>Telah diverifikasi</strong> mencakup laporan yang kemudian sedang ditindaklanjuti atau selesai; laporan ditolak dihitung terpisah.</li>
           <li><strong>Prioritas tinggi aktif</strong> menghitung laporan yang belum selesai atau ditolak dengan skor prioritas terbaru tinggi.</li>
           <li>Grafik rentang waktu memakai tanggal laporan dikirim dalam WIB. Distribusi status menunjukkan status saat ini dari laporan tersebut.</li>
           <li>Jumlah nol berarti database tidak memiliki laporan yang sesuai, bukan data yang hilang. Bila database tidak dapat dihubungi, halaman menampilkan pesan gagal, bukan angka nol.</li>
         </ul>
-      </section>
+      </details>
     </template>
   </div>
 </template>

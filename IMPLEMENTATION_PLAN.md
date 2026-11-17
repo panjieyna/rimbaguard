@@ -360,6 +360,22 @@ Design regression record, 16 November 2026:
 
 This is a bounded design refinement. It does not mark the remaining Phase 6 release and deployment gates complete.
 
+## Admin design refinement — 17 November 2026
+
+- [x] Reapply the admin-only redesign after the user discarded the first attempt. Use an Inter-based forest-green navigation shell, clear active states, readable page headings, separate account/logout controls, and shared panel/filter styling scoped to the admin workspace.
+- [x] Redesign Ringkasan, Laporan, Peta, Analitik and Pengaturan. Group queue metadata into readable rows, retain practical filters and pagination, give the map and its selectable report list their own panels, retain chart table alternatives, and organize settings into account, session security, service information and scoring rules.
+- [x] Preserve real API/data behavior, role guards, report review links, dataset distinctions, missing/stale score states, error/empty states and global-signout confirmation. Keep score meanings and service configuration claims accurate; no backend, database, user-page or test-file changes are part of this pass.
+- [x] Inspect the five pages directly using a retained QA officer session at 1440 px and 375 px. Fix truncated map filters and improve chart rendering/readability. The inspected pages have no horizontal overflow or browser runtime errors. This visual inspection is not a substitute for the deferred functional checks.
+- [ ] Update and run relevant automated checks after the user requests testing. No test suites, type check or production build were run during this design-only pass.
+- [x] Follow the user's readability feedback: raise the admin-only typography scale (44 px desktop page title, 24 px section headings, 48 px statistic values, 16–18 px supporting/body text), strengthen report titles and metadata contrast, and clarify statistic/table boundaries with restrained forest accents. Increase chart labels to 14 px with more status-chart space. Keep public typography and functional behavior separate from these scoped admin styles. Direct previews at 1440/375 px cover all five sections; automated tests remain deferred.
+
+## Private report photos in officer queues — 17 November 2026
+
+- [x] Add lazy photo thumbnails to the shared officer queue used by Ringkasan and Laporan, with an accessible native dialog for the full stored photo, close/Escape/focus restoration and explicit loading/error/retry states. Keep photo controls outside report links, including the stacked mobile layout.
+- [x] Add `GET /api/admin/reports/:id/evidence?size=thumbnail|full`. Recheck the officer session and report RLS before reading only the stored sealed evidence path. Generate a bounded 384 × 288 WebP thumbnail using the existing Sharp dependency; stream the full supported stored image only on demand. Do not expose Storage paths, signed URLs, service keys, or evidence through public APIs. No SQL migration is required.
+- [x] Direct browser inspection with retained QA sessions: actual thumbnails and full JPEG return 200 with `private, no-store`; malformed size returns 422, missing report 404, anonymous access 401 and citizen access 403. Thumbnail/full viewing, Escape/focus restoration and the shared report-list view work; the inspected 375 px layout has no horizontal overflow or runtime errors. This creates no reports or AI requests.
+- [ ] Add automated regression coverage in the next requested testing pass. No test files or test suites were changed/run for this feature; the direct inspection does not certify the full suite.
+
 ## External setup needed before live phase gates
 
 | Dependency | Required setup | Needed by |

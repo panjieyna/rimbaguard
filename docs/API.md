@@ -40,6 +40,7 @@ Setiap laporan memiliki `revision`. Aksi petugas mengirim `expectedRevision`. Bi
 | GET | `/api/admin/dashboard?dataset=real\|simulation` | Ringkasan, 5 laporan aktif teratas, dan analitik 30 hari |
 | GET | `/api/admin/reports?scope=&category=&priority=&dataset=&page=` | Antrean prioritas, 20 per halaman |
 | GET | `/api/admin/reports/:id` | Detail tinjauan: bukti, analisis AI, skor, audit dengan nama petugas, aksi yang diizinkan |
+| GET | `/api/admin/reports/:id/evidence?size=thumbnail\|full` | Foto privat sebagai gambar biner; default thumbnail WebP 384 × 288, full memakai foto bukti tersimpan |
 | PATCH | `/api/admin/reports/:id/status` | Ubah status sesuai matriks |
 | PUT | `/api/admin/reports/:id/publication` | Publikasikan atau perbarui ringkasan publik |
 | DELETE | `/api/admin/reports/:id/publication` | Tarik publikasi |
@@ -48,6 +49,12 @@ Setiap laporan memiliki `revision`. Aksi petugas mengirim `expectedRevision`. Bi
 | GET | `/api/admin/map?category=&priority=&status=&from=&to=&dataset=&page=` | Peta petugas (koordinat persis) |
 | GET | `/api/admin/analytics?days=7\|30\|90\|365&dataset=real\|simulation` | Analitik |
 | GET | `/api/admin/settings` | Akun, keadaan layanan tanpa kunci, versi aturan skor |
+
+### Foto pada antrean petugas
+
+Endpoint foto memeriksa sesi/peran petugas dan akses RLS laporan sebelum mengambil objek bukti privat yang sudah tersimpan. Klien mengirim ID laporan dan pilihan ukuran, tanpa path Storage atau URL eksternal. Respons sukses memakai MIME gambar yang tervalidasi, `private, no-store`, `nosniff`, dan kebijakan resource same-origin; URL bertanda tangan maupun kunci layanan tidak dikirim ke browser.
+
+Anonim mendapat `401`, pengguna non-petugas `403`, laporan yang tidak ditemukan `404`, serta ID/ukuran tidak valid `422`. Kegagalan mengambil atau memproses foto dijawab `503 EVIDENCE_UNAVAILABLE`, terpisah dari keberhasilan memuat daftar laporan. Pratinjau dimuat secara lazy dan foto penuh hanya saat petugas membuka dialog.
 
 ### Status
 

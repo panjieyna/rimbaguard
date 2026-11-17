@@ -8,36 +8,50 @@ const score = (value: number) => value.toLocaleString('id-ID', { maximumFraction
 </script>
 
 <template>
-  <div>
-    <!-- Table from 1024 px; stacked rows below so nothing scrolls sideways on phones. -->
-    <table class="hidden w-full text-left text-sm lg:table">
+  <div class="admin-queue">
+    <!-- Group secondary metadata so the queue remains readable in an admin workspace. -->
+    <table class="hidden w-full table-fixed text-left text-sm xl:table">
       <caption class="sr-only">{{ caption }}</caption>
-      <thead class="border-b border-line text-xs text-charcoal/75">
-        <tr><th scope="col" class="py-2 pr-4 font-medium">Laporan</th><th scope="col" class="py-2 pr-4 font-medium">Kategori</th><th scope="col" class="py-2 pr-4 font-medium">Lokasi</th><th scope="col" class="py-2 pr-4 font-medium">Prioritas</th><th scope="col" class="py-2 pr-4 text-right font-medium">Skor</th><th scope="col" class="py-2 pr-4 font-medium">Dikirim</th><th scope="col" class="py-2 pr-4 font-medium">Status</th><th scope="col" class="py-2 font-medium"><span class="sr-only">Tindakan</span></th></tr>
+      <thead class="queue-heading border-b border-line">
+        <tr><th scope="col" class="w-[47%] px-6 py-4 font-medium">Laporan</th><th scope="col" class="w-[20%] px-4 py-4 font-medium">Prioritas</th><th scope="col" class="w-[21%] px-4 py-4 font-medium">Status</th><th scope="col" class="px-4 py-4 font-medium"><span class="sr-only">Tindakan</span></th></tr>
       </thead>
       <tbody class="divide-y divide-line">
-        <tr v-for="report in reports" :key="report.id" class="align-top">
-          <td class="py-3 pr-4"><span class="font-mono text-xs text-charcoal/75">{{ report.reportCode }}</span><span v-if="report.isSimulation" class="ml-2 rounded bg-sage-100 px-1.5 text-xs font-semibold text-forest-900">SIMULASI</span><span class="mt-1 block max-w-64 font-medium leading-snug">{{ report.title }}</span></td>
-          <td class="py-3 pr-4">{{ THREAT_CATEGORY_LABELS[report.effectiveCategory] }}<span class="block text-xs text-charcoal/70">{{ CATEGORY_SOURCE_LABELS[report.categorySource] }}</span></td>
-          <td class="py-3 pr-4">{{ report.locationName || 'Lokasi tanpa nama' }}</td>
-          <td class="py-3 pr-4"><MapPriorityBadge :level="report.priority?.level ?? null" :stale="report.priority?.stale" /></td>
-          <td class="py-3 pr-4 text-right tabular-nums">{{ report.priority ? score(report.priority.totalScore) : '–' }}</td>
-          <td class="py-3 pr-4 whitespace-nowrap">{{ formatReportDate(report.createdAt) }}</td>
-          <td class="py-3 pr-4"><ReportsReportStatus :status="report.status" /></td>
-          <td class="py-3"><NuxtLink :to="`/admin/reports/${report.id}`" class="button-secondary px-4 py-2" :aria-label="`Tinjau laporan ${report.reportCode}`">Tinjau</NuxtLink></td>
+        <tr v-for="report in reports" :key="report.id" class="align-top hover:bg-[#FAFCF8]">
+          <td class="px-6 py-5">
+            <div class="flex items-start gap-4">
+              <AdminEvidencePreview :report-id="report.id" :report-title="report.title" :report-code="report.reportCode" class="mt-1 shrink-0" />
+              <div class="min-w-0"><span class="queue-meta font-mono">{{ report.reportCode }}</span><span v-if="report.isSimulation" class="ml-2 rounded-md bg-sage-100 px-2 py-1 text-xs font-semibold text-forest-900">SIMULASI</span><NuxtLink :to="`/admin/reports/${report.id}`" class="queue-title mt-2 block hover:underline">{{ report.title }}</NuxtLink><span class="queue-category mt-2 block">{{ THREAT_CATEGORY_LABELS[report.effectiveCategory] }}</span><span class="queue-meta block">{{ CATEGORY_SOURCE_LABELS[report.categorySource] }}</span><span class="queue-meta mt-2 flex flex-wrap gap-x-3 gap-y-1"><span>{{ report.locationName || 'Lokasi tanpa nama' }}</span><span>{{ formatReportDate(report.createdAt) }}</span></span></div>
+            </div>
+          </td>
+          <td class="px-4 py-5"><MapPriorityBadge class="queue-badge" :level="report.priority?.level ?? null" :stale="report.priority?.stale" /><span class="queue-score mt-2 block tabular-nums">{{ report.priority ? `Skor ${score(report.priority.totalScore)} / 100` : 'Skor belum dihitung' }}</span></td>
+          <td class="px-4 py-5"><ReportsReportStatus class="queue-badge queue-status" :status="report.status" /></td>
+          <td class="px-4 py-5"><NuxtLink :to="`/admin/reports/${report.id}`" class="queue-action inline-flex min-h-12 items-center gap-1 hover:underline" :aria-label="`Tinjau laporan ${report.reportCode}`">Tinjau<AdminIcon name="chevron-right" class="size-4" /></NuxtLink></td>
         </tr>
       </tbody>
     </table>
-    <ul class="divide-y divide-line border-y border-line lg:hidden" :aria-label="caption">
-      <li v-for="report in reports" :key="report.id" class="py-4">
-        <NuxtLink :to="`/admin/reports/${report.id}`" class="block hover:text-forest-700">
-          <span class="flex flex-wrap items-center gap-2 text-xs"><span class="font-mono text-charcoal/75">{{ report.reportCode }}</span><span v-if="report.isSimulation" class="rounded bg-sage-100 px-1.5 font-semibold text-forest-900">SIMULASI</span></span>
-          <span class="mt-1 block font-medium leading-snug">{{ report.title }}</span>
-          <span class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2"><MapPriorityBadge :level="report.priority?.level ?? null" :stale="report.priority?.stale" /><span v-if="report.priority" class="text-sm tabular-nums text-charcoal/80">Skor {{ score(report.priority.totalScore) }}</span></span>
-          <span class="mt-2 block text-xs leading-5 text-charcoal/75">{{ THREAT_CATEGORY_LABELS[report.effectiveCategory] }} · {{ report.locationName || 'Lokasi tanpa nama' }} · {{ formatReportDate(report.createdAt) }}</span>
-          <span class="mt-2 block"><ReportsReportStatus :status="report.status" /></span>
+    <ul class="divide-y divide-line xl:hidden" :aria-label="caption">
+      <li v-for="report in reports" :key="report.id" class="px-5 py-5 sm:px-6">
+        <div class="mb-4 flex items-center gap-3"><AdminEvidencePreview :report-id="report.id" :report-title="report.title" :report-code="report.reportCode" /><span class="queue-meta">Foto bukti<br>Klik untuk memperbesar</span></div>
+        <NuxtLink :to="`/admin/reports/${report.id}`" class="block rounded-md hover:text-forest-700">
+          <span class="flex flex-wrap items-center gap-2"><span class="queue-meta font-mono">{{ report.reportCode }}</span><span v-if="report.isSimulation" class="rounded bg-sage-100 px-1.5 text-xs font-semibold text-forest-900">SIMULASI</span></span>
+          <span class="queue-title mt-2 block">{{ report.title }}</span>
+          <span class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2"><MapPriorityBadge class="queue-badge" :level="report.priority?.level ?? null" :stale="report.priority?.stale" /><span v-if="report.priority" class="queue-score tabular-nums">Skor {{ score(report.priority.totalScore) }}</span></span>
+          <span class="queue-category mt-3 block">{{ THREAT_CATEGORY_LABELS[report.effectiveCategory] }}</span><span class="queue-meta block">{{ CATEGORY_SOURCE_LABELS[report.categorySource] }}</span><span class="queue-meta mt-2 block">{{ report.locationName || 'Lokasi tanpa nama' }} · {{ formatReportDate(report.createdAt) }}</span>
+          <span class="mt-3 flex flex-wrap items-center justify-between gap-3"><ReportsReportStatus class="queue-badge queue-status" :status="report.status" /><span class="queue-action inline-flex min-h-11 items-center gap-1">Tinjau laporan<AdminIcon name="chevron-right" class="size-4" /></span></span>
         </NuxtLink>
       </li>
     </ul>
   </div>
 </template>
+
+<style scoped>
+.queue-heading { background: #EDF3E9; color: #173D32; }
+.queue-heading th { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+.queue-title { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; color: #173D32; }
+.queue-category { font-size: 1rem; line-height: 1.625rem; color: #343F38; }
+.queue-meta { font-size: 0.875rem; line-height: 1.5rem; color: #526058; }
+.queue-score { font-size: 1rem; line-height: 1.625rem; color: #46564C; }
+.queue-action { font-size: 1rem; line-height: 1.5rem; font-weight: 600; color: #285C48; }
+.admin-queue :deep(.queue-badge) { font-size: 1rem; line-height: 1.625rem; font-weight: 500; }
+.admin-queue :deep(.queue-status > span:first-child) { width: 0.5rem; height: 0.5rem; flex-shrink: 0; }
+</style>
