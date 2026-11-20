@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
       ? await client.auth.exchangeCodeForSession(input.data.code)
       : await client.auth.verifyOtp({ token_hash: input.data.token_hash!, type: input.data.type! })
     if (error || !data.user || !data.session) return sendRedirect(event, '/login?error=confirmation_failed', 303)
-    const user = await getSessionUserFromClient(client, data.user.id)
+    const user = await getSessionUserFromClient(client, data.user)
     return sendRedirect(event, safeAuthRedirect(user.role, input.data.next), 303)
   }
   catch {

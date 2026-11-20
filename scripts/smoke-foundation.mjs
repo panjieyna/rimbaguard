@@ -19,7 +19,7 @@ try {
     const response = await request('/')
     assert.equal(response.status, 200)
     const html = await response.text()
-    assert.ok(html.includes('Protecting Our Forests Starts With Awareness.'))
+    assert.match(html, /Bersama menjaga(?:\s|<[^>]*>)*hutan kita\./)
     for (const field of privateNames) assert.ok(!html.includes(field))
   })
   await check('Halaman tentang dapat dimuat', async () => {

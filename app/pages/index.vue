@@ -42,7 +42,7 @@ onBeforeUnmount(() => previewObserver?.disconnect())
           <div class="max-w-[38rem] text-white">
             <p class="text-sm leading-6 font-medium tracking-[0.1em] text-white/90 uppercase">Perlindungan hutan, bersama.</p>
             <h1 id="hero-title" class="mt-5 text-[2.25rem] leading-[1.15] font-semibold tracking-[-0.025em] sm:text-[3rem] lg:text-[3.5rem]">Bersama menjaga<br class="hidden sm:block"> hutan kita.</h1>
-            <p class="mt-6 max-w-[34rem] text-lg leading-8 text-white/95">Melihat dugaan ancaman terhadap hutan? Kirim foto dan lokasi kejadian agar petugas dapat memeriksa dan menindaklanjutinya.</p>
+            <p class="mt-6 max-w-[34rem] text-lg leading-8 text-white/95">Mulai dari foto dan cerita Anda. Asisten AI membantu melengkapi informasi dan menyiapkan draf laporan untuk Anda periksa sebelum dikirim kepada petugas.</p>
             <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <NuxtLink to="/report" class="button-primary min-h-13 bg-white font-semibold text-forest-900 hover:bg-sage-100 focus-visible:outline-white active:bg-white">Laporkan ancaman <span aria-hidden="true">↗</span></NuxtLink>
               <NuxtLink to="/map" class="button-secondary min-h-13 border-white/60 bg-transparent text-white hover:bg-white/10 focus-visible:outline-white active:bg-white/15">Lihat peta laporan</NuxtLink>

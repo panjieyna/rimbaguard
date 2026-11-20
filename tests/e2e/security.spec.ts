@@ -3,10 +3,11 @@ import { createClient } from '@supabase/supabase-js'
 import { existsSync } from 'node:fs'
 import type { Database } from '../../shared/types/database'
 
-const ORIGIN = 'http://localhost:3000'
+let ORIGIN = 'http://localhost:3000'
 const RANDOM_ID = '00000000-0000-4000-8000-0000000000aa'
 const readerConfigured = Boolean(process.env.E2E_READER_EMAIL && process.env.E2E_READER_PASSWORD && process.env.RIMBAGUARD_TEST_USER_ID)
 test.use({ trace: 'off', screenshot: 'off' })
+test.beforeEach(async ({ baseURL }) => { ORIGIN = new URL(baseURL!).origin })
 
 function serviceDatabase() {
   if (existsSync('.env')) process.loadEnvFile('.env')
@@ -36,13 +37,14 @@ async function login(page: Page, email: string, password: string) {
 test('anonymous clients reach only public data and every mutation is origin- and type-checked', async ({ request }) => {
   test.setTimeout(120_000)
   for (const path of ['/api/reports', `/api/reports/${RANDOM_ID}`, '/api/admin/dashboard', '/api/admin/reports', `/api/admin/reports/${RANDOM_ID}`,
-    '/api/admin/analytics', '/api/admin/settings', '/api/admin/map']) {
+    '/api/admin/analytics', '/api/admin/settings', '/api/admin/map', '/api/report-assistant', `/api/report-assistant/${RANDOM_ID}`]) {
     expect(await status(request, 'GET', path), path).toBe(401)
   }
   for (const [method, path] of [['POST', '/api/reports'], ['PATCH', `/api/reports/${RANDOM_ID}`], ['POST', `/api/reports/${RANDOM_ID}/analyze`],
     ['POST', '/api/uploads/authorize'], ['POST', '/api/uploads/finalize'], ['PATCH', `/api/admin/reports/${RANDOM_ID}/status`],
     ['PUT', `/api/admin/reports/${RANDOM_ID}/publication`], ['DELETE', `/api/admin/reports/${RANDOM_ID}/publication`],
-    ['PATCH', `/api/admin/reports/${RANDOM_ID}/category`], ['POST', `/api/admin/reports/${RANDOM_ID}/notes`]] as const) {
+    ['PATCH', `/api/admin/reports/${RANDOM_ID}/category`], ['POST', `/api/admin/reports/${RANDOM_ID}/notes`],
+    ['POST', '/api/report-assistant'], ['PUT', `/api/report-assistant/${RANDOM_ID}/answers`]] as const) {
     expect(await status(request, method, path), `${method} ${path}`).toBe(401)
   }
   // Cross-site request forgery defenses run before authentication.
@@ -72,6 +74,11 @@ test('a signed-in citizen cannot abuse uploads, reach other reports, exceed limi
   test.skip(!readerConfigured, 'Requires the retained reader identity in ignored .env.e2e.')
   test.setTimeout(150_000)
   const othersReport = await serviceDatabase().from('reports').select('id').eq('user_id', process.env.RIMBAGUARD_TEST_USER_ID!).limit(1).single()
+  const othersDraft = await serviceDatabase().from('report_assistant_drafts').select('id,upload_id').eq('user_id', process.env.RIMBAGUARD_TEST_USER_ID!).limit(1).maybeSingle()
+  expect(othersDraft.error).toBeNull()
+  const othersPhoto = await serviceDatabase().from('evidence_uploads').select('id').eq('report_id', othersReport.data!.id).limit(1).single()
+  expect(othersPhoto.error).toBeNull()
+  if (!othersDraft.data) test.info().annotations.push({ type: 'coverage', description: 'No retained assistant draft: HTTP checks cover nonexistent draft and foreign photo. Cross-owner draft RLS/RPC behavior is covered by the rollback SQL suite; drafts expire with their receipts.' })
   await login(page, process.env.E2E_READER_EMAIL!, process.env.E2E_READER_PASSWORD!)
 
   const probe = await page.evaluate(async ({ others, random }) => {
@@ -88,6 +95,16 @@ test('a signed-in citizen cannot abuse uploads, reach other reports, exceed limi
     }
   }, { others: othersReport.data!.id, random: RANDOM_ID })
   expect(probe).toEqual({ traversal: 422, svg: 422, oversized: 422, unknownUpload: 404, forgedUpload: 422, othersRead: 404, othersAnalyze: 404, officerOnly: 403 })
+
+  const draftProbe = await page.evaluate(async ({ id, uploadId }) => {
+    const send = async (path: string, method: string, body: unknown) => (await fetch(path, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })).status
+    return {
+      read: (await fetch(`/api/report-assistant/${id}`)).status,
+      answers: await send(`/api/report-assistant/${id}/answers`, 'PUT', { expectedVersion: 1, answers: [] }),
+      foreignPhoto: await send('/api/report-assistant', 'POST', { id: crypto.randomUUID(), uploadId, story: 'Pengujian izin: foto pengguna lain tidak boleh dibaca atau dipakai.' }),
+    }
+  }, { id: othersDraft.data?.id ?? RANDOM_ID, uploadId: othersDraft.data?.upload_id ?? othersPhoto.data!.id })
+  expect(draftProbe).toEqual({ read: 404, answers: 404, foreignPhoto: 404 })
 
   // The database-backed limiter is shared by every server instance.
   const limited = await page.evaluate(async (random) => {
@@ -111,10 +128,14 @@ test('a signed-in citizen cannot abuse uploads, reach other reports, exceed limi
   // A copied session cookie stops working once the owner signs out everywhere.
   const stolen = await browser.newContext({ baseURL: ORIGIN })
   await stolen.addCookies(await page.context().cookies())
-  expect((await stolen.request.get('/api/reports')).status()).toBe(200)
+  const copiedSessionStatus = async () => {
+    try { return (await stolen.request.get('/api/reports')).status() }
+    catch { throw new Error('Copied-session request failed; credential headers omitted.') }
+  }
+  expect(await copiedSessionStatus()).toBe(200)
   const logout = await page.evaluate(async () => (await fetch('/api/auth/logout', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ scope: 'global' }) })).status)
   expect(logout).toBe(200)
-  expect((await stolen.request.get('/api/reports')).status()).toBe(401)
+  expect(await copiedSessionStatus()).toBe(401)
   expect((await page.request.get('/api/reports')).status()).toBe(401)
   await stolen.close()
 })

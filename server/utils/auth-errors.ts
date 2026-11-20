@@ -38,7 +38,7 @@ export function safeAuthFailure(error: AuthProviderFailure, operation: 'login' |
 }
 
 const UUID_PATH = '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-const CITIZEN_DESTINATIONS = new RegExp(`^(?:/|/report|/reports(?:${UUID_PATH})?|/map|/about)$`, 'u')
+const CITIZEN_DESTINATIONS = new RegExp(`^(?:/|/report|/reports(?:${UUID_PATH})?|/map|/about|/account)$`, 'u')
 const OFFICER_DESTINATIONS = new RegExp(`^/admin/(?:dashboard|reports(?:${UUID_PATH})?|map|analytics|settings)$`, 'u')
 
 /**

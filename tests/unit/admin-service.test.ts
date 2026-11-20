@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SessionUser } from '../../shared/types/domain'
 import type { ReportRow } from '../../shared/types/database'
+import { DEFAULT_GEMINI_MODEL } from '../../server/services/ai/threat-analysis'
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn(), from: vi.fn(), refresh: vi.fn(), refreshOne: vi.fn(), environment: vi.fn() }))
 vi.mock('../../server/utils/supabase', () => ({ getServiceDatabase: () => ({ rpc: mocks.rpc, from: mocks.from }), getUserDatabase: vi.fn() }))
@@ -121,7 +122,7 @@ describe('officer reads', () => {
     const eq = vi.fn().mockResolvedValue({ error: null })
     mocks.from.mockReturnValue({ select: () => ({ eq }) })
     const settings = await getSettings(officer)
-    expect(settings).toEqual({ account: officer, services: { database: 'available', ai: { configured: true, model: 'gemini-3.5-flash' } }, scoring: { version: 'rimbaguard-priority-v1' } })
+    expect(settings).toEqual({ account: officer, services: { database: 'available', ai: { configured: true, model: DEFAULT_GEMINI_MODEL } }, scoring: { version: 'rimbaguard-priority-v1' } })
     expect(JSON.stringify(settings)).not.toContain('unit-secret-key-not-real')
   })
 })

@@ -1,6 +1,6 @@
 # API RimbaGuard AI
 
-Ringkasan endpoint server Nuxt untuk fitur prioritas, peta, dan alur kerja petugas (Fase 4–5). Semua endpoint berada di origin aplikasi yang sama dengan halaman. Browser tidak pernah menerima kunci Supabase atau Gemini.
+Ringkasan endpoint server Nuxt untuk pelaporan, asisten AI, prioritas, peta, akun, dan alur kerja petugas. Semua endpoint berada di origin aplikasi yang sama dengan halaman. Browser tidak pernah menerima kunci Supabase atau Gemini.
 
 ## Aturan umum
 
@@ -11,7 +11,27 @@ Ringkasan endpoint server Nuxt untuk fitur prioritas, peta, dan alur kerja petug
 - Endpoint `/api/admin/*` memerlukan sesi petugas. Server memeriksa identitas dan peran di setiap handler. Fungsi database juga memeriksa ulang bahwa pelakunya admin.
 - Mutasi petugas dibatasi 120 permintaan per 10 menit per petugas.
 
-## Konflik dan revisi
+## Asisten pelaporan privat
+
+Semua endpoint berikut memerlukan sesi pemilik draf. Petugas tidak memperoleh akses ke draf pribadi warga melalui endpoint ini. Foto harus sudah melewati alur authorize → upload langsung → finalize; URL/path bebas tidak diterima sebagai input asisten.
+
+| Metode | Endpoint | Body / hasil |
+|---|---|---|
+| GET | `/api/report-assistant` | Draf terbaru yang belum dikirim dan belum kedaluwarsa, atau `{draft:null}`. |
+| POST | `/api/report-assistant` | `{id,uploadId,story}`; ID UUID tetap untuk retry, cerita 20–1.500 karakter. Klaim atomik lalu panggil Gemini sungguhan. |
+| GET | `/api/report-assistant/:id` | Draf milik sendiri; ID tidak ada/milik orang lain sama-sama `404`. |
+| PUT | `/api/report-assistant/:id/answers` | `{expectedVersion,answers:[{id,text}]}`; seluruh pertanyaan wajib dijawab, maksimal tiga jawaban × 500 karakter. ID hanya dari hasil tersimpan. |
+| POST | `/api/reports` | Field laporan biasa dan `assistant:{draftId,expectedVersion,confirmed:true}`, dengan header `Idempotency-Key`. |
+
+Respons memuat `{draft}`: `id`, `uploadId`, `version`, `status`, `story`, `result`, `answers`, `description`, `errorCode`, `evidencePath`, `evidenceUrl`, `expiresAt`, `reportId`. Lease dan identitas internal tidak dikirim. Preview memakai signed URL lima menit. Hasil AI memisahkan `visual_observations`, `reported_summary`, `suggested_title`, `suggested_category`, `questions`, `limitations`, dan `needs_human_review:true`. Validasi Zod ketat tetap berlaku walaupun provider memakai JSON schema.
+
+Status: `processing → ready | failed`; `ready → submitted` hanya setelah konfirmasi. Masa berlaku mengikuti receipt foto, dua jam sejak unggahan. Lease pemrosesan 90 detik, transport Gemini maksimal 45 detik/64 KB. Input sama dengan draf ready memakai hasil tersimpan; processing aktif menjawab `202` tanpa generasi kedua. Retry kegagalan dilakukan atas tindakan pengguna. POST dibatasi enam/pengguna dan tiga/foto per 10 menit; penyimpanan jawaban 30/pengguna per 10 menit.
+
+`200` dengan `draft.status:failed` berarti kegagalan provider berhasil disimpan, bukan AI berhasil. `result:null` dan kode aman seperti `AI_TIMEOUT`, `AI_QUOTA_EXCEEDED`, atau `AI_PROVIDER_UNAVAILABLE` menyertai kegagalan. Skema belum terpasang memberi `503 ASSISTANT_SCHEMA_UNAVAILABLE`. Versi/lease berubah memberi `409 ASSISTANT_CONFLICT`, bukti habis masa berlaku `409 EVIDENCE_EXPIRED`, dan jawaban/konfirmasi tidak sah `422`. Tidak ada respons AI palsu.
+
+`description` disusun dari cerita asli dan jawaban pelapor. Observasi dan ringkasan AI hanya ditampilkan sebagai bantuan, bukan disalin ke keterangan saksi. Pelapor boleh memperbaiki judul, kategori dan deskripsi saat meninjau. Pengiriman menggunakan satu transaksi: validasi ownership, versi, jawaban lengkap, bukti dan konfirmasi → `create_report` → tautkan draf. Kegagalan membatalkan transaksi; replay payload/kunci identik mengembalikan laporan sama. Analisis ancaman setelah pengiriman tetap proses terpisah.
+
+## Konflik dan revisi laporan
 
 Setiap laporan memiliki `revision`. Aksi petugas mengirim `expectedRevision`. Bila laporan sudah diubah pihak lain, server menjawab `409 REPORT_CONFLICT` tanpa mengubah apa pun. Klien lalu memuat ulang laporan. Perubahan status, publikasi, dan koreksi kategori menaikkan revisi. Catatan internal tidak menaikkan revisi.
 
@@ -24,7 +44,12 @@ Setiap laporan memiliki `revision`. Aksi petugas mengirim `expectedRevision`. Bi
 | POST | `/api/auth/register` | Registrasi; email konfirmasi dikirim Supabase Auth |
 | POST | `/api/auth/login` | Login; sesi di cookie HttpOnly. Dibatasi 30 percobaan per IP dan 10 per email per 15 menit |
 | POST | `/api/auth/logout` | `{ "scope": "local" }` (perangkat ini) atau `{ "scope": "global" }` (semua perangkat) |
-| GET | `/api/auth/session` | Identitas aman (`id`, `email`, `fullName`, `role`) atau `null`; tidak pernah token |
+| GET | `/api/auth/session` | Identitas aman (`id`, `email`, `fullName`, `role`, `avatarUrl`) atau `null`; tidak pernah token atau path penyimpanan |
+| PATCH | `/api/account/profile` | `{ "fullName" }` (2–100 karakter). Mengganti nama sendiri; dibatasi 10 per 10 menit |
+| POST | `/api/account/password` | `{ "currentPassword", "newPassword" }`. Kata sandi lama diperiksa lewat sesi terpisah yang langsung ditutup; kata sandi baru minimal 12 karakter dan harus berbeda. Setelah berhasil, sesi di perangkat lain dicabut, perangkat ini tetap masuk. Dibatasi 5 per 15 menit |
+| PUT | `/api/account/avatar` | `{ "image": "<base64>" }` maksimal 45.000 byte (browser memotong dan memperkecil foto lebih dulu). Server memeriksa isi berkas lalu menyimpannya ulang sebagai WebP 256 × 256 tanpa metadata di bucket privat `profile-photos` (dibuat otomatis bila belum ada; migrasi `007` menambah kebijakan pengaman) |
+| DELETE | `/api/account/avatar` | Body `{}`. Menghapus foto profil sendiri |
+| GET | `/api/account/avatar?v=<id>` | Foto profil milik sesi itu sendiri sebagai `image/webp`. Versi lama dijawab `404`, sehingga URL berversi boleh di-cache privat |
 | POST | `/api/uploads/authorize` | Signed upload URL untuk path milik pengguna. Nama berkas tanpa direktori, JPEG/PNG/WebP, maksimal 5.000.000 byte |
 | POST | `/api/uploads/finalize` | Memeriksa byte, format, dan ukuran sebenarnya, lalu menyegel bukti sebagai JPEG tanpa metadata |
 | POST | `/api/reports` | Membuat laporan; wajib `Idempotency-Key` (UUID). Field `status`, `role`, skor, atau hasil AI ditolak |

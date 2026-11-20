@@ -92,7 +92,7 @@ test('officers review, respond and audit reports while reporters see only what i
   await page.getByRole('link', { name: 'Data simulasi' }).click()
   await expect(page.getByText('Menampilkan data simulasi untuk pengujian dan demo.', { exact: false })).toBeVisible()
   await expect(page.getByRole('img', { name: /Laporan masuk per hari/ })).toBeVisible({ timeout: 20_000 })
-  await expect(page.getByRole('img', { name: /Distribusi status laporan/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Status penanganan', exact: true })).toBeVisible()
 
   // Queue scoped to manual review after AI failure.
   await page.goto('/admin/reports?scope=analysis_failed&dataset=simulation')
@@ -158,7 +158,7 @@ test('officers review, respond and audit reports while reporters see only what i
   await expect(page.getByRole('heading', { name: 'Analitik laporan' })).toBeVisible()
   await expect(page.getByRole('img', { name: /Laporan masuk per minggu/ })).toBeVisible({ timeout: 20_000 })
   await page.goto('/admin/settings')
-  await expect(page.getByText('Terkonfigurasi · gemini-3.5-flash')).toBeVisible()
+  await expect(page.locator('.service-row').filter({ hasText: 'Analisis AI' })).toContainText('Terkonfigurasi')
   await expect(page.getByText('Tersedia', { exact: true })).toBeVisible()
   await page.setViewportSize({ width: 375, height: 800 })
   await page.getByRole('button', { name: 'Menu' }).click()

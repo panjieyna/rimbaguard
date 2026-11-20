@@ -37,6 +37,7 @@ test('a report travels from the citizen through AI analysis to an officer resolu
   // 1. The citizen submits; the saved report starts AI analysis automatically.
   await login(page, process.env.E2E_EMAIL!, process.env.E2E_PASSWORD!, /\/reports$/)
   await page.goto('/report')
+  await page.getByRole('button', { name: 'Isi formulir sendiri', exact: false }).click()
   await expect(page.getByText('Akun ini menggunakan mode simulasi.', { exact: false })).toBeVisible()
   await page.getByLabel('Judul laporan', { exact: true }).fill(title)
   await page.getByLabel('Kategori ancaman', { exact: true }).selectOption('forest_fire')

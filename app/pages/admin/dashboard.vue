@@ -36,7 +36,7 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
       <p v-if="data.refresh.status !== 'fresh'" role="status" class="notice">Sebagian skor prioritas belum dapat diperbarui; urutan memakai perhitungan terakhir.</p>
       <section aria-labelledby="summary-title">
         <h2 id="summary-title" class="sr-only">Kondisi laporan saat ini</h2>
-        <dl class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 min-[87.5rem]:grid-cols-5">
+        <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 min-[87.5rem]:grid-cols-5">
           <AdminStatTile label="Total laporan" :value="summary.total" hint="Seluruh laporan pada pilihan data ini." icon="reports" />
           <AdminStatTile label="Menunggu verifikasi" :value="summary.pendingVerification" hint="Siap diperiksa petugas." icon="clock" tone="amber" :to="`/admin/reports?scope=pending_verification${dataset === 'simulation' ? '&dataset=simulation' : ''}`" />
           <AdminStatTile label="Prioritas tinggi" :value="summary.highPriority" hint="Laporan aktif yang perlu didahulukan." icon="alert" tone="red" :to="`/admin/reports?priority=high${dataset === 'simulation' ? '&dataset=simulation' : ''}`" />
@@ -68,7 +68,7 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
         <div v-else class="grid gap-5 xl:grid-cols-2">
           <div class="admin-panel p-5 sm:p-6 xl:col-span-2"><div class="mb-6 flex items-center justify-between gap-4"><h3 class="text-base font-semibold text-forest-900">Laporan per hari</h3><span class="admin-muted">30 hari terakhir</span></div><ClientOnly><AdminBarChart title="Laporan masuk per hari, 30 hari terakhir" :labels="daily.map(item => item.label)" :values="daily.map(item => item.count)" height-class="h-64" /><template #fallback><p class="h-64 text-sm text-charcoal/75">Memuat grafik…</p></template></ClientOnly></div>
           <div class="admin-panel p-5 sm:p-6"><h3 class="text-base font-semibold text-forest-900">Kategori ancaman</h3><p class="admin-muted mt-1">Kategori petugas, AI, atau pelapor sesuai hasil terbaru.</p><ClientOnly><AdminBarChart class="mt-5" title="Distribusi kategori ancaman, 30 hari terakhir" :labels="categories.map(item => THREAT_CATEGORY_LABELS[item.category])" :values="categories.map(item => item.count)" horizontal tip-labels height-class="h-64" /></ClientOnly></div>
-          <div class="admin-panel p-5 sm:p-6"><h3 class="text-base font-semibold text-forest-900">Status penanganan</h3><p class="admin-muted mt-1">Status terkini dari laporan dalam rentang ini.</p><ClientOnly><AdminBarChart class="mt-5" title="Distribusi status laporan, 30 hari terakhir" :labels="statuses.map(item => REPORT_STATUS_LABELS[item.status])" :values="statuses.map(item => item.count)" horizontal tip-labels height-class="h-96" /></ClientOnly></div>
+          <div class="admin-panel p-5 sm:p-6"><h3 class="text-base font-semibold text-forest-900">Status penanganan</h3><p class="admin-muted mt-1">Status terkini dari laporan dalam rentang ini.</p><ClientOnly><AdminBarChart class="mt-5" title="Distribusi status laporan, 30 hari terakhir" :labels="statuses.map(item => REPORT_STATUS_LABELS[item.status])" :values="statuses.map(item => item.count)" horizontal tip-labels height-class="h-80" /></ClientOnly></div>
         </div>
       </section>
 

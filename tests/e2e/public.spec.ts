@@ -28,7 +28,7 @@ for (const width of [320, 375, 768, 1280, 1440]) {
     if (await menu.isVisible()) await menu.click()
     await page.getByRole('navigation', { name: 'Navigasi utama' }).getByRole('link', { name: 'Tentang', exact: true }).click()
     await expect(page).toHaveURL(/\/about$/)
-    await expect(page.getByRole('heading', { level: 1 })).toContainText('Dari kepedulian')
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Kepedulian Anda')
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
 }
@@ -115,6 +115,6 @@ test('public map provides a map and a privacy-safe list or empty state', async (
   await page.goto('/map')
   await expect(page.getByRole('heading', { name: 'Peta laporan masyarakat' })).toBeVisible()
   await expect(page.getByRole('region', { name: 'Peta lokasi laporan' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Laporan publik', exact: true })).toBeVisible()
-  await expect(page.getByText('Peta berbasis laporan insiden; tidak menampilkan deteksi deforestasi, batas kawasan, atau pemantauan satelit langsung.')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Daftar laporan', exact: true })).toBeVisible()
+  await expect(page.getByText('Titik menunjukkan perkiraan lokasi. Foto dan koordinat rinci tetap privat.')).toBeVisible()
 })

@@ -5,16 +5,31 @@ import { getServerEnvironment } from './config'
 import { getUserDatabase } from './supabase'
 import { apiError, databaseUnavailable } from './response'
 import { classifySessionError } from './session-error'
+import { avatarPathOf, avatarUrlOf, type AuthIdentity } from './avatar'
 
 const profileSchema = z.object({ id: z.uuid(), email: z.email(), full_name: z.string(), role: z.enum(['public', 'admin']) })
 
 /** Call only after Supabase has authenticated this user on the same client. */
-export async function getSessionUserFromClient(client: ReturnType<typeof getUserDatabase>, userId: string): Promise<SessionUser> {
+export async function getSessionUserFromClient(client: ReturnType<typeof getUserDatabase>, authUser: AuthIdentity): Promise<SessionUser> {
+  const userId = authUser.id
   const { data: profile, error: profileError } = await client.from('profiles').select('id,email,full_name,role').eq('id', userId).single()
   if (profileError) throw databaseUnavailable()
   const result = profileSchema.safeParse(profile)
   if (!result.success || result.data.id !== userId) throw databaseUnavailable()
-  return { id: result.data.id, email: result.data.email, fullName: result.data.full_name, role: result.data.role }
+  return {
+    id: result.data.id,
+    email: result.data.email,
+    fullName: result.data.full_name,
+    role: result.data.role,
+    avatarUrl: avatarUrlOf(avatarPathOf(authUser)),
+  }
+}
+
+/** The verified Supabase user behind requireSession(), for server-only data such as the photo path. */
+export function sessionAuthUser(event: H3Event): AuthIdentity {
+  const user = event.context.rimbaguardAuthUser as AuthIdentity | undefined
+  if (!user) throw apiError(401, 'AUTHENTICATION_REQUIRED', 'Silakan masuk untuk melanjutkan.')
+  return user
 }
 
 export async function getOptionalSession(event: H3Event): Promise<SessionUser | null> {
@@ -28,7 +43,8 @@ export async function getOptionalSession(event: H3Event): Promise<SessionUser | 
     throw databaseUnavailable()
   }
   if (!data.user) return null
-  return getSessionUserFromClient(client, data.user.id)
+  event.context.rimbaguardAuthUser = data.user
+  return getSessionUserFromClient(client, data.user)
 }
 
 export async function requireSession(event: H3Event): Promise<SessionUser> {

@@ -70,18 +70,23 @@ test('public map exposes only published allowlisted data with database filters a
   await page.route('https://tile.openstreetmap.org/**', route => route.abort())
   await page.goto('/map')
   await expect(page.getByRole('heading', { name: 'Peta laporan masyarakat' })).toBeVisible()
-  await expect(page.getByRole('search', { name: 'Filter laporan pada peta' })).toBeVisible()
   await expect(page.getByRole('region', { name: 'Peta lokasi laporan' })).toBeVisible()
-  await expect(page.getByRole('listitem').filter({ hasText: 'Prioritas tinggi' }).first()).toBeVisible()
-  if (!body.total) await expect(page.getByText('Belum ada laporan yang dipublikasikan.')).toBeVisible()
+  if (body.total) {
+    await page.locator('.map-key > summary').click()
+    await expect(page.getByRole('listitem').filter({ hasText: 'Prioritas tinggi' }).first()).toBeVisible()
+  }
+  if (!body.total) await expect(page.getByRole('heading', { name: 'Belum ada laporan publik', exact: true })).toBeVisible()
   await expect(page.getByText('Peta dasar belum dapat dimuat.', { exact: false })).toBeVisible({ timeout: 20_000 })
+  await page.locator('.public-map-filters > summary').click()
+  await expect(page.getByRole('search', { name: 'Filter laporan pada peta' })).toBeVisible()
+  await expect(page.getByLabel('Kategori', { exact: true })).toBeVisible()
   await page.getByLabel('Kategori', { exact: true }).selectOption('forest_fire')
   await page.getByLabel('Status verifikasi', { exact: true }).selectOption('resolved')
   await page.getByRole('button', { name: 'Terapkan', exact: true }).click()
   await expect(page).toHaveURL(/category=forest_fire/)
   await expect(page).toHaveURL(/status=resolved/)
   await expect(page.getByText(/^\d+ laporan sesuai filter$/)).toBeVisible({ timeout: 20_000 })
-  if (!body.total) await expect(page.getByText('Tidak ada laporan publik yang sesuai filter.')).toBeVisible()
+  if (!body.total) await expect(page.getByRole('heading', { name: 'Tidak ada hasil yang sesuai', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Atur ulang', exact: true }).click()
   await expect(page).not.toHaveURL(/category=/)
 
@@ -152,7 +157,8 @@ test('the officer map shows persisted scores, clusters nearby reports and filter
   await expect(page.getByRole('heading', { name: 'Peta prioritas laporan' })).toBeVisible()
   const map = page.getByRole('region', { name: 'Peta prioritas laporan petugas' })
   await expect(map).toBeVisible()
-  // Identical simulation points form one cluster labelled with their count.
+  // Nearby simulation points form a cluster; several zooms may be needed as
+  // the retained dataset also contains reports at different coordinates.
   const clusterIcon = map.locator('.rg-cluster').first()
   await expect(clusterIcon).toBeVisible({ timeout: 20_000 })
   expect(Number(await clusterIcon.textContent())).toBeGreaterThanOrEqual(2)
@@ -161,6 +167,14 @@ test('the officer map shows persisted scores, clusters nearby reports and filter
   await clusterButton.focus()
   await page.keyboard.press('Enter')
   const marker = map.locator('.leaflet-marker-icon[role="button"][aria-label*="(simulasi)"]').first()
+  for (let zoom = 0; zoom < 8 && !await marker.isVisible(); zoom++) {
+    await page.waitForTimeout(500)
+    if (await marker.isVisible()) break
+    const next = map.getByRole('button', { name: /Kelompok \d+ laporan berdekatan/ }).first()
+    if (!await next.isVisible()) break
+    await next.focus()
+    await page.keyboard.press('Enter')
+  }
   await expect(marker).toBeVisible({ timeout: 20_000 })
   await marker.focus()
   await page.keyboard.press('Enter')
@@ -185,6 +199,6 @@ test('the officer map shows persisted scores, clusters nearby reports and filter
   await expect(page.getByRole('table', { name: 'Komponen skor prioritas' })).toBeVisible()
   await expect(page.getByText('Kategori pelapor (sementara)', { exact: false }).first()).toBeVisible()
   expect(clientErrors).toEqual([])
-  await page.getByRole('button', { name: 'Keluar', exact: true }).click()
+  await logoutFromAccount(page)
   await expect(page).toHaveURL(/\/$/, { timeout: 30_000 })
 })

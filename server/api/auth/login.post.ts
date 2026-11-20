@@ -20,6 +20,6 @@ export default defineEventHandler(async (event) => {
     throw apiError(failure.statusCode, failure.code, failure.message)
   }
   if (!data.user || !data.session) throw apiError(503, 'AUTH_UNAVAILABLE', 'Sesi masuk belum dapat dibuat. Silakan coba kembali.')
-  const user = await getSessionUserFromClient(client, data.user.id)
+  const user = await getSessionUserFromClient(client, data.user)
   return { user, redirectTo: safeAuthRedirect(user.role, getQuery(event).next) }
 })

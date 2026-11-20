@@ -4,7 +4,7 @@ import type { MapFilterValues } from '~/types/map'
 import { REPORT_STATUS_LABELS, THREAT_CATEGORIES, THREAT_CATEGORY_LABELS } from '#shared/constants/domain'
 import { MAP_DATASETS, MAP_DATASET_LABELS, MAP_PRIORITY_FILTERS, MAP_PRIORITY_FILTER_LABELS } from '#shared/constants/scoring'
 
-const props = defineProps<{ statuses: readonly ReportStatus[]; values: MapFilterValues; showDataset?: boolean }>()
+const props = defineProps<{ statuses: readonly ReportStatus[]; values: MapFilterValues; showDataset?: boolean; expanded?: boolean }>()
 const emit = defineEmits<{ apply: [values: MapFilterValues] }>()
 const id = useId()
 const open = ref(false)
@@ -27,11 +27,11 @@ function reset() { Object.assign(form, blank()); apply() }
 
 <template>
   <form role="search" method="get" aria-label="Filter laporan pada peta" class="rounded-lg border border-line bg-white p-4" @submit.prevent="apply">
-    <div class="flex items-center justify-between gap-3 lg:hidden">
+    <div v-if="!expanded" class="flex items-center justify-between gap-3 lg:hidden">
       <p class="text-sm font-medium">Filter<span v-if="activeCount" class="font-normal text-charcoal/75"> · {{ activeCount }} aktif</span></p>
       <button type="button" class="button-secondary min-h-11 px-4 py-2" :aria-expanded="open" :aria-controls="`${id}-fields`" @click="open = !open">{{ open ? 'Tutup filter' : 'Ubah filter' }}</button>
     </div>
-    <div :id="`${id}-fields`" class="mt-4 gap-4 sm:grid-cols-2 lg:mt-0 lg:grid lg:items-end" :class="[open ? 'grid' : 'hidden', showDataset ? 'lg:grid-cols-[repeat(6,minmax(0,1fr))_auto]' : 'lg:grid-cols-[repeat(5,minmax(0,1fr))_auto]']">
+    <div :id="`${id}-fields`" class="mt-4 gap-4 sm:grid-cols-2 lg:mt-0 lg:grid lg:items-end" :class="[open || expanded ? 'grid' : 'hidden', showDataset ? 'lg:grid-cols-[repeat(6,minmax(0,1fr))_auto]' : 'lg:grid-cols-[repeat(5,minmax(0,1fr))_auto]']">
       <div><label :for="`${id}-category`" class="form-label">Kategori</label><select :id="`${id}-category`" v-model="form.category" name="category" class="form-input"><option value="">Semua kategori</option><option v-for="category in THREAT_CATEGORIES" :key="category" :value="category">{{ THREAT_CATEGORY_LABELS[category] }}</option></select></div>
       <div><label :for="`${id}-priority`" class="form-label">Prioritas</label><select :id="`${id}-priority`" v-model="form.priority" name="priority" class="form-input"><option value="">Semua prioritas</option><option v-for="priority in MAP_PRIORITY_FILTERS" :key="priority" :value="priority">{{ MAP_PRIORITY_FILTER_LABELS[priority] }}</option></select></div>
       <div><label :for="`${id}-status`" class="form-label">Status verifikasi</label><select :id="`${id}-status`" v-model="form.status" name="status" class="form-input"><option value="">Semua status</option><option v-for="status in statuses" :key="status" :value="status">{{ REPORT_STATUS_LABELS[status] }}</option></select></div>

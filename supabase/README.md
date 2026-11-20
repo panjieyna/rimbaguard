@@ -1,8 +1,14 @@
 # Supabase foundation
 
-The migration defines the PRD tables, strict read policies, private evidence storage, and server-only rate-limit/status operations. It contains no accounts, reports, demonstration data, or keys.
+The migrations define PRD tables, strict read policies, private evidence storage, and server-only transactional operations. They contain no production accounts, reports, or keys. Test fixtures are rolled back.
 
-Apply migrations to a disposable Supabase project first, using your normal migration workflow or the Dashboard SQL Editor. Keep them tracked as the source of schema truth. The current application requires migrations `001`, `002`, and `003`; see the implementation checklist for the hosted verification record.
+Apply migrations to a disposable Supabase project first, using your normal migration workflow or the Dashboard SQL Editor. Keep them tracked as the source of schema truth. The current application uses migrations `001`–`008`; see the implementation checklists for hosted verification records.
+
+## Report assistant (008)
+
+After migrations `001`–`006`, run the complete [JALANKAN_ASISTEN_PELAPORAN.sql](JALANKAN_ASISTEN_PELAPORAN.sql) bundle in a new SQL Editor query. Migration `007` adds account photos and is independent of the assistant. Expected `finish`: `1..26` without errors. The bundle commits the schema but rolls back its fixtures. The user confirmed this hosted result on 18 November 2026.
+
+Private drafts use owner-only RLS, server-only RPC writes, a 90-second inference lease, optimistic versions and receipt-bound expiration (two hours). `create_assisted_report` validates confirmation and complete answers, calls the existing idempotent report transaction, and links the draft atomically. Never insert synthetic successful AI results into a live project to make a demo appear operational. Provider failures are saved as failed drafts with no result.
 
 ## Apply through Supabase SQL Editor
 
@@ -97,6 +103,14 @@ After `001`–`005`, run the entire [Phase 5 bundle](JALANKAN_FASE_5.sql). It ap
 - Publication requires a real report in `verified`, `in_progress` or `resolved`. The audit keeps the approved public wording, and withdrawal requires an internal reason. Internal notes do not change the revision.
 - `admin_map_reports` keeps its Phase 4 signature. It and the new `admin_report_queue` share `private.admin_report_page`, so the map and the queue always agree.
 - `admin_analytics` separates real and simulation data and uses WIB calendar days. The statistic definitions are in [docs/API.md](../docs/API.md).
+
+## Profile photos (migration 007)
+
+After `001`–`006`, run the entire [profile photo bundle](JALANKAN_FASE_6_PROFIL.sql). It applies [20261117000700_profile_photos.sql](migrations/20261117000700_profile_photos.sql): a private `profile-photos` bucket (WebP only, 256 KB) and a restrictive policy that keeps every browser role out, like `report-evidence`. The bundle verifies both and is idempotent. It creates no data.
+
+- The server re-encodes each photo to a 256 × 256 WebP without metadata and stores it as `<user-id>/<uuid>.webp`. The current path lives in the user's Auth `app_metadata`, which only the service role can write. The server accepts it only inside the owner's namespace and serves only the signed-in user's own photo.
+- No table or grant changes are needed. Name changes use the existing service-role grant on `profiles.full_name`; password changes go through Supabase Auth after the current password is proven on a separate session.
+- Without this bundle the feature still works: on the first upload the server creates the same private bucket through the Storage API (no browser policy grants access to it) and retries once. The bundle adds the restrictive policy as a second guard against a future broad storage policy, so running it is still recommended.
 
 ## Required business-conflict repair
 

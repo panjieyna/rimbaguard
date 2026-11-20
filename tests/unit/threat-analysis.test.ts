@@ -100,7 +100,8 @@ describe('Gemini threat-analysis provider', () => {
 
   it('resolves metadata safely before a database attempt is claimed', () => {
     expect(resolveGeminiModel()).toBe(DEFAULT_GEMINI_MODEL)
-    expect(resolveGeminiModel('  gemini-3.5-flash  ')).toBe(DEFAULT_GEMINI_MODEL)
+    expect(resolveGeminiModel(`  ${DEFAULT_GEMINI_MODEL}  `)).toBe(DEFAULT_GEMINI_MODEL)
+    expect(resolveGeminiModel('gemini-3.5-flash')).toBe('gemini-3.5-flash')
     expect(() => resolveGeminiModel('private configuration with spaces')).toThrow(ThreatAnalysisError)
     try { resolveGeminiModel('private configuration with spaces') }
     catch (error) { expect(String(error)).not.toContain('private configuration') }

@@ -1,3 +1,14 @@
+# About page forest — 17 November 2026
+
+`about-rainforest.webp` and `about-rainforest-768.webp` are WebP derivatives of a new fictional forest scene generated with the built-in OpenAI image generation tool (not the fallback CLI). They replace the wide panorama in the About introduction only.
+
+- Native generated size: 1254 × 1254 px. No upscaling was applied. The prompt requested a larger native size when available; the delivered dimensions are recorded here rather than described as 2K or 4K.
+- Preparation: encoded as WebP at quality 92; the small derivative is 768 × 768 px. The page uses a centered responsive display crop with accurate intrinsic dimensions and `srcset` sizing.
+- The image is decorative, not a named real location, satellite image or report evidence. No photographer identity or Creative Commons license is claimed.
+- Exact generation prompt:
+
+> Use case: photorealistic-natural. Asset type: decorative forest image for the About page of RimbaGuard, an Indonesian forest community-reporting website. Generate a NEW high-resolution square image, ideally 2048 by 2048 or highest available native resolution. A richly detailed tropical broadleaf rainforest viewed at human eye level from within the forest, majestic tall straight tree trunks, layered emerald foliage, delicate ferns and moss in the foreground, a small natural earthy opening through the middle leading into deeper forest. Soft clear morning daylight filtering through the canopy. Fresh natural forest greens, restrained warm light. Premium realistic editorial nature photography aesthetic, crisp individual leaves and bark texture, realistic depth of field with sharp foreground and middle distance. Distinct from a drone panorama: no aerial view, no distant hills, no winding river or sunset sky. Compose the main forest opening near the center; the frame must look good cropped to a tall desktop panel and a wide mobile strip. No people, no animals, no buildings, no roads, no signs, no text, no logos, no watermark, no UI. Avoid fog blur, oversaturation, artificial glow, oversharpening halos and plastic textures. This is a fictional decorative scene, not a representation of a named location or incident.
+
 # Reporting workflow forest
 
 `workflow-forest.webp` is a fictional illustrated forest generated with the built-in OpenAI image generation tool on 16 November 2026. It is a separate decorative layer behind the reporting character; report steps, icons, buttons and privacy information are native page content. It is not a photograph, location record or environmental observation.
@@ -23,7 +34,7 @@
 
 - Brief: a horizontal panorama of tropical broadleaf forest, a winding river, and misty hills, with natural colors and no people, text, or incident claims.
 - This is an AI illustration of a fictional landscape. It does not depict a named real location and is not environmental evidence, satellite data, or a report photograph.
-- The asset is used as a decorative landing background and in the split-screen authentication layout. Its AI provenance is documented here and in README; at the user's request, asset captions are omitted from the page. No external photographer attribution or Creative Commons license is claimed for this asset.
+- The asset is used as a decorative landing background, in the split-screen authentication layout, and in the About page introduction. Its AI provenance is documented here and in README; at the user's request, asset captions are omitted from the page. No external photographer attribution or Creative Commons license is claimed for this asset.
 - Changes after generation: resized and compressed to WebP; narrower screens use a landscape display crop.
 
 # Previously used forest photograph

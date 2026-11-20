@@ -26,6 +26,9 @@ export const PUBLIC_REPORT_STATUSES = ['verified', 'in_progress', 'resolved'] as
 
 export const EVIDENCE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
 export const MAX_EVIDENCE_BYTES = 5_000_000
+/** The browser downscales a profile photo before sending it; the server re-encodes it. */
+export const MAX_AVATAR_UPLOAD_BYTES = 45_000
+export const AVATAR_PIXELS = 256
 
 export const THREAT_CATEGORY_LABELS: Record<(typeof THREAT_CATEGORIES)[number], string> = {
   illegal_logging_suspected: 'Dugaan penebangan liar',

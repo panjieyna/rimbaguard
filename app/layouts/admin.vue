@@ -7,14 +7,35 @@ const menuOpen = ref(false)
 const ready = ref(false)
 const loggingOut = ref(false)
 const logoutError = ref('')
+// Show a sign-out error once, next to the control that was used.
+const logoutOrigin = ref<'menu' | 'sidebar'>('sidebar')
 const menuButton = ref<HTMLButtonElement>()
-const initials = computed(() => (session.value?.user?.fullName || 'Petugas').trim().split(/\s+/).slice(0, 2).map(word => word.charAt(0)).join('').toUpperCase())
-function escapeMenu(event: KeyboardEvent) {
-  if (event.key === 'Escape' && menuOpen.value) { menuOpen.value = false; menuButton.value?.focus() }
+const accountMenu = ref<HTMLDetailsElement>()
+const displayName = computed(() => session.value?.user?.fullName || 'Petugas RimbaGuard')
+
+function closeAccount(restoreFocus = false) {
+  if (!accountMenu.value?.open) return
+  accountMenu.value.open = false
+  if (restoreFocus) accountMenu.value.querySelector('summary')?.focus()
 }
-onMounted(() => { ready.value = true; document.addEventListener('keydown', escapeMenu) })
-onBeforeUnmount(() => document.removeEventListener('keydown', escapeMenu))
-watch(() => route.fullPath, () => { menuOpen.value = false })
+function dismissAccount(event: PointerEvent) {
+  if (event.target instanceof Node && !accountMenu.value?.contains(event.target)) closeAccount()
+}
+function escapeMenu(event: KeyboardEvent) {
+  if (event.key !== 'Escape') return
+  if (accountMenu.value?.open) closeAccount(true)
+  else if (menuOpen.value) { menuOpen.value = false; menuButton.value?.focus() }
+}
+onMounted(() => {
+  ready.value = true
+  document.addEventListener('keydown', escapeMenu)
+  document.addEventListener('pointerdown', dismissAccount)
+})
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', escapeMenu)
+  document.removeEventListener('pointerdown', dismissAccount)
+})
+watch(() => route.fullPath, () => { menuOpen.value = false; closeAccount() })
 
 const links: { to: string; label: string; icon: AdminIconName }[] = [
   { to: '/admin/dashboard', label: 'Ringkasan', icon: 'dashboard' },
@@ -25,9 +46,10 @@ const links: { to: string; label: string; icon: AdminIconName }[] = [
 ]
 const active = (path: string) => route.path === path || (path === '/admin/reports' && route.path.startsWith('/admin/reports/'))
 
-async function logout() {
+async function logout(origin: 'menu' | 'sidebar') {
   if (loggingOut.value) return
   loggingOut.value = true
+  logoutOrigin.value = origin
   logoutError.value = ''
   try {
     await $fetch('/api/auth/logout', { method: 'POST', body: {} })
@@ -52,21 +74,45 @@ async function logout() {
       <nav class="mt-4" aria-label="Navigasi petugas">
         <ul class="space-y-2">
           <li v-for="link in links" :key="link.to">
-            <NuxtLink :to="link.to" class="flex min-h-14 items-center gap-3 rounded-xl px-4 py-3 text-base font-semibold focus-visible:outline-white" :class="active(link.to) ? 'bg-[#EAF0E9] text-forest-900' : 'text-white/90 hover:bg-white/10 hover:text-white'" :aria-current="active(link.to) ? 'page' : undefined"><AdminIcon :name="link.icon" class="size-5" /><span>{{ link.label }}</span><AdminIcon v-if="active(link.to)" name="chevron-right" class="ml-auto size-4" /></NuxtLink>
+            <NuxtLink :to="link.to" class="flex min-h-13 items-center gap-3 rounded-xl px-4 py-3 text-base font-medium focus-visible:outline-white" :class="active(link.to) ? 'bg-[#EAF0E9] text-forest-900' : 'text-white/85 hover:bg-white/10 hover:text-white'" :aria-current="active(link.to) ? 'page' : undefined"><AdminIcon :name="link.icon" class="size-5" /><span>{{ link.label }}</span><AdminIcon v-if="active(link.to)" name="chevron-right" class="ml-auto size-4" /></NuxtLink>
           </li>
         </ul>
       </nav>
       <div class="mt-8 border-t border-white/15 pt-5 lg:mt-auto">
-        <NuxtLink to="/admin/settings" class="flex items-center gap-3 rounded-lg p-2 hover:bg-white/10 focus-visible:outline-white" aria-label="Pengaturan akun petugas"><span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold">{{ initials }}</span><span class="min-w-0"><span class="block truncate text-sm font-medium">{{ session?.user?.fullName || 'Petugas RimbaGuard' }}</span><span class="mt-0.5 block text-xs leading-5 text-white/70">Akun petugas</span></span></NuxtLink>
+        <NuxtLink to="/admin/settings" class="flex items-center gap-3 rounded-lg p-2 hover:bg-white/10 focus-visible:outline-white"><UiUserAvatar :name="session?.user?.fullName || 'Petugas'" :src="session?.user?.avatarUrl" tone="glass" /><span class="min-w-0"><span class="block truncate text-sm font-medium">{{ session?.user?.fullName || 'Petugas RimbaGuard' }}</span><span class="mt-0.5 block text-xs leading-5 text-white/70">Akun petugas</span><span class="sr-only">, buka pengaturan akun</span></span></NuxtLink>
         <NuxtLink to="/" class="mt-3 flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm text-white/85 hover:bg-white/10 focus-visible:outline-white"><AdminIcon name="external" class="size-4" />Situs publik</NuxtLink>
-        <button type="button" class="mt-2 flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/25 px-3 text-left text-base font-medium text-white hover:bg-white/10 focus-visible:outline-white disabled:opacity-50" :disabled="loggingOut || !ready" @click="logout"><AdminIcon name="logout" class="size-5" />{{ loggingOut ? 'Keluar…' : 'Keluar' }}</button>
-        <p v-if="logoutError" role="alert" class="mt-3 rounded-lg bg-white px-3 py-2 text-sm leading-6 text-[#9D302B]">{{ logoutError }}</p>
+        <button type="button" class="mt-2 flex min-h-12 w-full items-center gap-3 rounded-xl border border-white/25 px-3 text-left text-base font-medium text-white hover:bg-white/10 focus-visible:outline-white disabled:opacity-50" :disabled="loggingOut || !ready" @click="logout('sidebar')"><AdminIcon name="logout" class="size-5" />{{ loggingOut ? 'Keluar…' : 'Keluar' }}</button>
+        <p v-if="logoutError && logoutOrigin === 'sidebar'" role="alert" class="mt-3 rounded-lg bg-white px-3 py-2 text-sm leading-6 text-[#9D302B]">{{ logoutError }}</p>
       </div>
     </aside>
     <div class="min-w-0">
       <header class="hidden min-h-20 items-center justify-between gap-5 border-b border-line bg-white px-8 lg:flex xl:px-10">
         <div class="flex items-center gap-3"><span class="flex size-9 items-center justify-center rounded-xl bg-sage-100 text-forest-700"><AdminIcon name="leaf" class="size-5" /></span><p class="text-base font-medium text-forest-900">Ruang petugas</p></div>
-        <NuxtLink to="/admin/settings" class="flex min-h-12 items-center gap-3 rounded-xl px-3 py-1 hover:bg-sage-100" aria-label="Buka pengaturan akun"><span class="hidden text-right text-sm leading-5 xl:block"><span class="block max-w-56 truncate font-medium text-charcoal">{{ session?.user?.fullName || 'Petugas' }}</span><span class="text-charcoal/65">Petugas RimbaGuard</span></span><span class="flex size-10 items-center justify-center rounded-full bg-sage-100 text-sm font-semibold text-forest-700">{{ initials }}</span></NuxtLink>
+        <!-- Account menu: same disclosure pattern as the public header's "Akun saya". -->
+        <details ref="accountMenu" class="group relative">
+          <summary role="button" class="flex min-h-12 cursor-pointer list-none items-center gap-3 rounded-xl px-3 py-1 hover:bg-sage-100 group-open:bg-sage-100 [&::-webkit-details-marker]:hidden">
+            <span class="hidden text-right text-sm leading-5 xl:block"><span class="block max-w-56 truncate font-medium text-charcoal">{{ displayName }}</span><span class="text-charcoal/75">Petugas RimbaGuard</span></span>
+            <UiUserAvatar :name="displayName" :src="session?.user?.avatarUrl" />
+            <AdminIcon name="chevron-down" class="size-4 text-charcoal/60 group-open:rotate-180" />
+            <span class="sr-only">Menu akun</span>
+          </summary>
+          <div class="absolute right-0 z-30 mt-2 w-80 rounded-xl border border-line bg-white p-2 shadow-[0_12px_32px_rgb(23_61_50/0.14)]">
+            <div class="flex items-center gap-3 px-3 py-3">
+              <UiUserAvatar :name="displayName" :src="session?.user?.avatarUrl" />
+              <div class="min-w-0">
+                <p class="break-words text-base font-semibold leading-6 text-forest-900">{{ displayName }}</p>
+                <p class="truncate text-sm leading-5 text-charcoal/75">{{ session?.user?.email }}</p>
+              </div>
+            </div>
+            <div class="my-1 border-t border-line" />
+            <!-- Close at once on click; the route change alone waits until the next page has loaded. -->
+            <NuxtLink to="/admin/settings" class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-base font-medium text-forest-900 hover:bg-sage-100" @click="closeAccount()"><AdminIcon name="user" class="size-5" />Pengaturan akun</NuxtLink>
+            <NuxtLink to="/" class="flex min-h-11 items-center gap-3 rounded-lg px-3 text-base font-medium text-forest-900 hover:bg-sage-100" @click="closeAccount()"><AdminIcon name="external" class="size-5" />Situs publik</NuxtLink>
+            <div class="my-1 border-t border-line" />
+            <button type="button" class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left text-base font-medium text-[#9D302B] hover:bg-[#FBEFEB] disabled:opacity-50" :disabled="loggingOut || !ready" @click="logout('menu')"><AdminIcon name="logout" class="size-5" />{{ loggingOut ? 'Keluar…' : 'Keluar' }}</button>
+            <p v-if="logoutError && logoutOrigin === 'menu'" role="alert" class="mx-1 mt-2 rounded-lg bg-[#FBEFEB] px-3 py-2 text-sm leading-6 text-[#8E2A24]">{{ logoutError }}</p>
+          </div>
+        </details>
       </header>
       <main id="main-content" class="min-w-0 px-4 py-7 sm:px-7 sm:py-8 xl:px-10" tabindex="-1"><div class="mx-auto max-w-[1440px]"><slot /></div></main>
     </div>

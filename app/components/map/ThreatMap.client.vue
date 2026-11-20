@@ -33,8 +33,9 @@ function markerIcon(level: PriorityLevel | 'none', selected: boolean, name: stri
     className: 'rg-marker-wrapper',
     // The letter is decorative; the visually hidden text names the button.
     html: `<span class="rg-marker${selected ? ' rg-marker--selected' : ''}" style="--rg-marker:${style.color};--rg-marker-text:${style.text}" aria-hidden="true">${style.letter}</span><span class="sr-only">${escapeHtml(name)}</span>`,
-    iconSize: selected ? [38, 38] : [30, 30],
-    iconAnchor: selected ? [19, 19] : [15, 15],
+    // Keep a 44px touch target even when the visible priority dot is smaller.
+    iconSize: [44, 44],
+    iconAnchor: [22, 22],
   })
 }
 
@@ -131,7 +132,8 @@ watch(canvas, async (element) => {
   cluster = L.markerClusterGroup({
     showCoverageOnHover: false,
     spiderfyOnMaxZoom: true,
-    maxClusterRadius: 48,
+    maxClusterRadius: 64,
+    spiderfyDistanceMultiplier: 1.5,
     iconCreateFunction: clusterIcon,
   }).addTo(map)
   // Keyboard parity with the cluster click: zoom in, or spread identical points.
@@ -162,13 +164,15 @@ onBeforeUnmount(() => { map?.remove(); map = undefined; cluster = undefined; mar
 </template>
 
 <style>
-.rg-marker-wrapper { background: transparent; border: 0; }
+.rg-marker-wrapper { display: grid; place-items: center; background: transparent; border: 0; }
 .rg-marker, .rg-cluster {
   display: grid; place-items: center; width: 100%; height: 100%; border-radius: 9999px;
   background: var(--rg-marker); color: var(--rg-marker-text); font: 700 13px/1 var(--font-sans, Inter, sans-serif);
   border: 2px solid #FFFFFF; box-shadow: 0 1px 3px rgb(36 43 40 / 0.35);
 }
 .rg-marker--selected { border: 3px solid #173D32; box-shadow: 0 0 0 3px #FFFFFF, 0 2px 6px rgb(36 43 40 / 0.4); font-size: 15px; }
+.rg-marker { width: 30px; height: 30px; }
+.rg-marker--selected { width: 38px; height: 38px; }
 .rg-cluster { font-size: 14px; border-width: 3px; box-shadow: 0 0 0 4px rgb(255 255 255 / 0.55), 0 1px 4px rgb(36 43 40 / 0.35); }
 .leaflet-marker-icon:focus-visible { outline: 3px solid #285C48; outline-offset: 3px; border-radius: 9999px; }
 </style>

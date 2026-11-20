@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const image = await readAdminEvidence(event, user, id, size)
   setHeaders(event, {
     'content-type': image.mime,
-    'content-length': String(image.bytes.byteLength),
+    'content-length': image.bytes.byteLength,
     'cache-control': 'private, no-store',
     'x-content-type-options': 'nosniff',
     'cross-origin-resource-policy': 'same-origin',

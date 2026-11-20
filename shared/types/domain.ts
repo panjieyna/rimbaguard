@@ -9,6 +9,7 @@ import type {
   THREAT_CATEGORIES,
   USER_ROLES,
 } from '../constants/domain'
+import type { passwordChangeSchema, profileUpdateSchema } from '../schemas/account'
 import type { threatAnalysisSchema } from '../schemas/ai'
 import type { loginSchema, registerSchema } from '../schemas/auth'
 import type { coordinatesSchema } from '../schemas/common'
@@ -35,6 +36,21 @@ export interface SessionUser {
   email: string
   fullName: string
   role: UserRole
+  /** Same-origin URL of the private profile photo, new for every upload; null without a photo. */
+  avatarUrl?: string | null
+}
+
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>
+export type PasswordChangeInput = z.infer<typeof passwordChangeSchema>
+
+export interface AccountUserResponse {
+  user: SessionUser
+}
+
+export interface PasswordChangeResponse {
+  success: true
+  /** Other devices were signed out after the change; this browser stays signed in. */
+  otherSessionsSignedOut: boolean
 }
 
 export interface SessionResponse {

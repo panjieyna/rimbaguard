@@ -77,5 +77,5 @@ export const PRIORITY_MARKERS: Record<PriorityLevel | 'none', { letter: string; 
   high: { letter: 'T', color: '#C64C45', text: '#FFFFFF', label: 'Prioritas tinggi' },
   medium: { letter: 'S', color: '#C38B35', text: '#242B28', label: 'Prioritas sedang' },
   low: { letter: 'R', color: '#3D805B', text: '#FFFFFF', label: 'Prioritas rendah' },
-  none: { letter: '–', color: '#737B76', text: '#FFFFFF', label: 'Prioritas belum dihitung' },
+  none: { letter: '–', color: '#626D65', text: '#FFFFFF', label: 'Prioritas belum dihitung' },
 }

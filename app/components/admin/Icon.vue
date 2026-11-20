@@ -24,6 +24,10 @@ const paths: Record<AdminIconName, string> = {
   user: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M4 21v-2a8 8 0 0 1 16 0v2',
   eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
   lock: 'M5 10h14v11H5V10z M8 10V7a4 4 0 0 1 8 0v3 M12 14v3',
+  camera: 'M3 8h4l2-3h6l2 3h4v12H3V8z M15.5 13.5a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0',
+  key: 'M12 15a4 4 0 1 1-8 0 4 4 0 0 1 8 0 M10.8 12.2 20 3 M17 6l2.5 2.5 M14.5 8.5 17 11',
+  trash: 'M4 7h16 M9 7V4h6v3 M6 7l1 13h10l1-13 M10 11v6 M14 11v6',
+  mail: 'M3 6h18v12H3V6z m0 0 9 7 9-7',
 }
 </script>
 

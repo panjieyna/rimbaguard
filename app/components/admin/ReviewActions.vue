@@ -64,27 +64,27 @@ function chooseStatus(status: ReportStatus) { selectedStatus.value = status as A
 function submitStatus() {
   const status = selectedStatus.value
   if (!status) return
-  void run('status', () => $fetch(`/api/admin/reports/${props.report.id}/status`, {
+  void run('status', () => $fetch<void>(`/api/admin/reports/${props.report.id}/status`, {
     method: 'PATCH', body: { expectedRevision: props.report.revision, status, note: statusNote.value || undefined },
   }), `Status diperbarui: ${STATUS_ACTION_LABELS[status].toLowerCase()} berhasil.`, () => { selectedStatus.value = null; statusNote.value = '' })
 }
 function submitPublication() {
-  void run('publish', () => $fetch(`/api/admin/reports/${props.report.id}/publication`, {
+  void run('publish', () => $fetch<void>(`/api/admin/reports/${props.report.id}/publication`, {
     method: 'PUT', body: { expectedRevision: props.report.revision, publicSummary: publicSummary.value },
   }), isPublished.value ? 'Ringkasan publik diperbarui.' : 'Ringkasan dipublikasikan ke peta publik.', () => {})
 }
 function submitWithdrawal() {
-  void run('withdraw', () => $fetch(`/api/admin/reports/${props.report.id}/publication`, {
+  void run('withdraw', () => $fetch<void>(`/api/admin/reports/${props.report.id}/publication`, {
     method: 'DELETE', body: { expectedRevision: props.report.revision, note: withdrawalNote.value },
   }), 'Publikasi ditarik dari peta publik.', () => { withdrawalNote.value = '' })
 }
 function submitCategory() {
-  void run('category', () => $fetch(`/api/admin/reports/${props.report.id}/category`, {
+  void run('category', () => $fetch<void>(`/api/admin/reports/${props.report.id}/category`, {
     method: 'PATCH', body: { expectedRevision: props.report.revision, category: category.value || null, note: categoryNote.value || undefined },
   }), 'Kategori petugas disimpan. Skor prioritas dihitung ulang.', () => { categoryNote.value = '' })
 }
 function submitNote() {
-  void run('note', () => $fetch(`/api/admin/reports/${props.report.id}/notes`, {
+  void run('note', () => $fetch<void>(`/api/admin/reports/${props.report.id}/notes`, {
     method: 'POST', body: { note: internalNote.value },
   }), 'Catatan internal disimpan.', () => { internalNote.value = '' })
 }

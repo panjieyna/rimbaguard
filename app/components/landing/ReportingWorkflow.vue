@@ -4,13 +4,13 @@ const steps = [
     number: '01',
     icon: 'camera',
     title: 'Kirim pengamatan Anda',
-    description: 'Unggah foto, pilih lokasi, lalu ceritakan apa yang Anda lihat.',
+    description: 'Pilih foto dan ceritakan apa yang Anda lihat. Lengkapi waktu serta lokasi sebelum laporan dikirim.',
   },
   {
     number: '02',
     icon: 'analysis',
     title: 'AI membantu analisis awal',
-    description: 'Informasi ditata untuk mengenali dugaan ancaman. Hasilnya tetap perlu diperiksa petugas.',
+    description: 'Asisten membaca foto, menanyakan informasi pelengkap, dan membantu menyiapkan draf. Anda memeriksanya sebelum mengirim.',
   },
   {
     number: '03',
@@ -51,7 +51,7 @@ onBeforeUnmount(() => observer?.disconnect())
         <div class="relative z-10 lg:col-start-2 lg:row-start-1">
           <p class="inline-flex rounded-full border border-forest-500/25 bg-sage-100/65 px-3 py-1 text-xs leading-5 font-semibold tracking-wide text-forest-700 uppercase">Alur RimbaGuard</p>
           <h2 id="how-it-works" class="mt-4 max-w-xl text-3xl leading-[1.16] font-semibold tracking-tight text-forest-900 sm:text-[2.5rem]">Dari ponsel Anda,<br class="hidden sm:block"> untuk <span class="text-[#3C7A49]">hutan kita.</span></h2>
-          <p class="mt-4 max-w-xl text-base leading-7 text-charcoal/80">Ceritakan pengamatan Anda. AI membantu analisis awal, lalu petugas memeriksa laporan dan mencatat tindak lanjutnya.</p>
+          <p class="mt-4 max-w-xl text-base leading-7 text-charcoal/80">Tidak perlu bingung mulai dari mana. Asisten AI membantu melengkapi cerita Anda; petugas tetap memeriksa laporan dan mencatat tindak lanjutnya.</p>
         </div>
 
         <div class="workflow-illustration relative isolate flex min-w-0 flex-col items-center justify-end pt-8 pb-2 sm:pt-12 lg:col-start-1 lg:row-start-1 lg:row-span-3 lg:pt-12 lg:pb-0">

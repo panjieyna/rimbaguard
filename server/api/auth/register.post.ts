@@ -31,6 +31,6 @@ export default defineEventHandler(async (event) => {
   }
   if (!data.session) return { requiresEmailConfirmation: true, user: null }
   if (!data.user) throw apiError(503, 'AUTH_UNAVAILABLE', 'Pendaftaran belum dapat diselesaikan. Silakan coba kembali.')
-  const user = await getSessionUserFromClient(client, data.user.id)
+  const user = await getSessionUserFromClient(client, data.user)
   return { requiresEmailConfirmation: false, user }
 })

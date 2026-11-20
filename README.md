@@ -1,8 +1,24 @@
 # RimbaGuard AI
 
-Platform pelaporan ancaman hutan berbasis komunitas, analisis awal AI, prioritas yang dapat dijelaskan, dan verifikasi petugas. Bahasa utama aplikasi: Bahasa Indonesia.
+Platform pelaporan ancaman hutan berbasis komunitas, asisten penyusunan laporan AI, analisis awal, prioritas yang dapat dijelaskan, dan verifikasi petugas. Bahasa utama aplikasi: Bahasa Indonesia.
 
-Status: **Fase 1–5 selesai; Fase 6 berjalan**. Fitur utama untuk warga, publik, dan petugas berfungsi terhadap Supabase dan Gemini sungguhan. QA terpadu Fase 6 sudah dilakukan: perjalanan lengkap warga sampai petugas, uji keamanan, uji kegagalan layanan, audit aksesibilitas WCAG 2.2 AA otomatis, pemeriksaan tata letak di empat lebar layar, dan optimasi ukuran halaman. **Aplikasi belum di-deploy**, sehingga belum ada URL publik. Satu uji unggahan 5 MB menunggu koneksi yang lebih cepat. Pengguna mengonfirmasi migrasi hosted `1..44` (Fase 3), `1..66` (Fase 4), dan `1..64` (Fase 5). Lihat [PRD](PRD.md), [checklist implementasi](IMPLEMENTATION_PLAN.md), [arsitektur](docs/ARCHITECTURE.md), [dokumentasi API](docs/API.md), dan [skrip demo](docs/DEMO.md).
+Status: **Fase 1–5 selesai; QA penguatan asisten selesai, finalisasi lomba dan hosting masih berjalan**. Asisten pelaporan menambahkan draf privat, pertanyaan pelengkap dan konfirmasi sebelum pengiriman. Migrasi hosted dikonfirmasi pengguna lulus `1..26`. Pada 18 November 2026, `gemini-3.5-flash` mengalami timeout/503; pengujian nyata kemudian lulus dengan **`gemini-3.5-flash-lite`**, yang ditetapkan sebagai default dan model lokal. Foto, draf setelah reload, jawaban, konfirmasi, pengiriman dan replay idempoten lulus terhadap Supabase/Gemini nyata; analisis setelah pengiriman juga tersimpan sebagai `succeeded`. Kegagalan tetap disimpan dan jalur manual tersedia. **Belum ada URL publik**; deployment direncanakan di Delcom kampus. Lihat [PRD](PRD.md), [checklist implementasi](IMPLEMENTATION_PLAN.md), [hasil uji terbaru](docs/COMPETITION_IMPROVEMENT_PLAN.md), [arsitektur](docs/ARCHITECTURE.md), [API](docs/API.md), [skrip demo](docs/DEMO.md), dan [draf proposal](docs/COMPETITION_PROPOSAL.md).
+
+## Asisten pelaporan
+
+Audit ulang **20 November 2026**: 353 unit test, typecheck/build, 34 skenario browser, dan uji ulang Gemini nyata lulus. Proposal sudah disesuaikan dengan template resmi dan dilengkapi wireframe serta UI aktual. Versi terbaru masih lokal; finalisasi repository, video, PDF dan hosting belum ditutup. Rincian per bobot penilaian dan batas verifikasi ada di [audit komponen](docs/COMPETITION_IMPROVEMENT_PLAN.md#audit-ulang-komponen-penilaian--20-november-2026).
+
+1. Buka `/report`, unggah foto dan ceritakan pengamatan dalam 20–1.500 karakter.
+2. AI memisahkan apa yang terlihat dari cerita pelapor, menyarankan judul/kategori, dan menanyakan paling banyak tiga hal yang belum jelas. Jawaban **Saya tidak tahu** diperbolehkan.
+3. Jawaban tersimpan di draf privat. Saat formulir disiapkan, deskripsinya mempertahankan cerita asli dan jawaban pelapor; pengamatan maupun ringkasan AI tidak disalin menjadi kesaksian.
+4. Periksa seluruh isian, tentukan waktu dan lokasi, lalu centang konfirmasi untuk mengirim. Mengubah isian membatalkan centang. Draf belum masuk antrean petugas sebelum dikirim.
+5. Setelah laporan tersimpan, analisis ancaman yang terpisah dan prioritas dijalankan seperti alur semula. Petugas tetap menentukan verifikasi dan tindak lanjut.
+
+Draf dapat dilanjutkan setelah reload selama bukti masih berlaku (dua jam sejak unggahan). Jika AI gagal, cerita dan foto yang sudah disiapkan dapat diteruskan melalui **Isi formulir sendiri**. Asisten tidak mengenali GPS, menyimpulkan legalitas, melakukan pemantauan satelit, atau menghubungi petugas otomatis.
+
+Pada proyek yang sudah memakai migrasi `001`–`006`, jalankan seluruh isi [JALANKAN_ASISTEN_PELAPORAN.sql](supabase/JALANKAN_ASISTEN_PELAPORAN.sql). Hasil `finish` yang diharapkan `1..26`; fixture dibatalkan sebelum commit migrasi. Migrasi profil `007` diperlukan untuk fitur foto akun, tetapi tidak menjadi dependensi asisten. Key Supabase aplikasi bukan credential eksekusi SQL.
+
+`tests/e2e/assistant-ui.spec.ts` menguji kontrak antarmuka dengan fixture lokal yang diintersep dan tidak disimpan ke database. `tests/e2e/assistant.spec.ts` memakai unggahan, database dan Gemini nyata, hanya saat `E2E_GEMINI_LIVE=true` dan server mengonfirmasi akun simulasi. Uji antarmuka tidak menggantikan bukti keberhasilan provider nyata.
 
 ## Menjalankan secara lokal
 

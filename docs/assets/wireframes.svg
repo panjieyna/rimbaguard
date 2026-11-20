@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" role="img" aria-labelledby="title description">
+  <title id="title">Wireframe alur utama RimbaGuard</title>
+  <desc id="description">Skema tiga halaman yang telah diterapkan: beranda, penyusunan laporan dengan asisten, dan ruang petugas. Kotak merupakan struktur antarmuka, bukan statistik atau hasil AI.</desc>
+  <defs>
+    <style>text{font-family:Arial,sans-serif;fill:#24342d}.heading{font-size:22px;font-weight:700}.label{font-size:16px}.small{font-size:14px;fill:#526057}.frame{fill:#fff;stroke:#53645a;stroke-width:2}.block{fill:#f2f4ef;stroke:#8d9a91;stroke-width:1.5}.button{fill:#dfe8dc;stroke:#53645a;stroke-width:1.5}.line{stroke:#a5afa7;stroke-width:2}</style>
+  </defs>
+  <rect width="1200" height="820" fill="#fafbf8"/>
+  <text x="30" y="42" class="heading">RimbaGuard AI — wireframe halaman utama</text>
+  <text x="30" y="69" class="small">Dokumentasi struktur layar. Isi dinamis mengikuti data dan izin pengguna.</text>
+  <g transform="translate(30 105)">
+    <text y="0" class="heading">01 / Beranda</text>
+    <rect y="22" width="360" height="660" rx="10" class="frame"/>
+    <rect x="14" y="38" width="332" height="44" class="block"/>
+    <text x="26" y="65" class="label">Logo · Navigasi · Akun</text>
+    <rect x="14" y="98" width="332" height="190" class="block"/>
+    <text x="32" y="138" class="label">Foto hutan horizontal</text>
+    <text x="32" y="172" class="label">Judul dan pengenalan</text>
+    <rect x="32" y="204" width="180" height="46" rx="5" class="button"/>
+    <text x="48" y="234" class="label">Mulai melapor</text>
+    <rect x="14" y="306" width="332" height="74" class="block"/>
+    <text x="30" y="337" class="label">Statistik platform</text>
+    <text x="30" y="360" class="small">Bersumber dari database</text>
+    <rect x="14" y="398" width="332" height="122" class="block"/>
+    <text x="30" y="430" class="label">Cara kerja</text>
+    <text x="30" y="461" class="small">Pengamatan → Asisten → Petugas</text>
+    <rect x="14" y="538" width="332" height="84" class="block"/>
+    <text x="30" y="572" class="label">Pratinjau peta publik</text>
+    <text x="30" y="652" class="small">Footer dan navigasi</text>
+  </g>
+  <g transform="translate(420 105)">
+    <text y="0" class="heading">02 / Buat laporan</text>
+    <rect y="22" width="360" height="660" rx="10" class="frame"/>
+    <rect x="14" y="38" width="332" height="70" class="block"/>
+    <text x="30" y="68" class="label">Tujuan halaman dan petunjuk</text>
+    <text x="30" y="92" class="small">Laporan belum dikirim ke petugas</text>
+    <text x="25" y="143" class="small">Foto + cerita · Lengkapi · Periksa</text>
+    <rect x="14" y="163" width="332" height="120" class="block"/>
+    <text x="30" y="193" class="label">Foto dan cerita pelapor</text>
+    <line x1="30" y1="218" x2="328" y2="218" class="line"/>
+    <line x1="30" y1="242" x2="328" y2="242" class="line"/>
+    <rect x="14" y="301" width="332" height="122" class="block"/>
+    <text x="30" y="331" class="label">Pembacaan foto oleh AI</text>
+    <text x="30" y="358" class="small">Pertanyaan dan jawaban pelapor</text>
+    <text x="30" y="385" class="small">Hasil AI ditampilkan terpisah</text>
+    <rect x="14" y="441" width="332" height="112" class="block"/>
+    <text x="30" y="471" class="label">Periksa draf · Waktu · Lokasi</text>
+    <text x="30" y="501" class="small">Peta / lokasi perangkat atas izin</text>
+    <rect x="14" y="571" width="332" height="72" rx="5" class="button"/>
+    <text x="30" y="599" class="small">Konfirmasi isi terlebih dahulu</text>
+    <text x="30" y="625" class="label">Kirim laporan</text>
+    <text x="20" y="665" class="small">Alternatif: isi formulir sendiri</text>
+  </g>
+  <g transform="translate(810 105)">
+    <text y="0" class="heading">03 / Ruang petugas</text>
+    <rect y="22" width="360" height="660" rx="10" class="frame"/>
+    <rect x="14" y="38" width="91" height="624" class="block"/>
+    <text x="24" y="74" class="small">Ringkasan</text>
+    <text x="24" y="110" class="small">Laporan</text>
+    <text x="24" y="146" class="small">Peta</text>
+    <text x="24" y="182" class="small">Analitik</text>
+    <text x="24" y="218" class="small">Pengaturan</text>
+    <text x="24" y="639" class="small">Keluar</text>
+    <rect x="121" y="38" width="225" height="65" class="block"/>
+    <text x="135" y="66" class="label">Ringkasan petugas</text>
+    <text x="135" y="90" class="small">Nyata / simulasi dipisah</text>
+    <rect x="121" y="121" width="225" height="102" class="block"/>
+    <text x="135" y="157" class="label">Statistik laporan</text>
+    <text x="135" y="185" class="small">Tindakan yang perlu diperiksa</text>
+    <rect x="121" y="241" width="225" height="164" class="block"/>
+    <text x="135" y="272" class="label">Antrean prioritas</text>
+    <text x="135" y="301" class="small">Foto · Skor · Status</text>
+    <line x1="135" y1="325" x2="332" y2="325" class="line"/>
+    <line x1="135" y1="353" x2="332" y2="353" class="line"/>
+    <text x="135" y="385" class="small">Buka detail dan tinjau</text>
+    <rect x="121" y="423" width="225" height="114" class="block"/>
+    <text x="135" y="460" class="label">Grafik dan tabel</text>
+    <text x="135" y="491" class="small">Jumlah laporan dari database</text>
+    <rect x="121" y="555" width="225" height="107" class="block"/>
+    <text x="135" y="589" class="label">Verifikasi dan tindak lanjut</text>
+    <text x="135" y="619" class="small">Catatan dan riwayat keputusan</text>
+  </g>
+</svg>

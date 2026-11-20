@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import sharp from 'sharp'
-import { MAX_EVIDENCE_BYTES } from '../../shared/constants/domain'
+import { AVATAR_PIXELS, MAX_AVATAR_UPLOAD_BYTES, MAX_EVIDENCE_BYTES } from '../../shared/constants/domain'
 import type { EvidenceMimeType } from '../../shared/types/domain'
 import { apiError } from './response'
 
@@ -44,5 +44,34 @@ export async function normalizeEvidence(bytes: Uint8Array, declaredMime: string,
   }
   catch {
     throw apiError(422, 'INVALID_EVIDENCE_IMAGE', 'Gambar tidak dapat dibaca. Gunakan JPEG, PNG, atau WebP statis dengan maksimal 20 juta piksel.')
+  }
+}
+
+// The browser sends a few hundred pixels per side; larger input is refused before decoding.
+const MAX_AVATAR_INPUT_PIXELS = 4_194_304
+
+/**
+ * Decode an uploaded profile photo and re-encode it as a square WebP. Re-encoding
+ * drops EXIF/GPS metadata and anything appended after the image data.
+ */
+export async function normalizeAvatar(bytes: Uint8Array): Promise<Buffer> {
+  if (!bytes.byteLength || bytes.byteLength > MAX_AVATAR_UPLOAD_BYTES) {
+    throw apiError(422, 'INVALID_AVATAR_SIZE', 'Foto profil terlalu besar. Pilih foto lain.')
+  }
+  if (!detectImageMime(bytes)) throw apiError(422, 'INVALID_AVATAR_IMAGE', 'Gunakan foto berformat JPEG, PNG, atau WebP.')
+  try {
+    const image = sharp(Buffer.from(bytes), { limitInputPixels: MAX_AVATAR_INPUT_PIXELS, animated: false, failOn: 'error' })
+    const metadata = await image.metadata()
+    if (!['jpeg', 'png', 'webp'].includes(metadata.format ?? '') || !metadata.width || !metadata.height || (metadata.pages ?? 1) > 1) {
+      throw new Error('invalid_avatar_structure')
+    }
+    return await image.rotate()
+      .resize({ width: AVATAR_PIXELS, height: AVATAR_PIXELS, fit: 'cover', position: 'centre' })
+      .flatten({ background: '#ffffff' })
+      .webp({ quality: 82 })
+      .toBuffer()
+  }
+  catch {
+    throw apiError(422, 'INVALID_AVATAR_IMAGE', 'Foto tidak dapat dibaca. Gunakan foto JPEG, PNG, atau WebP yang tidak bergerak.')
   }
 }

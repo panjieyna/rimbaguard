@@ -83,17 +83,24 @@ watch(() => route.fullPath, () => {
             <details ref="accountMenu" class="group relative">
               <summary role="button" class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 border px-4 py-2 text-base font-medium [&::-webkit-details-marker]:hidden" :class="isHome ? 'rounded-full border-white/25 bg-white/10 text-white hover:bg-white/20 focus-visible:outline-white' : 'rounded-lg border-line bg-white text-forest-900 hover:bg-sage-100'">
                 <span class="flex items-center gap-2.5">
-                  <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2" /></svg>
+                  <UiUserAvatar :name="session.user.fullName || 'Pengguna'" :src="session.user.avatarUrl" size="xs" :tone="isHome ? 'glass' : 'sage'" />
                   Akun saya
                 </span>
                 <svg class="size-4 shrink-0 group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="m5 7 5 5 5-5" /></svg>
               </summary>
               <div class="mt-2 rounded-lg border border-line bg-white text-charcoal xl:absolute xl:right-0 xl:z-30 xl:w-72">
-                <div class="px-4 py-4">
-                  <p class="text-sm text-charcoal/75">Anda masuk sebagai</p>
-                  <p class="mt-1 break-words text-base font-semibold leading-6 text-forest-900">{{ session.user.fullName || 'Pengguna RimbaGuard' }}</p>
+                <div class="flex items-center gap-3 px-4 py-4">
+                  <UiUserAvatar :name="session.user.fullName || 'Pengguna'" :src="session.user.avatarUrl" />
+                  <div class="min-w-0">
+                    <p class="text-sm text-charcoal/75">Anda masuk sebagai</p>
+                    <p class="mt-0.5 break-words text-base font-semibold leading-6 text-forest-900">{{ session.user.fullName || 'Pengguna RimbaGuard' }}</p>
+                  </div>
                 </div>
                 <div class="border-t border-line p-2">
+                  <NuxtLink :to="session.user.role === 'admin' ? '/admin/settings' : '/account'" class="flex min-h-12 w-full items-center gap-3 rounded-md px-3 py-3 text-left text-base font-medium text-forest-900 hover:bg-sage-100">
+                    <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="3.5" /><path d="M4.5 21v-2a7.5 7.5 0 0 1 15 0v2" /></svg>
+                    Pengaturan akun
+                  </NuxtLink>
                   <button type="button" class="flex min-h-12 w-full items-center gap-3 rounded-md px-3 py-3 text-left text-base font-medium text-[#9D302B] hover:bg-[#FBEFEB] disabled:opacity-50" :disabled="loggingOut || !ready" @click="logout">
                     <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M10 4H4v16h6M8 12h12m-4-4 4 4-4 4" /></svg>
                     {{ loggingOut ? 'Keluar…' : 'Keluar' }}

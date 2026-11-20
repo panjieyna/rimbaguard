@@ -17,6 +17,15 @@ export type DatabaseAnalysisStatus = 'pending' | 'processing' | 'succeeded' | 'f
 export type DatabaseAuditActorType = 'user' | 'admin' | 'system'
 export type EvidenceUploadStatus = 'pending' | 'processing' | 'finalized' | 'attached'
 
+export type AssistantDraftRow = {
+  id: string; user_id: string; upload_id: string; story: string
+  status: 'processing' | 'ready' | 'failed' | 'submitted'
+  version: number; lease_token: string | null; lease_expires_at: string | null
+  result: Json | null; answers: Json; model_name: string; prompt_version: string
+  error_code: string | null; expires_at: string; report_id: string | null
+  created_at: string; updated_at: string
+}
+
 export type EvidenceUploadRow = {
   id: string
   user_id: string
@@ -149,6 +158,7 @@ export type Database = {
   public: {
     Tables: {
       profiles: Table<ProfileRow, 'id' | 'email'>
+      report_assistant_drafts: Table<AssistantDraftRow, 'id' | 'user_id' | 'upload_id' | 'story' | 'model_name' | 'prompt_version' | 'expires_at'>
       evidence_uploads: Table<
         EvidenceUploadRow,
         'user_id' | 'incoming_path' | 'sealed_path' | 'declared_mime_type' | 'declared_size',
@@ -191,6 +201,22 @@ export type Database = {
     }
     Views: { [_ in never]: never }
     Functions: {
+      claim_report_assistant: {
+        Args: { p_id: string; p_actor_id: string; p_upload_id: string; p_story: string; p_model_name: string; p_prompt_version: string }
+        Returns: { draft: AssistantDraftRow; claimed: boolean }
+      }
+      finish_report_assistant: {
+        Args: { p_id: string; p_actor_id: string; p_lease_token: string; p_result?: Json | null; p_error_code?: string | null }
+        Returns: AssistantDraftRow
+      }
+      answer_report_assistant: {
+        Args: { p_id: string; p_actor_id: string; p_expected_version: number; p_answers: Json }
+        Returns: AssistantDraftRow
+      }
+      create_assisted_report: {
+        Args: { p_draft_id: string; p_actor_id: string; p_expected_version: number; p_confirmed: boolean; p_idempotency_key: string; p_payload: Json; p_is_simulation: boolean }
+        Returns: { report: ReportRow; reused: boolean }
+      }
       consume_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number }
         Returns: { allowed: boolean; remaining: number; retry_after_seconds: number }[]

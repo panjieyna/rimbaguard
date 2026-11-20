@@ -87,7 +87,11 @@ test('citizen pages meet automated WCAG 2.2 AA checks and fit every width', asyn
     ...await audit(page, '/reports', settled(/laporan dapat diakses/)),
     // Read-only accessibility checks also run against the ordinary dev server;
     // the form, rather than the optional simulation banner, marks readiness.
-    ...await audit(page, '/report', async p => { await expect(p.getByRole('textbox', { name: 'Judul laporan', exact: true })).toBeVisible({ timeout: 30_000 }) }),
+    ...await audit(page, '/report', async p => { await expect(p.getByRole('textbox', { name: 'Ceritakan apa yang Anda lihat', exact: true })).toBeVisible({ timeout: 30_000 }) }),
+    ...await audit(page, '/report', async p => {
+      await p.getByRole('button', { name: 'Isi formulir sendiri', exact: false }).click()
+      await expect(p.getByRole('textbox', { name: 'Judul laporan', exact: true })).toBeVisible()
+    }),
     ...await audit(page, `/reports/${reportId}`, settled('Riwayat perkembangan')),
   ]
   expect(problems).toEqual([])
@@ -103,7 +107,12 @@ test('officer pages meet automated WCAG 2.2 AA checks and fit every width', asyn
     ...await audit(page, '/admin/dashboard?dataset=simulation', async p => { await expect(p.getByRole('img', { name: /Laporan masuk per hari/ })).toBeVisible({ timeout: 30_000 }) }),
     ...await audit(page, '/admin/reports?scope=all&dataset=simulation', settled(/laporan sesuai filter/)),
     ...await audit(page, `/admin/reports/${reportId}`, settled('Verifikasi dan penanganan')),
-    ...await audit(page, '/admin/map?dataset=simulation', async p => { await expect(p.locator('.rg-cluster').first()).toBeVisible({ timeout: 30_000 }) }),
+    ...await audit(page, '/admin/map?dataset=simulation', async p => {
+      await expect(p.locator('.rg-cluster').first()).toBeVisible({ timeout: 30_000 })
+      await p.getByRole('region', { name: 'Peta prioritas laporan petugas' }).scrollIntoViewIfNeeded()
+      // Leaflet animates its initial fitBounds; scan settled target geometry.
+      await p.waitForTimeout(500)
+    }),
     ...await audit(page, '/admin/analytics?dataset=simulation', async p => { await expect(p.getByRole('img', { name: /Laporan masuk per hari/ })).toBeVisible({ timeout: 30_000 }) }),
     ...await audit(page, '/admin/settings', settled('Keadaan layanan')),
   ]
