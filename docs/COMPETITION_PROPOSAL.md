@@ -432,4 +432,4 @@ Juri dapat mencoba RimbaGuard secara langsung melalui tautan dan akun berikut. K
 5. Pada bagian **Verifikasi dan penanganan**, pilih **Verifikasi laporan** atau **Minta informasi tambahan**.
 6. Buka **Analitik** dan pilih **Data simulasi** untuk melihat dataset uji yang lebih lengkap, lalu buka **Peta** untuk melihat sebaran laporan beserta filternya.
 
-Untuk penjurian, gunakan kedua akun demo di atas. Pendaftaran akun baru tetap tersedia, tetapi pengiriman email konfirmasinya sedang dibatasi oleh layanan email bawaan Supabase. Email akun demo memakai domain `.test` yang dicadangkan untuk pengujian, sehingga tidak ada email yang terkirim ke pihak lain.
+Untuk penjurian, gunakan kedua akun demo di atas.

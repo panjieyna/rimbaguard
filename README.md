@@ -5,6 +5,7 @@
 | | |
 |---|---|
 | **Website live** | [ifs24044-rimbaguard.s1if.cloud](https://ifs24044-rimbaguard.s1if.cloud) |
+| **Video demo** | [youtu.be/J-vmfoXlex8](https://youtu.be/J-vmfoXlex8) |
 | **Proposal** | [ITRUSH26_semogabisamagang_RimbaGuard.pdf](docs/ITRUSH26_semogabisamagang_RimbaGuard.pdf) |
 | **Akun demo** | Akun pelapor dan petugas tercantum pada Lampiran D proposal yang dikumpulkan ke panitia |
 | **Kompetisi** | Web Development IT RUSH 2026 · Subtema Lingkungan dan Konservasi |
