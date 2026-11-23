@@ -10,7 +10,26 @@ const root = process.cwd()
 const source = path.join(root, 'docs/COMPETITION_PROPOSAL.md')
 const assetDir = path.join(root, 'docs/assets/proposal-2026')
 const scratch = path.join(root, '.npm-cache/proposal-pdf')
-const output = path.join(root, 'docs/ITRUSH26_semogabisamagang_RimbaGuard.pdf')
+// `--private` builds the copy submitted to the jury: demo-account passwords come from the
+// git-ignored .env.juri and the PDF goes to the git-ignored submission/ folder. The default
+// build is the public copy kept in the repository, without credentials.
+const privateCopy = process.argv.includes('--private')
+const output = privateCopy
+  ? path.join(root, 'submission/ITRUSH26_semogabisamagang_RimbaGuard.pdf')
+  : path.join(root, 'docs/ITRUSH26_semogabisamagang_RimbaGuard.pdf')
+if (privateCopy) {
+  process.loadEnvFile(path.join(root, '.env.juri'))
+  await mkdir(path.dirname(output), { recursive: true })
+}
+const videoUrl = process.env.PROPOSAL_VIDEO_URL?.trim()
+if (videoUrl && !/^https:\/\/(youtu\.be|(www\.)?youtube\.com)\/\S+$/.test(videoUrl)) throw new Error('PROPOSAL_VIDEO_URL must be a YouTube https link')
+const fills = {
+  VIDEO_LINK: videoUrl ? `[${videoUrl.replace(/^https:\/\//, '')}](${videoUrl})` : 'Tautan dicantumkan pada formulir pengumpulan karya',
+  JURI_PELAPOR_PASSWORD: privateCopy ? `\`${process.env.JURI_PELAPOR_PASSWORD}\`` : 'Tercantum pada salinan proposal untuk juri',
+  JURI_PETUGAS_PASSWORD: privateCopy ? `\`${process.env.JURI_PETUGAS_PASSWORD}\`` : 'Tercantum pada salinan proposal untuk juri',
+}
+if (privateCopy && (!process.env.JURI_PELAPOR_PASSWORD || !process.env.JURI_PETUGAS_PASSWORD)) throw new Error('.env.juri is missing a demo password')
+if (privateCopy && !videoUrl) console.warn('PERINGATAN: PROPOSAL_VIDEO_URL belum diisi; tautan video belum tercantum di salinan juri.')
 await mkdir(assetDir, { recursive: true })
 await mkdir(scratch, { recursive: true })
 const escape = value => String(value).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -74,7 +93,10 @@ await writeFile(path.join(assetDir, 'wireframe-officer.svg'), svg([
 const pngUri = async name => `data:image/jpeg;base64,${(await sharp(path.join(assetDir, name)).jpeg({ quality: 93, chromaSubsampling: '4:4:4', mozjpeg: true }).toBuffer()).toString('base64')}`
 await writeFile(path.join(assetDir, 'mobile-pair.svg'), `<svg xmlns="http://www.w3.org/2000/svg" width="840" height="844" viewBox="0 0 840 844"><rect width="840" height="844" fill="white"/><image x="0" y="0" width="390" height="844" href="${await pngUri('home-mobile.png')}"/><image x="450" y="0" width="390" height="844" href="${await pngUri('report-mobile.png')}"/></svg>`)
 
-const text = await readFile(source, 'utf8')
+const text = (await readFile(source, 'utf8')).replace(/\{\{([A-Z_]+)\}\}/g, (token, key) => {
+  if (!(key in fills)) throw new Error(`Unknown proposal placeholder ${token}`)
+  return fills[key]
+})
 const mediaUrls = new Map()
 for (const match of text.matchAll(/!\[[^\]]*\]\(([^)]+\.png)\)/g)) {
   const local = path.resolve(path.dirname(source), match[1])
@@ -180,6 +202,9 @@ figcaption { text-align: center; font-size: 10.5pt; line-height: 1.25; margin-to
 .sheet[data-group="ui-analysis"] .figure img { max-height: 155mm; }
 .sheet[data-group="ui-map"] .figure:last-of-type img { max-height: 130mm; }
 .sheet[data-group="access"] table th:first-child { width: 44%; }
+.sheet[data-group="access"] table:has(th:nth-child(3)) th:first-child { width: 18%; }
+.sheet[data-group="access"] table:has(th:nth-child(3)) th:nth-child(2) { width: 44%; }
+.sheet[data-group="access"] td code { overflow-wrap: normal; white-space: nowrap; }
 .sheet[data-group="references"] p { line-height: 1.35; margin-bottom: 4mm; text-align: left; }
 .sheet[data-group="cover"] .sheet-body { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .sheet[data-group="cover"] h1 { margin-bottom: 4mm; color: #173D32; }

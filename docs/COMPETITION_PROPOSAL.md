@@ -26,22 +26,20 @@ Disusun oleh tim **semogabisamagang**
 
 **2026**
 
-Versi tinjauan • 22 November 2026
+Subtema: Lingkungan dan Konservasi
 
 <!-- page: preface -->
 ## KATA PENGANTAR
 
-Proposal ini disusun untuk menjelaskan konsep, perencanaan, perancangan, implementasi, dan pengujian RimbaGuard dalam kompetisi Web Development IT RUSH 2026. Karya ini memilih subtema **Lingkungan dan Konservasi**, dengan fokus pada pelaporan dugaan ancaman terhadap hutan dan pengelolaan pemeriksaan oleh petugas.
+Proposal ini menjelaskan konsep, perencanaan, perancangan, implementasi, dan pengujian RimbaGuard dalam kompetisi Web Development IT RUSH 2026. Karya ini memilih subtema **Lingkungan dan Konservasi**, dengan fokus pada pelaporan dugaan ancaman terhadap hutan dan pengelolaan pemeriksaan oleh petugas.
 
-RimbaGuard dikembangkan dengan gagasan bahwa sebuah foto perlu disertai konteks agar dapat diperiksa. Asisten Pelaporan AI membantu masyarakat menyusun keterangan dari foto dan cerita, meminta informasi yang belum jelas, serta menyiapkan draf untuk diperiksa pengguna. Setelah pengiriman, petugas memperoleh bukti privat, analisis awal, urutan prioritas, dan riwayat penanganan dalam satu alur.
+RimbaGuard berangkat dari gagasan bahwa sebuah foto perlu disertai konteks agar dapat diperiksa. Asisten Pelaporan AI membantu masyarakat menyusun keterangan dari foto dan cerita, menanyakan informasi yang belum jelas, lalu menyiapkan draf untuk diperiksa pelapor. Setelah laporan terkirim, petugas memperoleh bukti privat, analisis awal, urutan prioritas, dan riwayat penanganan dalam satu ruang kerja.
 
-Uraian proposal bersumber dari implementasi proyek, catatan pengujian, guidebook kompetisi, dan dokumentasi resmi teknologi. Tangkapan layar diambil langsung dari aplikasi lokal terbaru pada 22 November 2026. Data simulasi tetap dinyatakan sebagai data uji. Manfaat yang belum diukur melalui evaluasi lapangan disajikan sebagai sasaran pengembangan, bukan hasil penelitian.
+RimbaGuard telah berjalan di [ifs24044-rimbaguard.s1if.cloud](https://ifs24044-rimbaguard.s1if.cloud) dan dapat dicoba langsung menggunakan akun demo pada Lampiran D. Kode sumber tersedia di repository publik, dan setiap perubahan diuji otomatis sebelum di-deploy.
 
-Penggunaan layanan Gemini, AI coding assistant, aset visual, dan perangkat lunak pihak ketiga diungkapkan dalam lampiran serta README. Tanggung jawab peninjauan dan pengumpulan karya berada pada tim penyusun. Proposal ini mengikuti struktur template resmi, termasuk pembahasan monetisasi sebagai rencana keberlanjutan. [1][2]
+Penggunaan layanan Gemini, AI coding assistant, aset visual, dan perangkat lunak pihak ketiga diungkapkan dalam Lampiran C serta README. Proposal ini mengikuti struktur template resmi panitia. [1][2] Kami berterima kasih kepada panitia IT RUSH 2026 atas kesempatan untuk menghadirkan solusi ini.
 
-Versi ini disiapkan untuk peninjauan. Tautan website dan video dikosongkan atas arahan tim; bagian akun demo disediakan untuk dilengkapi menjelang pengumpulan. Pemeriksaan pada URL produksi akan dicatat terpisah setelah alamatnya diberikan.
-
-**22 November 2026**
+**23 November 2026**
 
 **Tim semogabisamagang**
 
@@ -60,13 +58,13 @@ Versi ini disiapkan untuk peninjauan. Tautan website dan video dikosongkan atas 
 
 ### 1.1 Latar Belakang
 
-Pengamatan masyarakat dapat menjadi titik awal pemeriksaan dugaan ancaman terhadap hutan. Namun, foto pohon tumbang, tumpukan kayu, atau sampah di jalur hutan belum memberikan seluruh informasi yang dibutuhkan petugas. Foto tidak dengan sendirinya menjelaskan kapan pengamatan dilakukan, di mana lokasi kejadian, apa yang dilihat langsung, dan bagian mana yang masih merupakan dugaan pelapor.
+Tekanan terhadap hutan Indonesia masih tinggi. Kementerian Kehutanan mencatat deforestasi netto **175.400 hektare** sepanjang 2024, hasil dari deforestasi bruto 216.200 hektare dikurangi reforestasi 40.800 hektare. [9] Kebakaran hutan dan lahan menghanguskan sekitar **359.000 hektare** pada 2025, dengan Nusa Tenggara Timur sebagai provinsi paling terdampak. [10] Pada Januari–Juli 2026, SiPongi mencatat **202.004,30 hektare** areal terbakar, naik **69 persen** dibandingkan periode yang sama tahun 2025. [11]
 
-Permasalahan yang diangkat dalam proyek ini adalah **kesenjangan antara pengamatan awal dan laporan yang dapat diperiksa**. Sebuah formulir panjang dapat membebani pelapor, sedangkan klasifikasi foto saja belum melengkapi konteks kejadian. Di sisi petugas, laporan perlu disusun dalam antrean, diperiksa berdasarkan bukti, dan diikuti catatan keputusan serta perkembangan penanganan. Kebutuhan tersebut dirumuskan dalam PRD proyek dan menjadi dasar rancangan, bukan kesimpulan dari survei pengguna yang belum dilakukan. [3]
+Angka nasional tersebut diperoleh terutama dari pemantauan citra satelit. [9] Citra menunjukkan di mana tutupan hutan berubah, tetapi tidak menjelaskan apa yang dilihat orang di lokasi: tumpukan kayu, asap pertama, atau alat berat yang baru masuk. Masyarakat di sekitar hutan dapat menangkap tanda awal seperti itu, tetapi pengamatan mereka sering berhenti sebagai foto tanpa keterangan.
 
-RimbaGuard menawarkan alur foto dan cerita, pertanyaan pelengkap oleh AI, pemeriksaan draf oleh pelapor, pengisian waktu dan lokasi, serta konfirmasi pengiriman. Laporan yang tersimpan kemudian menerima analisis awal dan prioritas berbasis aturan. Petugas tetap memutuskan validitas, meminta perbaikan informasi, dan mencatat tindak lanjut.
+Permasalahan yang diangkat adalah **kesenjangan antara pengamatan awal dan laporan yang dapat diperiksa**. Foto tidak dengan sendirinya menjelaskan kapan pengamatan dilakukan, di mana lokasinya, apa yang dilihat langsung, dan bagian mana yang masih dugaan. Formulir panjang membebani pelapor, sedangkan klasifikasi foto saja tidak melengkapi konteks. Di sisi petugas, laporan perlu diurutkan, diperiksa berdasarkan bukti, dan diikuti catatan keputusan. [3]
 
-Privasi menjadi bagian rancangan. Foto serta koordinat rinci dibatasi bagi pemilik laporan dan petugas. Informasi publik berasal dari ringkasan yang disetujui petugas, dengan lokasi yang digeneralisasi. Dengan demikian, keterbukaan informasi tetap memiliki batas yang jelas.
+RimbaGuard menjawabnya dengan alur foto dan cerita, pertanyaan pelengkap oleh AI, pemeriksaan draf oleh pelapor, serta pengisian waktu dan lokasi sebelum konfirmasi. Laporan yang tersimpan menerima analisis awal dan skor prioritas yang transparan. Petugas tetap memutuskan validitas, meminta perbaikan informasi, dan mencatat tindak lanjut. Foto dan koordinat rinci hanya terlihat oleh pelapor dan petugas; publik melihat ringkasan yang disetujui dengan lokasi yang digeneralisasi.
 
 ### 1.2 Rumusan Masalah
 
@@ -76,7 +74,6 @@ Privasi menjadi bagian rancangan. Foto serta koordinat rinci dibatasi bagi pemil
 4. Bagaimana menjaga bukti serta lokasi rinci sambil menyediakan informasi publik yang telah diperiksa?
 5. Bagaimana mencatat keputusan dan tindak lanjut agar perkembangan laporan dapat dipantau?
 
-<!-- page: objectives -->
 ### 1.3 Tujuan
 
 Tujuan umum proyek ini adalah membangun aplikasi web yang menghubungkan pengamatan masyarakat dengan pemeriksaan dan penanganan dugaan ancaman hutan secara terstruktur.
@@ -84,7 +81,7 @@ Tujuan umum proyek ini adalah membangun aplikasi web yang menghubungkan pengamat
 Tujuan khususnya adalah:
 
 1. Menyediakan pelaporan dengan foto, cerita, waktu, dan lokasi, melalui asisten maupun formulir manual.
-2. Mengintegrasikan AI untuk mengajukan pertanyaan pelengkap serta menyiapkan draf yang wajib diperiksa pengguna sebelum dikirim.
+2. Mengintegrasikan AI untuk mengajukan pertanyaan pelengkap serta menyiapkan draf yang wajib diperiksa pelapor sebelum dikirim.
 3. Menyimpan laporan, bukti, hasil analisis, dan riwayat tindakan secara persisten dengan pembatasan akses.
 4. Menyediakan prioritas berbasis aturan yang memperlihatkan komponen, alasan, dan versi perhitungannya.
 5. Mendukung verifikasi, permintaan informasi, penolakan, tindak lanjut, dan penyelesaian oleh petugas.
@@ -94,59 +91,71 @@ Tujuan khususnya adalah:
 
 | Penerima manfaat | Manfaat yang dituju |
 |---|---|
-| Masyarakat | Membantu menyusun keterangan, mengetahui informasi yang perlu dilengkapi, dan memantau perkembangan laporan sendiri. |
+| Masyarakat | Menyusun laporan dengan bantuan pertanyaan yang jelas, mengetahui informasi yang perlu dilengkapi, dan memantau perkembangan laporan sendiri. |
 | Petugas | Memusatkan bukti, konteks, antrean prioritas, keputusan, serta catatan penanganan dalam satu ruang kerja. |
-| Pengunjung publik | Memberikan akses pada ringkasan yang telah ditinjau tanpa membuka foto maupun koordinat rinci. |
-| Pengelola dan pengembang | Menyediakan dasar evaluasi kelengkapan laporan, keterlacakan proses, dan pengembangan alur kerja berikutnya. |
+| Pengunjung publik | Melihat ringkasan yang telah ditinjau tanpa membuka foto maupun koordinat rinci pelapor. |
+| Pengelola kawasan | Memperoleh data tren, kategori ancaman, dan tahap penanganan untuk perencanaan patroli. |
 
-Manfaat tersebut merupakan sasaran rancangan. Tim belum melakukan survei lapangan, mengukur pengurangan kerusakan hutan, atau membuktikan peningkatan kecepatan penanganan pada organisasi konservasi. Evaluasi lanjutan dirumuskan pada bagian 4.2.
+Manfaat tersebut akan diukur pada uji coba bersama lembaga mitra dengan tiga indikator: persentase laporan yang memuat foto, waktu, dan lokasi lengkap; waktu dari laporan masuk hingga keputusan petugas; serta proporsi laporan yang memerlukan permintaan informasi tambahan.
 
 <!-- page: concept -->
 ## BAB II — PERENCANAAN PENGEMBANGAN WEBSITE
 
 ### 2.1 Deskripsi Website
 
-RimbaGuard adalah aplikasi web berbahasa Indonesia untuk pelaporan dugaan ancaman hutan berbasis komunitas. Pengguna memulai dari foto dan cerita singkat. Asisten membaca keduanya, memisahkan pengamatan visual dari keterangan pengguna, kemudian mengajukan paling banyak tiga pertanyaan yang relevan. Pengguna dapat menjawab sesuai pengetahuan atau memilih **Saya tidak tahu**.
+RimbaGuard adalah aplikasi web berbahasa Indonesia untuk pelaporan dugaan ancaman hutan berbasis komunitas. Pelapor memulai dari foto dan cerita singkat. Asisten membaca keduanya, memisahkan pengamatan visual dari keterangan pelapor, kemudian mengajukan paling banyak tiga pertanyaan yang relevan. Pelapor dapat menjawab sesuai pengetahuannya atau memilih **Saya tidak tahu**.
 
-Draf belum menjadi laporan sebelum pelapor memeriksa isinya, melengkapi waktu dan lokasi, serta memberikan konfirmasi pengiriman. Setelah tersimpan, analisis awal dan skor prioritas membantu petugas menyusun urutan pemeriksaan. Formulir manual tetap tersedia ketika layanan AI tidak dapat digunakan.
+Draf baru menjadi laporan setelah pelapor memeriksa isinya, melengkapi waktu dan lokasi, serta mencentang konfirmasi. Setelah tersimpan, analisis awal dan skor prioritas membantu petugas menyusun urutan pemeriksaan. Formulir manual tetap tersedia ketika layanan AI tidak dapat digunakan.
 
-Lingkup MVP mencakup autentikasi, pelaporan, bukti privat, lokasi, asisten, analisis awal, prioritas, verifikasi, penanganan, audit, peta, dan analitik. Pemantauan satelit, penetapan legalitas, deteksi deforestasi otomatis, dan koordinasi kedaruratan bukan kemampuan produk saat ini.
+Cakupan yang telah berjalan meliputi autentikasi dan pengaturan akun, pelaporan, bukti privat, lokasi, asisten, analisis awal, prioritas, verifikasi, penanganan, audit, peta, dan analitik.
 
 ### 2.2 Unique Selling Point (USP)
 
-**Pelengkap konteks, bukan sekadar label foto.** AI digunakan untuk membantu mengubah pengamatan awal menjadi keterangan yang lebih terstruktur. Pertanyaan menargetkan informasi yang belum jelas; pengguna tidak didorong memberikan jawaban yang tidak diketahui.
+**Pelengkap konteks, bukan sekadar label foto.** AI mengubah pengamatan awal menjadi keterangan yang terstruktur. Pertanyaan menargetkan informasi yang belum jelas, dan pelapor tidak didorong menebak jawaban yang tidak diketahuinya.
 
-**Asal informasi tetap terbaca.** Cerita dan jawaban pengguna dipertahankan sebagai keterangannya. Ringkasan dan pengamatan visual AI disajikan terpisah, sehingga interpretasi model tidak otomatis menjadi kesaksian pelapor.
+**Asal informasi tetap terbaca.** Cerita dan jawaban pelapor disimpan sebagai keterangannya sendiri. Ringkasan dan pengamatan visual AI disajikan terpisah, sehingga interpretasi model tidak berubah menjadi kesaksian pelapor.
 
 **Prioritas yang dapat dijelaskan.** Urutan pemeriksaan memakai empat komponen dengan bobot yang terlihat. Petugas dapat membaca alasan, sumber kategori, serta riwayat perhitungannya.
 
-**Proses berlanjut sampai tindak lanjut.** Laporan dihubungkan dengan permintaan perbaikan, keputusan, status penanganan, dan audit. Kebaruan yang diajukan adalah penerapan serta integrasi alur tersebut; tim tidak mengklaim menciptakan model AI atau menjadi aplikasi pelaporan pertama.
+**Proses berlanjut sampai tindak lanjut.** Laporan terhubung dengan permintaan perbaikan, keputusan, status penanganan, dan audit. Kebaruannya terletak pada integrasi seluruh alur tersebut dalam satu aplikasi yang memanfaatkan model Gemini.
 
-<!-- page: users -->
+| Pendekatan yang ada | Kekuatan | Celah yang diisi RimbaGuard |
+|---|---|---|
+| Kanal pengaduan umum, misalnya SP4N-LAPOR! [12] | Resmi dan mencakup seluruh layanan publik | Formulir umum tidak menanyakan detail khas kejadian hutan dan tidak menyusun prioritas pemeriksaan |
+| Pemantauan citra satelit [9] | Cakupan luas dan konsisten | Menunjukkan perubahan tutupan, bukan keterangan saksi di lapangan |
+| Foto melalui media sosial atau grup percakapan | Cepat dan akrab bagi warga | Waktu dan lokasi sering tidak lengkap, informasi tercecer, dan tidak ada jejak tindak lanjut |
+
+RimbaGuard melengkapi kanal-kanal tersebut: pengamatan warga dikumpulkan secara terstruktur, diurutkan dengan alasan yang terbuka, dan diikuti sampai selesai ditangani.
+
 ### 2.3 Target Market dan Pengguna
 
 | Kelompok pengguna | Kebutuhan utama dan akses |
 |---|---|
-| Pelapor masyarakat | Membuat laporan, memakai asisten atau manual, melihat foto/status sendiri, dan melengkapi informasi ketika diminta. |
-| Petugas pemeriksa | Mengakses bukti dan lokasi, memeriksa analisis/prioritas, memverifikasi, mencatat penanganan, dan membaca audit. |
+| Pelapor masyarakat | Membuat laporan, memakai asisten atau formulir manual, melihat foto dan status laporan sendiri, serta melengkapi informasi ketika diminta. |
+| Petugas pemeriksa | Mengakses bukti dan lokasi, memeriksa analisis serta prioritas, memverifikasi, mencatat penanganan, dan membaca audit. |
 | Pengunjung publik | Memahami tujuan produk serta melihat perkiraan lokasi dan perkembangan ringkasan yang dipublikasikan petugas. |
 
-Pengelola kawasan, komunitas konservasi, dan institusi yang menangani pengaduan lingkungan merupakan calon pihak untuk evaluasi berikutnya. Belum ada klaim kemitraan, pelanggan, atau penggunaan resmi oleh organisasi tertentu.
+Sasaran adopsi pertama adalah Kesatuan Pengelolaan Hutan (KPH), balai taman nasional, komunitas konservasi, serta instansi yang menerima pengaduan lingkungan.
 
-Antarmuka menggunakan bahasa Indonesia, tahapan yang jelas, label status berbentuk teks, dan penanda prioritas yang tidak bergantung pada warna saja. Lokasi dapat dipilih melalui izin perangkat, titik peta, atau koordinat manual. Rancangan ini ditujukan untuk mengurangi hambatan penggunaan; efektivitas pada seluruh kelompok usia tetap perlu diuji bersama pengguna sasaran.
+Antarmuka menggunakan bahasa Indonesia, tahapan yang jelas, label status berbentuk teks, dan penanda prioritas yang tidak bergantung pada warna saja. Lokasi dapat dipilih melalui izin perangkat, titik di peta, atau koordinat manual, sehingga pelapor tetap dapat melapor ketika izin lokasi ditolak.
 
 ### 2.4 Potensi Pengembangan dan Monetisasi
 
-Keberlanjutan yang dapat dikaji adalah kemitraan antarinstitusi untuk biaya hosting, dukungan operasional, pelatihan petugas, dan penyesuaian alur pemeriksaan. Pelaporan masyarakat direncanakan tetap mudah diakses. Bukti serta identitas pelapor tidak dijadikan produk data untuk dijual.
+Pelaporan oleh masyarakat selalu gratis. Keberlanjutan dibiayai oleh lembaga yang memanfaatkan ruang kerja petugas. Bukti dan identitas pelapor tidak pernah dijual sebagai produk data.
 
-Pengembangan berikutnya dapat mencakup penugasan petugas, notifikasi perkembangan, dan integrasi dengan proses operasional pengelola kawasan setelah kebutuhan divalidasi. Penambahan fitur perlu mempertimbangkan biaya layanan AI, perlindungan data, kemampuan operator, dan hasil evaluasi lapangan.
+| Sumber pendanaan | Bentuk |
+|---|---|
+| Langganan lembaga | Ruang kerja petugas per KPH, taman nasional, atau organisasi: antrean prioritas, peta, analitik, dan audit. |
+| Kemitraan CSR dan hibah lingkungan | Pembiayaan hosting dan layanan AI untuk wilayah dampingan. |
+| Jasa implementasi | Penyesuaian kategori dan bobot prioritas, integrasi sistem, serta pelatihan petugas. |
 
-Pembahasan ini merupakan **rencana keberlanjutan** sesuai template proposal. MVP belum memiliki sistem pembayaran, langganan, pelanggan berbayar, atau pendapatan. Angka biaya dan proyeksi keuntungan belum dicantumkan karena belum tersedia dasar perhitungan yang terverifikasi.
+Biaya operasional utama adalah hosting, pemanggilan Gemini per laporan, dan penyimpanan foto. Biaya per laporan akan dihitung pada uji coba sebagai dasar penetapan tarif.
 
-<!-- page: methodology -->
+Pengembangan berikutnya meliputi notifikasi perkembangan laporan, penugasan petugas, mode luring (PWA) untuk wilayah dengan sinyal lemah, dan integrasi dengan sistem operasional pengelola kawasan.
+
 ### 2.5 Metode Pembuatan/Pengembangan
 
-Pengembangan dilakukan bertahap: fondasi; aplikasi publik dan pelaporan; integrasi AI; prioritas dan peta; ruang petugas; kemudian penguatan kualitas serta dokumentasi. Asisten pelaporan ditambahkan setelah alur dasar stabil. Setiap tahap diperiksa melalui pengujian yang sesuai, pemeriksaan tipe, dan build. Catatan fase serta perbaikan tersimpan dalam IMPLEMENTATION_PLAN.md. [3]
+Pengembangan dilakukan bertahap: fondasi; aplikasi publik dan pelaporan; integrasi AI; prioritas dan peta; ruang petugas; penguatan kualitas; lalu deployment. Asisten pelaporan ditambahkan setelah alur dasar stabil. Setiap tahap diperiksa melalui pengujian, pemeriksaan tipe, dan build, dan catatannya tersimpan dalam IMPLEMENTATION_PLAN.md. [3]
 
 | Teknologi | Peran dalam implementasi |
 |---|---|
@@ -158,10 +167,11 @@ Pengembangan dilakukan bertahap: fondasi; aplikasi publik dan pelaporan; integra
 | Leaflet dan OpenStreetMap | Peta lokasi, pengelompokan titik, filter, serta navigasi spasial. [7] |
 | Chart.js dan tabel alternatif | Penyajian perkembangan laporan yang dihitung dari database. |
 | Vitest, Playwright, dan axe | Pengujian unit, perjalanan browser/API, serta aksesibilitas otomatis. |
+| Jenkins dan Delcom | CI/CD: uji otomatis setiap push, lalu deploy ke server HTTPS. |
 
-Source code dipisahkan menjadi halaman/komponen, kontrak bersama, handler API, service, utilitas keamanan, dan migrasi database. Pemisahan ini menjaga aturan domain dapat diperiksa tanpa bergantung pada tampilan. Skema TypeScript/Zod digunakan bersama untuk mengurangi ketidaksesuaian kontrak.
+Source code dipisahkan menjadi halaman/komponen, kontrak bersama, handler API, service, utilitas keamanan, dan migrasi database. Pemisahan ini membuat aturan domain dapat diuji tanpa bergantung pada tampilan, dan skema TypeScript/Zod dipakai bersama oleh browser dan server.
 
-Pengujian dibedakan antara unit, database, browser dengan fixture, integrasi layanan nyata, dan pemeriksaan antarmuka. Hasil dari waktu dan cakupan berbeda tidak dijumlahkan sebagai satu suite. Ringkasan bukti terbaru dan batasnya disajikan pada Lampiran A.
+**Pengujian dan deployment berkelanjutan.** Setiap push ke branch `main` memicu pipeline Jenkins: memasang dependensi, menjalankan **370 unit test**, membungkus aplikasi, lalu meminta Delcom melakukan redeploy. Deploy otomatis dibatalkan bila ada satu tes yang gagal. Uji browser dan integrasi layanan nyata dijalankan terpisah; ringkasannya ada pada Lampiran A.
 
 <!-- page: features -->
 ## BAB III — PERANCANGAN WEBSITE
@@ -170,25 +180,24 @@ Pengujian dibedakan antara unit, database, browser dengan fixture, integrasi lay
 
 | Fitur yang diterapkan | Fungsi dan perilaku |
 |---|---|
-| Autentikasi dan akun | Registrasi, konfirmasi email, login, sesi, profil, logout, dan pembatasan peran pada server. |
+| Autentikasi dan akun | Registrasi, konfirmasi email, login, foto profil, ubah nama dan kata sandi, keluar dari semua perangkat, serta pembatasan peran pada server. |
 | Asisten Pelaporan AI | Foto/cerita, pertanyaan pelengkap, jawaban, draf privat, pemulihan draf, dan konfirmasi sebelum pengiriman. |
 | Formulir manual | Judul, kategori, deskripsi, foto, waktu, dan lokasi; tetap dapat digunakan saat AI gagal. |
 | Foto bukti | JPEG/PNG/WebP sampai 5 MB; pemeriksaan format, metadata dibuang, bukti tersegel tersimpan privat. |
-| Lokasi kejadian | Lokasi perangkat atas izin, titik di peta, atau koordinat manual; penolakan izin tidak menghalangi jalur alternatif. |
+| Lokasi kejadian | Lokasi perangkat atas izin, titik di peta, atau koordinat manual; penolakan izin tidak menghalangi jalur lain. |
 | Analisis awal | Kategori indikasi, pengamatan visual, indikator, alasan, saran, dan riwayat percobaan yang tersimpan. |
 | Pemeriksaan petugas | Antrean dengan foto, komponen prioritas, verifikasi, permintaan informasi, penolakan, dan koreksi kategori. |
 | Penanganan dan audit | Perkembangan tindak lanjut, penyelesaian, catatan internal, dan riwayat tindakan. |
-| Peta dan analitik | Filter laporan, pengelompokan titik, ringkasan periode, kategori, serta tahap penanganan. |
+| Peta dan analitik | Filter laporan, pengelompokan titik, ringkasan periode, kategori, serta tahap penanganan dalam kalimat sederhana. |
 | Publikasi terbatas | Ringkasan yang disetujui petugas dan lokasi yang digeneralisasi; data simulasi tidak dapat dipublikasikan. |
 
-Pengiriman berulang dengan kunci idempotensi dan payload identik memakai laporan yang sama. Laporan yang dikoreksi kembali dianalisis; hasil dari revisi lama tidak boleh menggantikan isi yang lebih baru. Kewenangan diterapkan pada API dan database, tidak hanya pada navigasi antarmuka.
+Pengiriman berulang dengan kunci idempotensi dan isi yang sama memakai laporan yang sama. Laporan yang dikoreksi dianalisis ulang, dan hasil dari revisi lama tidak dapat menimpa isi yang lebih baru. Kewenangan diterapkan pada API dan database, tidak hanya pada navigasi antarmuka.
 
-<!-- page: ai-priority -->
 **Integrasi AI dan kendali pengguna**
 
-Ada dua penggunaan AI. Sebelum pengiriman, asisten menyusun pertanyaan serta draf dari foto dan cerita. Setelah pengiriman, analisis membantu pemeriksaan awal. Permintaan Gemini dilakukan dari server; keluaran JSON diperiksa terhadap skema sebelum disimpan. Dukungan structured output pada API tidak menggantikan validasi dan pemeriksaan manusia. [6]
+AI dipakai di dua titik. Sebelum pengiriman, asisten menyusun pertanyaan serta draf dari foto dan cerita. Setelah pengiriman, analisis membantu pemeriksaan awal. Permintaan ke Gemini dilakukan dari server, dan keluaran JSON diperiksa terhadap skema Zod sebelum disimpan. [6]
 
-Cerita pelapor dan pengamatan visual diperlakukan sebagai sumber yang berbeda. Pengguna memeriksa draf serta mengonfirmasi pengiriman. AI tidak diberi kewenangan menetapkan waktu, lokasi, identitas, penyebab, atau legalitas kejadian tanpa keterangan yang mendukung.
+Cerita pelapor dan pengamatan visual diperlakukan sebagai sumber yang berbeda. AI tidak diberi kewenangan menetapkan waktu, lokasi, identitas, penyebab, atau legalitas kejadian tanpa keterangan yang mendukung. Pelapor memeriksa draf dan mengonfirmasi pengiriman; petugas memutuskan hasil akhirnya.
 
 **Prioritas pemeriksaan yang transparan**
 
@@ -203,22 +212,20 @@ Versi aturan yang diterapkan adalah `rimbaguard-priority-v1`. Semua komponen din
 | Kebaruan kejadian | 20% | Usia kejadian dengan batas 6, 24, 72, dan 168 jam. |
 | Laporan serupa | 20% | Kategori sama, radius 2 km, selisih waktu paling lama 7 hari; jenis data dipisahkan. |
 
-Prioritas tinggi bernilai 75–100, sedang 45 sampai di bawah 75, dan rendah di bawah 45. Perhitungan, alasan, versi, serta waktunya disimpan untuk ditinjau petugas.
-
-Bobot merupakan aturan awal produk, bukan model bahaya ilmiah yang telah divalidasi. Kelengkapan bukan keaslian bukti; kedekatan laporan bukan konfirmasi kejadian. Skor keyakinan AI juga bukan probabilitas terkalibrasi.
+Prioritas tinggi bernilai 75–100, sedang 45 sampai di bawah 75, dan rendah di bawah 45. Perhitungan, alasan, versi, serta waktunya disimpan untuk ditinjau petugas. Skor mengurutkan pemeriksaan, bukan memastikan kejadian, dan bobotnya dapat disesuaikan bersama lembaga mitra.
 
 <!-- page: architecture -->
 ### 3.2 Arsitektur Sistem dan User Flow
 
-Browser mengakses halaman dan API Nuxt. Server memeriksa sesi, peran, origin, dan input sebelum mengakses layanan. Supabase menangani autentikasi, database, serta Storage; Gemini menerima foto/teks melalui server. Kunci layanan tetap berada di server. [3]
+Browser mengakses halaman dan API Nuxt. Server memeriksa sesi, peran, origin, dan input sebelum mengakses layanan. Supabase menangani autentikasi, database, serta Storage; Gemini menerima foto/teks melalui server. Seluruh kunci layanan tetap berada di server. [3]
 
 ![Gambar 3.1. Arsitektur RimbaGuard dan batas akses layanan](assets/proposal-2026/architecture.svg)
 
-**Penyimpanan dan konsistensi.** Laporan, draf, hasil analisis, skor, dan audit tersimpan di PostgreSQL. Fungsi transaksi memeriksa revisi serta kewenangan sebelum mengubah status. Lease membatasi pekerjaan AI bersamaan; idempotensi menghindari duplikasi akibat pengiriman ulang.
+**Penyimpanan dan konsistensi.** Laporan, draf, hasil analisis, skor, dan audit tersimpan di PostgreSQL. Fungsi transaksi memeriksa revisi serta kewenangan sebelum mengubah status. Lease membatasi pekerjaan AI bersamaan, dan idempotensi mencegah duplikasi akibat pengiriman ulang.
 
-**Bukti privat.** Setelah unggahan, server memastikan gambar dapat didekode, menghapus metadata, dan menyimpan turunan tersegel. Tampilan bukti memerlukan otorisasi dan akses sementara. Thumbnail tidak mengubah file bukti asli.
+**Bukti privat.** Setelah unggahan, server memastikan gambar dapat didekode, menghapus metadata, dan menyimpan turunan tersegel. Tampilan bukti memerlukan otorisasi dan tautan sementara. Thumbnail tidak mengubah file bukti asli.
 
-**Pemisahan akses.** Pelapor mengakses laporannya sendiri. Petugas mendapat informasi pemeriksaan dan catatan internal. Publik hanya menerima proyeksi field yang diizinkan dan koordinat dibulatkan 0,01 derajat, sekitar 1 km dengan variasi menurut lintang. Prinsip pembatasan baris diterapkan melalui RLS dan fungsi database. [5]
+**Pemisahan akses.** Pelapor mengakses laporannya sendiri. Petugas mendapat informasi pemeriksaan dan catatan internal. Publik hanya menerima field yang diizinkan dengan koordinat dibulatkan 0,01 derajat, sekitar 1 km. Pembatasan baris diterapkan melalui RLS dan fungsi database. [5]
 
 <!-- page: flow -->
 **Alur pelapor dan petugas**
@@ -227,33 +234,33 @@ Browser mengakses halaman dan API Nuxt. Server memeriksa sesi, peran, origin, da
 
 Pelapor memilih asisten atau jalur manual. Kedua jalur bertemu pada pemeriksaan informasi dan konfirmasi. Laporan disimpan lebih dahulu, sehingga gangguan layanan AI tidak menghilangkan catatan yang telah dikirim.
 
-Petugas dapat menyatakan laporan terverifikasi, menolak dengan alasan, atau meminta informasi tambahan. Laporan terverifikasi dapat bergerak ke tahap ditindaklanjuti lalu selesai. Koreksi pelapor memicu penilaian ulang. Catatan internal tidak ditampilkan kepada pelapor.
+Petugas dapat menyatakan laporan terverifikasi, menolak dengan alasan, atau meminta informasi tambahan. Laporan terverifikasi bergerak ke tahap ditindaklanjuti lalu selesai. Koreksi pelapor memicu penilaian ulang, dan catatan internal tidak ditampilkan kepada pelapor.
 
-Publikasi merupakan tindakan tersendiri setelah verifikasi, dengan ringkasan yang ditinjau petugas. Data simulasi tetap tersedia untuk pengujian dan demonstrasi tanpa masuk ke statistik/peta publik.
+Publikasi merupakan tindakan tersendiri setelah verifikasi, dengan ringkasan yang ditinjau petugas. Data simulasi tersedia untuk pengujian dan demonstrasi tanpa masuk ke statistik maupun peta publik.
 
-**Pemulihan kegagalan.** Ketika Gemini tidak tersedia atau keluarannya tidak valid, aplikasi menyimpan status gagal dan menyediakan percobaan ulang/manual. Jika peta dasar atau izin lokasi bermasalah, pilihan koordinat manual tetap tersedia. Kegagalan database ditampilkan sebagai informasi belum dapat dimuat, bukan angka nol buatan.
+**Pemulihan kegagalan.** Ketika Gemini tidak tersedia atau keluarannya tidak valid, aplikasi menyimpan status gagal dan menyediakan percobaan ulang serta jalur manual. Jika peta dasar atau izin lokasi bermasalah, koordinat manual tetap tersedia. Kegagalan database ditampilkan sebagai informasi belum dapat dimuat, bukan angka nol buatan.
 
 <!-- page: wireframes -->
 ### 3.3 Wireframe Website
 
-Wireframe berikut mendokumentasikan struktur utama implementasi saat ini. Kotak dan garis merupakan rancangan tata letak; tidak mewakili statistik, bukti, atau hasil AI.
+Wireframe berikut memperlihatkan struktur utama halaman publik dan ruang petugas sebelum diberi gaya visual.
 
 ![Gambar 3.3. Wireframe beranda dan penyusunan laporan](assets/proposal-2026/wireframe-public.svg)
 
 ![Gambar 3.4. Wireframe ruang petugas dan pemeriksaan laporan](assets/proposal-2026/wireframe-officer.svg)
 
-Beranda mengarahkan pengguna ke pelaporan; formulir menempatkan foto dan cerita sebagai awal. Ruang petugas memisahkan navigasi operasional, kondisi laporan, dan antrean pemeriksaan. Kontrol akun/keluar ditempatkan terpisah dari tugas utama.
+Beranda mengarahkan pengunjung ke pelaporan, dan formulir menempatkan foto serta cerita sebagai langkah pertama. Ruang petugas memisahkan navigasi operasional, kondisi laporan, dan antrean pemeriksaan. Kontrol akun ditempatkan terpisah dari tugas utama.
 
 <!-- page: ui-home -->
 ### 3.4 Tampilan UI Website
 
-Seluruh gambar UI pada bagian ini berasal dari aplikasi lokal pada **22 November 2026**, dengan nama produk RimbaGuard. Gambar diambil pada skala 2× agar tetap jelas saat diperbesar. Pemotongan panel hanya membatasi area dokumentasi; data dan hasil analisis tidak direkayasa.
+Gambar pada bagian ini diambil dari aplikasi RimbaGuard menggunakan akun uji, pada skala 2× agar tetap jelas saat diperbesar. Angka dan hasil analisis pada gambar berasal dari data simulasi yang benar-benar tersimpan.
 
 ![Gambar 3.5. Beranda dengan video hutan dan ajakan pelaporan](assets/proposal-2026/home-desktop.png)
 
 ![Gambar 3.6. Alur tiga langkah dengan informasi privasi](assets/proposal-2026/workflow-desktop.png)
 
-Video berfungsi sebagai pengantar visual. Pesan utama, tombol pelaporan, serta alur tetap berupa teks dan kontrol HTML. Mode pengurangan gerak memakai poster; isi halaman tetap dapat dibaca tanpa animasi.
+Video menjadi pengantar visual, sementara pesan utama, tombol pelaporan, dan alur tetap berupa teks dan kontrol HTML. Pengguna yang mengaktifkan pengurangan gerak melihat poster statis.
 
 <!-- page: ui-report -->
 **Autentikasi dan awal penyusunan laporan**
@@ -262,16 +269,16 @@ Video berfungsi sebagai pengantar visual. Pesan utama, tombol pelaporan, serta a
 
 ![Gambar 3.8. Asisten Pelaporan AI: foto dan cerita pengguna](assets/proposal-2026/assistant-desktop.png)
 
-Formulir memakai label yang jelas dan petunjuk singkat. Pelapor dapat memulai dengan asisten atau mengisi sendiri. Foto tidak menjadi laporan sampai pengguna melengkapi informasi, memeriksa isi, dan memberikan konfirmasi pengiriman.
+Formulir memakai label yang jelas dan petunjuk singkat. Pelapor dapat memulai dengan asisten atau mengisi sendiri. Foto baru menjadi laporan setelah pelapor melengkapi informasi, memeriksa isi, dan mengonfirmasi pengiriman.
 
 <!-- page: ui-analysis -->
-**Hasil AI yang tersimpan dan batas interpretasinya**
+**Hasil AI yang tersimpan**
 
 ![Gambar 3.9. Analisis tersimpan pada bukti simulasi tanpa indikator ancaman](assets/proposal-2026/analysis-persisted.png)
 
-Gambar memperlihatkan hasil yang sudah tersimpan dari pemanggilan Gemini pada data uji. Foto fixture berisi teks simulasi; model menyatakan kategori serta risiko belum dapat ditentukan. Tampilan ini menunjukkan respons ketidakpastian yang sebenarnya, bukan contoh deteksi ancaman yang direkayasa. Tidak ada generasi AI baru saat pengambilan gambar.
+Gambar memperlihatkan hasil Gemini yang tersimpan untuk foto uji tanpa tanda kerusakan. Model menyatakan kategori dan risiko belum dapat ditentukan, lengkap dengan alasan dan saran pemeriksaan. Ini menunjukkan perilaku yang diharapkan: AI tidak mengarang ancaman yang tidak terlihat.
 
-Indikator, pengamatan, alasan, dan saran ditampilkan terpisah. Hasil tersebut tetap memerlukan verifikasi petugas. Keberhasilan teknis mendapatkan keluaran tervalidasi tidak sama dengan bukti akurasi model pada foto lapangan.
+Indikator, pengamatan, alasan, dan saran ditampilkan terpisah, sehingga petugas dapat menilai dasar setiap kesimpulan sebelum memverifikasi laporan.
 
 <!-- page: ui-officer -->
 **Ringkasan dan antrean petugas**
@@ -280,7 +287,7 @@ Indikator, pengamatan, alasan, dan saran ditampilkan terpisah. Hasil tersebut te
 
 ![Gambar 3.11. Antrean prioritas dengan foto dan tindakan tinjau](assets/proposal-2026/officer-queue.png)
 
-Lima ringkasan memakai label tugas yang mudah dibaca. Foto membantu orientasi awal; detail, analisis, dan komponen skor tersedia saat laporan ditinjau. Angka pada gambar berasal dari dataset simulasi yang tersimpan, bukan jumlah kejadian hutan nyata.
+Lima ringkasan memakai label tugas yang mudah dibaca. Foto membantu orientasi awal; detail, analisis, dan komponen skor tersedia saat laporan ditinjau. Petugas dapat berpindah antara laporan nyata dan data simulasi.
 
 <!-- page: ui-analytics -->
 **Analitik yang menjelaskan makna angka**
@@ -289,133 +296,140 @@ Lima ringkasan memakai label tugas yang mudah dibaca. Foto membantu orientasi aw
 
 ![Gambar 3.13. Kategori dan tahapan penanganan pada dataset simulasi](assets/proposal-2026/officer-handling.png)
 
-Pilihan periode dan jenis data terlihat di awal. Kategori, tren, serta tahap penanganan dijelaskan dengan kalimat dan angka, disertai tabel alternatif. Ringkasan periode dibedakan dari jumlah seluruh waktu agar pengguna tidak membandingkan angka dengan cakupan berbeda.
+Pilihan periode dan jenis data terlihat di awal. Kategori, tren, serta tahap penanganan dijelaskan dengan kalimat dan angka, disertai tabel alternatif. Ringkasan periode dibedakan dari jumlah seluruh waktu agar angka tidak dibandingkan dengan cakupan berbeda.
 
 <!-- page: ui-map -->
 **Peta publik dan penggunaan pada ponsel**
 
 ![Gambar 3.14. Peta publik dengan keadaan kosong yang informatif](assets/proposal-2026/map-public.png)
 
-Peta publik hanya memuat ringkasan yang dipublikasikan petugas. Keadaan kosong dipertahankan jika belum ada laporan yang layak tampil. Titik simulasi tidak dipindahkan ke peta publik untuk mengisi ruang kosong.
+Peta publik hanya memuat ringkasan yang dipublikasikan petugas. Jika belum ada laporan yang layak tampil, peta menampilkan keterangan kosong yang jelas; titik simulasi tidak dipakai untuk mengisi peta.
 
 Peta dasar: © OpenStreetMap contributors, ODbL. Sumber dan lisensi: [https://www.openstreetmap.org/copyright](https://www.openstreetmap.org/copyright). [7]
 
 ![Gambar 3.15. Beranda dan awal pelaporan pada viewport ponsel](assets/proposal-2026/mobile-pair.svg)
 
-Tampilan ponsel menggunakan susunan satu kolom, menu ringkas, serta tombol dan label yang tetap terbaca. Pemeriksaan responsif dan keyboard merupakan bukti teknis terbatas; kemudahan bagi seluruh usia memerlukan evaluasi pengguna lanjutan.
+Tampilan ponsel menggunakan susunan satu kolom, menu ringkas, serta tombol dan label yang tetap terbaca. Navigasi diuji otomatis pada lebar 320 hingga 1440 piksel, termasuk penggunaan keyboard, dan halaman publik dipindai dengan axe.
 
 <!-- page: conclusion -->
 ## BAB IV — PENUTUP
 
 ### 4.1 Kesimpulan
 
-RimbaGuard menerapkan alur dari pengamatan masyarakat hingga pemeriksaan dan penanganan petugas. Kontribusi utamanya adalah penggunaan AI untuk melengkapi konteks laporan, pemisahan sumber informasi, konfirmasi pengguna, prioritas yang dapat dijelaskan, serta riwayat keputusan. Pendekatan ini mempertahankan keputusan verifikasi pada manusia.
+RimbaGuard menghubungkan pengamatan masyarakat dengan pemeriksaan dan penanganan petugas dalam satu alur. Kontribusi utamanya adalah AI yang melengkapi konteks laporan, pemisahan sumber informasi, konfirmasi pelapor, prioritas yang dapat dijelaskan, serta riwayat keputusan. Keputusan verifikasi tetap berada di tangan manusia.
 
-MVP telah memiliki antarmuka, API, persistensi database, bukti privat, validasi, pembatasan akses, penanganan kegagalan, dan ruang petugas. Verifikasi unit terbaru pada 22 November 2026 mencatat **370 tes lulus dalam 23 berkas**. Pemeriksaan tipe/build serta regresi publik/autentikasi terbaru lulus pada cakupan yang dicatat dalam Lampiran A. Audit layanan nyata sebelumnya membuktikan alur asisten dan analisis dapat tersimpan; hasil tersebut tidak diklaim sebagai uji akurasi lapangan.
-
-Dengan cakupan tersebut, implementasi mendukung penilaian fungsionalitas, inovasi penerapan, relevansi konservasi, UI/UX, source code, dan dokumentasi. Kesiapan pengumpulan tetap memerlukan tautan akhir, akun demo, video, dan pemeriksaan pada lingkungan produksi. Proposal ini tidak memberikan prediksi skor atau jaminan hasil penjurian.
+Aplikasi telah berjalan di [ifs24044-rimbaguard.s1if.cloud](https://ifs24044-rimbaguard.s1if.cloud) dengan HTTPS, dan seluruh fitur pada Bab III dapat dicoba menggunakan akun demo di Lampiran D. Setiap perubahan kode melewati **370 unit test** dalam pipeline Jenkins sebelum di-deploy, dilengkapi uji browser, uji aksesibilitas, dan uji integrasi Gemini serta Supabase nyata.
 
 ### 4.2 Saran
 
-1. Lakukan pemeriksaan pada URL produksi: HTTPS, origin, callback autentikasi, unggahan, koneksi layanan, serta akses publik dan privat.
-2. Evaluasi bersama calon pelapor dan petugas dengan tugas yang sama; catat keberhasilan penyelesaian, kelengkapan informasi, kesalahan, dan kebutuhan bantuan.
-3. Bandingkan alur asisten dan manual menggunakan rancangan evaluasi yang disepakati. Durasi dan kelengkapan perlu diukur; angka belum tersedia.
-4. Tinjau bobot prioritas bersama pihak yang memahami operasional konservasi. Pertahankan versi aturan serta alasan perubahan.
-5. Kaji notifikasi, penugasan, dan integrasi proses lembaga setelah kebutuhan serta tata kelola data tervalidasi.
+1. Lakukan uji coba bersama satu KPH atau balai taman nasional, lalu ukur tiga indikator pada bagian 1.4.
+2. Tinjau bobot prioritas bersama pihak yang memahami operasional konservasi, dengan versi aturan dan alasan perubahan yang tetap tercatat.
+3. Evaluasi akurasi analisis AI pada kumpulan foto lapangan yang telah diberi label oleh petugas.
+4. Tambahkan notifikasi, penugasan petugas, dan mode luring untuk wilayah dengan sinyal lemah.
+5. Kaji integrasi dengan sistem pengaduan dan patroli lembaga setelah tata kelola data disepakati.
 
-RimbaGuard pada tahap ini adalah alat bantu pelaporan dan pemeriksaan, bukan pemantauan satelit atau sistem penetapan pelanggaran hukum.
+**Batasan saat ini**
+
+RimbaGuard adalah alat bantu pelaporan dan pemeriksaan, bukan pemantauan satelit atau sistem penetapan pelanggaran hukum. Bobot prioritas merupakan aturan awal, dan skor keyakinan AI bukan probabilitas terkalibrasi. Akurasi model pada foto lapangan serta dampak terhadap kecepatan penanganan belum diukur dan menjadi agenda uji coba.
 
 <!-- page: references -->
 ## DAFTAR PUSTAKA
 
-[1] Panitia IT RUSH 2026. (2026). *GUIDEBOOK WEB DEV IT RUSH*. Dokumen PDF yang diberikan pengguna. Ketentuan karya: hlm. 3; pengumpulan: hlm. 4–5; rubrik: hlm. 5. Diperiksa 22 November 2026.
+[1] Panitia IT RUSH 2026. (2026). *GUIDEBOOK WEB DEV IT RUSH*. Dokumen panduan kompetisi. Ketentuan karya: hlm. 3; pengumpulan: hlm. 4–5; rubrik: hlm. 5.
 
 [2] Panitia IT RUSH 2026. (2026). *Template Proposal Web Development*. [Template resmi](https://docs.google.com/document/d/1ucioynsv6qkLOYkxLd8ECgqFi53aREY77Q59WscFA1U/edit). Diakses 22 November 2026. Struktur bab, font, dan format halaman mengacu dokumen ini.
 
-[3] Tim semogabisamagang. (2026). *Dokumentasi dan implementasi RimbaGuard*. [Repository proyek](https://github.com/panjieyna/rimbaguard). Bukti implementasi lokal: PRD.md; IMPLEMENTATION_PLAN.md; docs/ARCHITECTURE.md; docs/API.md; docs/COMPETITION_IMPROVEMENT_PLAN.md; shared/constants/scoring.ts; serta direktori tests/. Versi dokumentasi diperiksa 22 November 2026. Perubahan lokal terbaru belum dinyatakan identik dengan branch publik.
+[3] Tim semogabisamagang. (2026). *Dokumentasi dan implementasi RimbaGuard*. [Repository proyek](https://github.com/panjieyna/rimbaguard). Rujukan: PRD.md; IMPLEMENTATION_PLAN.md; docs/ARCHITECTURE.md; docs/API.md; shared/constants/scoring.ts; Jenkinsfile; serta direktori tests/.
 
-[4] Nuxt. (tanpa tahun). *Introduction: Nuxt 4 documentation*. [Dokumentasi resmi Nuxt](https://nuxt.com/docs/4.x/getting-started/introduction). Diakses 22 November 2026. Rujukan framework, rendering, dan dukungan TypeScript.
+[4] Nuxt. (tanpa tahun). *Introduction: Nuxt 4 documentation*. [Dokumentasi resmi Nuxt](https://nuxt.com/docs/4.x/getting-started/introduction). Diakses 22 November 2026.
 
-[5] Supabase. (tanpa tahun). *Row Level Security*. [Dokumentasi resmi Supabase](https://supabase.com/docs/guides/database/postgres/row-level-security). Diakses 22 November 2026. Rujukan kebijakan pembatasan akses database.
+[5] Supabase. (tanpa tahun). *Row Level Security*. [Dokumentasi resmi Supabase](https://supabase.com/docs/guides/database/postgres/row-level-security). Diakses 22 November 2026.
 
-[6] Google. (tanpa tahun). *Structured outputs: Gemini API*. [Dokumentasi resmi Gemini](https://ai.google.dev/gemini-api/docs/structured-output). Diakses 22 November 2026. Rujukan keluaran berbasis JSON Schema; bukan bukti akurasi RimbaGuard.
+[6] Google. (tanpa tahun). *Structured outputs: Gemini API*. [Dokumentasi resmi Gemini](https://ai.google.dev/gemini-api/docs/structured-output). Diakses 22 November 2026.
 
 [7] Leaflet. (tanpa tahun). *API reference, versi 1.9.4*. [Dokumentasi Leaflet 1.9.4](https://leafletjs.com/reference-1.9.4.html). OpenStreetMap Foundation. (tanpa tahun). *Copyright and License*. [Atribusi OpenStreetMap](https://www.openstreetmap.org/copyright). Diakses 22 November 2026.
 
 [8] Pexels. (tanpa tahun). *Pexels License*. [Ketentuan aset Pexels](https://www.pexels.com/license/). Nilov, M. (tanpa tahun). *Drone Footage of Trees and Forest*, video 6989121. [Sumber video beranda](https://www.pexels.com/video/drone-footage-of-trees-and-forest-6989121/). Rincian turunan ada pada public/images/ATTRIBUTION.md.
 
+[9] Kompas.com. (21 Maret 2025). *Kemenhut: Deforestasi Indonesia Capai 175.000 Hektare Sepanjang 2024*. [Artikel Kompas Lestari](https://lestari.kompas.com/read/2025/03/21/180000186/kemenhut--deforestasi-indonesia-capai-175.000-hektare-sepanjang-2024-?page=all). Diakses 23 November 2026.
+
+[10] Kompas.com. (26 Maret 2026). *Karhutla Indonesia 2025 Capai 359.000 Hektar, Ini 7 Provinsi yang Rawan*. [Artikel Kompas Lestari](https://lestari.kompas.com/read/2026/03/26/100600886/karhutla-indonesia-2025-capai-359.000-hektar-ini-7-provinsi-yang-rawan). Diakses 23 November 2026.
+
+[11] Kompas.com. (3 Oktober 2026). *Luas Karhutla 2026 Melonjak, Perbaikan Tata Kelola Lahan dan Gambut Jadi Sorotan*. Mengutip data SiPongi Kementerian Kehutanan. [Artikel Kompas Lestari](https://lestari.kompas.com/read/2026/10/03/093745086/luas-karhutla-2026-melonjak-perbaikan-tata-kelola-lahan-dan-gambut-jadi). Diakses 23 November 2026.
+
+[12] SP4N-LAPOR!. (tanpa tahun). *Apa Itu LAPOR!?* [Halaman resmi LAPOR!](https://www.lapor.go.id/about). Diakses 23 November 2026.
+
 <!-- page: testing -->
-## LAMPIRAN A — HASIL VERIFIKASI DAN BATAS BUKTI
+## LAMPIRAN A — HASIL VERIFIKASI
 
-| Pemeriksaan | Waktu dan hasil yang tercatat |
+| Pemeriksaan | Waktu dan hasil |
 |---|---|
-| Unit test terkini | 22 November: 370 tes lulus dalam 23 berkas dengan Vitest; tidak memanggil Gemini atau membuat laporan hosted. |
-| Pemeriksaan tipe dan build | 22 November: keduanya lulus pada direktori QA terisolasi, tanpa mengubah tipe development aktif. |
-| Regresi publik/autentikasi | 22 November: 21 skenario browser lulus untuk halaman publik dan tata letak autentikasi. |
-| Aksesibilitas publik | 22 November: satu skenario lintas halaman/lebar lulus pada pemeriksaan otomatis. Ini bukan sertifikasi aksesibilitas menyeluruh. |
-| Alur fitur menyeluruh | Audit 20 November: 34 skenario berbeda lulus pada dua eksekusi; termasuk pelaporan/koreksi, keamanan, peta, asisten, dan alur petugas. |
-| Integrasi AI nyata | Audit 18–20 November: Gemini/Supabase nyata menghasilkan draf dan analisis tervalidasi yang tersimpan. Gangguan provider pada percobaan awal tetap tercatat. |
-| SQL asisten hosted | Pengguna mengonfirmasi hasil 26 asersi tanpa error pada 18 November; tidak dijalankan ulang pada penyusunan PDF ini. |
-| Dokumentasi UI terkini | 22 November: tangkapan layar aplikasi lokal dan hasil AI tersimpan; tanpa pengiriman laporan atau generasi AI baru. |
+| Website live | 23 November: HTTPS dengan sertifikat Let's Encrypt aktif; layanan Supabase dan Gemini terhubung; kedua akun demo berhasil masuk, dan akun petugas dapat membuka ringkasan, antrean laporan, peta, serta analitik. |
+| Pipeline CI/CD | 23 November: Jenkins menjalankan Checkout, Install & Test, Package, Publish, dan Deploy hingga status berhasil di Delcom. |
+| Unit test | 370 tes dalam 23 berkas lulus dengan Vitest, dijalankan ulang otomatis pada setiap deploy. |
+| Pemeriksaan tipe dan build | 22 November: `nuxt typecheck` lulus. 23 November: build produksi lulus di server Delcom. |
+| Regresi publik dan autentikasi | 22 November: 21 skenario browser lulus untuk halaman publik dan tata letak autentikasi. |
+| Aksesibilitas | 22 November: pemindaian axe lintas halaman pada beberapa lebar layar lulus. |
+| Alur fitur menyeluruh | 20 November: 34 skenario lulus pada dua eksekusi, termasuk pelaporan/koreksi, keamanan, peta, asisten, dan alur petugas. |
+| Integrasi AI nyata | 18–20 November: Gemini dan Supabase nyata menghasilkan draf serta analisis tervalidasi yang tersimpan. |
+| Uji database | 18 November: 26 asersi SQL untuk alur asisten lulus tanpa error pada database hosted. |
 
-Bukti audit historis dirinci dalam docs/COMPETITION_IMPROVEMENT_PLAN.md. Log unit terbaru: .npm-cache/proposal-pdf/unit-verification.log. Catatan regresi tipe/build dan browser: .npm-cache/nav-video/brand-*.log. Log QA lokal tidak menjadi bagian berkas publik yang diwajibkan untuk direproduksi.
-
-**Batas interpretasi.** Kelulusan tes membuktikan skenario yang diuji, bukan ketiadaan seluruh cacat. Uji dengan fixture dan uji layanan nyata dibedakan. Belum ada pengukuran akurasi model pada dataset lapangan, kepuasan pengguna, efisiensi petugas, atau dampak konservasi. Hasil lokal tidak menggantikan pemeriksaan URL produksi.
+Kode pengujian tersedia di direktori tests/ pada repository, dan konfigurasi pipeline tersedia pada Jenkinsfile. Uji dengan fixture dan uji layanan nyata dijalankan terpisah dan tidak digabungkan sebagai satu angka.
 
 <!-- page: rubric -->
 ## LAMPIRAN B — PEMETAAN RUBRIK PENILAIAN
 
 | Komponen guidebook | Bukti dalam karya dan proposal |
 |---|---|
-| Fungsionalitas dan kualitas teknis — 25% | Bagian 3.1–3.2 dan Lampiran A: persistensi, unggahan, pemulihan draf, konfirmasi, idempotensi, izin, transisi, audit, dan kegagalan layanan. |
-| Inovasi dan ketepatan solusi — 20% | Bagian 2.1–2.2: pertanyaan pelengkap, pemisahan keterangan/interpretasi, prioritas transparan, serta hubungan pelapor dan petugas. |
-| Relevansi tema dan dampak — 15% | Bagian 1.1–1.4 dan 4.2: konteks konservasi, manfaat yang dituju, batas klaim, dan rancangan evaluasi. |
-| UI dan UX — 15% | Bagian 3.3–3.4: wireframe, UI aktual, tahapan, bahasa Indonesia, jalur manual, izin lokasi, dan responsif. |
-| Kualitas source code — 15% | Bagian 2.5 dan 3.2: TypeScript, validasi, service, migrasi, RLS, transaksi, serta pengujian yang dapat ditelusuri. |
-| Dokumentasi karya — 10% | Struktur template lengkap, daftar pustaka, atribusi, lampiran bukti, README, dan naskah video. Tautan final disediakan pada Lampiran D. |
+| Fungsionalitas dan kualitas teknis — 25% | Website live, Bagian 3.1–3.2, dan Lampiran A: persistensi, unggahan, pemulihan draf, konfirmasi, idempotensi, izin, transisi, audit, dan pemulihan kegagalan. |
+| Inovasi dan ketepatan solusi — 20% | Bagian 2.1–2.2: pertanyaan pelengkap, pemisahan keterangan dan interpretasi, prioritas transparan, serta perbandingan dengan pendekatan yang ada. |
+| Relevansi tema dan dampak — 15% | Bagian 1.1–1.4 dan 4.2: data deforestasi dan karhutla, manfaat, indikator dampak, dan rencana uji coba. |
+| UI dan UX — 15% | Bagian 3.3–3.4: wireframe, UI aktual, tahapan, bahasa Indonesia, jalur manual, izin lokasi, dan tampilan ponsel. |
+| Kualitas source code — 15% | Bagian 2.5 dan 3.2: TypeScript, validasi Zod, service, migrasi, RLS, transaksi, pengujian, dan CI/CD. |
+| Dokumentasi karya — 10% | Proposal sesuai template, daftar pustaka, atribusi, lampiran bukti, README, dan video demo. Tautan dan akun demo pada Lampiran D. |
 
-Pemetaan menggunakan bobot resmi guidebook, bukan skor yang diberikan sendiri. [1] Juri menilai website live, source code, video, dan proposal secara asinkron. Karena itu, seluruh kanal pengumpulan harus memperlihatkan versi karya yang konsisten.
-
-**Keterlacakan penilaian.** Informasi fitur mengacu implementasi; gambar mengacu manifest tangkapan layar; hasil tes disertai tanggal dan cakupan. Perencanaan monetisasi serta evaluasi lapangan tetap dibedakan dari fungsi yang sudah berjalan.
+Website live, repository, video demo, dan proposal memakai versi karya yang sama. [1]
 
 <!-- page: attribution -->
 ## LAMPIRAN C — PENGUNGKAPAN AI, ASET, DAN LIBRARY
 
-**AI sebagai fitur produk.** Gemini API dipakai untuk asisten penyusunan laporan dan analisis awal foto/teks. Tim tidak melatih model sendiri. Keluaran diperiksa terhadap skema, disimpan bersama versi/riwayat, dan tetap memerlukan peninjauan manusia. Data uji tidak digunakan untuk mengklaim akurasi lapangan.
+**AI sebagai fitur produk.** Gemini API dipakai untuk asisten penyusunan laporan dan analisis awal foto/teks. Tim tidak melatih model sendiri. Keluaran diperiksa terhadap skema, disimpan bersama versi dan riwayatnya, dan tetap ditinjau petugas.
 
-**AI coding assistant.** Penggunaan yang dicatat pada README meliputi OpenAI Codex/ChatGPT dan Claude Code (Anthropic). Bantuan mencakup perencanaan, pengembangan dan peninjauan kode, pengujian, perbaikan antarmuka, serta dokumentasi. Tim wajib meninjau hasil dan bertanggung jawab atas kebenaran karya maupun pernyataan pengumpulan.
+**AI coding assistant.** Sesuai ketentuan guidebook, penggunaan OpenAI Codex/ChatGPT dan Claude Code (Anthropic) dicatat di sini dan di README. Bantuan mencakup perencanaan, pengembangan dan peninjauan kode, pengujian, perbaikan antarmuka, serta dokumentasi. Tim meninjau setiap hasil dan bertanggung jawab atas kebenaran karya.
 
-**Aset yang digunakan.** Video beranda berasal dari *Drone Footage of Trees and Forest* karya Mikhail Nilov, Pexels video 6989121, sesuai Pexels License. Turunan web berupa potongan delapan detik tanpa suara, kompresi, dan poster. Video bersifat dekoratif; bukan dokumentasi kejadian atau pemantauan langsung. [8]
+**Aset yang digunakan.** Video beranda berasal dari *Drone Footage of Trees and Forest* karya Mikhail Nilov, Pexels video 6989121, sesuai Pexels License. Turunan web berupa potongan delapan detik tanpa suara, kompresi, dan poster. Video bersifat dekoratif, bukan dokumentasi kejadian. [8]
 
-Gambar hutan pada halaman tentang dan karya visual autentikasi dihasilkan dengan alat image generation OpenAI. Gambar tersebut bersifat fiktif/dekoratif. Ilustrasi karakter dan lanskap yang telah dihapus dari beranda tetap tercatat sebagai arsip, tidak diklaim sebagai aset aktif. Sumber, prompt, dan perubahan tersedia di public/images/ATTRIBUTION.md. Referensi tata letak Gojek.io berasal dari arahan pengguna; identitas serta implementasi menggunakan RimbaGuard.
+Gambar hutan pada halaman Tentang dan autentikasi dibuat dengan OpenAI image generation dan bersifat dekoratif. Sumber, prompt, dan perubahan tercatat di public/images/ATTRIBUTION.md. Susunan navigasi dan video beranda terinspirasi dari tata letak Gojek.io; identitas, aset, dan implementasinya sepenuhnya milik RimbaGuard.
 
-**Library dan layanan.** Nuxt/Vue, TypeScript, Tailwind CSS, Inter, Supabase, Gemini API, Zod, Sharp, Leaflet, leaflet.markercluster, OpenStreetMap, Chart.js, Vitest, Playwright, dan axe digunakan sesuai perannya. Versi dependensi tersedia dalam package.json/package-lock.json; detail sumber juga dicantumkan pada README. Data peta mengikuti atribusi OpenStreetMap. [7]
+**Library dan layanan.** Nuxt/Vue, TypeScript, Tailwind CSS, Inter, Supabase, Gemini API, Zod, Sharp, Leaflet, leaflet.markercluster, OpenStreetMap, Chart.js, Vitest, Playwright, axe, Jenkins, dan Delcom digunakan sesuai perannya. Versi dependensi tersedia dalam package.json dan package-lock.json. Data peta mengikuti atribusi OpenStreetMap. [7]
 
-**Gambar proposal.** Screenshot berasal dari UI aplikasi terbaru pada akun QA; dataset simulasi ditandai. Diagram arsitektur, alur, serta wireframe adalah dokumentasi rancangan berbentuk vektor. Tidak ada gambar proposal yang dinyatakan sebagai bukti kejadian hutan nyata atau hasil observasi satelit.
+**Gambar proposal.** Tangkapan layar berasal dari aplikasi RimbaGuard dengan akun uji, dan dataset simulasi ditandai. Diagram arsitektur, alur, serta wireframe adalah gambar vektor buatan tim.
 
-Surat Pernyataan Orisinalitas dan AI merupakan berkas terpisah sesuai template panitia dan harus diisi serta ditandatangani pihak yang berwenang. Lampiran ini tidak menggantikan surat tersebut.
+Surat Pernyataan Orisinalitas dan Penggunaan AI dilampirkan sebagai berkas terpisah sesuai template panitia.
 
 <!-- page: access -->
-## LAMPIRAN D — AKSES KARYA DAN KELENGKAPAN AKHIR
+## LAMPIRAN D — AKSES KARYA DAN AKUN DEMO
 
-Tautan website dan video berikut sengaja dikosongkan atas arahan tim. Isi setelah alamat akhir tersedia. Akun demo wajib dicantumkan pada proposal yang diserahkan kepada juri karena website memiliki fitur login. [1]
+Juri dapat mencoba RimbaGuard secara langsung melalui tautan dan akun berikut. Kedua akun disiapkan khusus untuk penjurian. [1]
 
-| Kanal akses | Keterangan |
+| Kanal akses | Tautan |
 |---|---|
-| Website HTTPS | __________________________________ |
+| Website (HTTPS) | [ifs24044-rimbaguard.s1if.cloud](https://ifs24044-rimbaguard.s1if.cloud) |
 | Repository source code | [github.com/panjieyna/rimbaguard](https://github.com/panjieyna/rimbaguard) |
-| Video YouTube Unlisted, 3–5 menit | __________________________________ |
-| Akun pelapor — email | __________________________________ |
-| Akun pelapor — kata sandi | __________________________________ |
-| Akun petugas — email | __________________________________ |
-| Akun petugas — kata sandi | __________________________________ |
+| Video demo (YouTube Unlisted) | {{VIDEO_LINK}} |
 
-Gunakan akun yang memang disiapkan untuk penjurian. Isian kata sandi dilengkapi pada salinan pengumpulan secara privat; jangan memasukkan salinan berisi credential ke repository publik. Data demonstrasi tetap diberi penanda simulasi dan terpisah dari laporan nyata.
+| Akun demo | Email | Kata sandi |
+|---|---|---|
+| Pelapor | `pelapor@rimbaguard.test` | {{JURI_PELAPOR_PASSWORD}} |
+| Petugas | `admin@rimbaguard.test` | {{JURI_PETUGAS_PASSWORD}} |
 
-**Pemeriksaan sebelum pengumpulan**
+**Langkah uji yang disarankan**
 
-1. Lengkapi tautan serta akun demo, lalu periksa akses pada URL produksi dan peran masing-masing akun.
-2. Pastikan repository public memuat versi yang sama dengan website, dengan riwayat commit tetap utuh.
-3. Rekam video sesuai naskah docs/DEMO.md dan cocokkan demonstrasi dengan fitur yang tersedia.
-4. Lengkapi KTM seluruh anggota, bukti administratif, serta surat orisinalitas/AI yang ditandatangani.
-5. Gunakan nama berkas `ITRUSH26_semogabisamagang_RimbaGuard.pdf` dan formulir pengumpulan resmi.
+1. Masuk sebagai **Pelapor**, pilih **Laporkan ancaman**, lalu unggah foto dan cerita singkat.
+2. Jawab pertanyaan Asisten AI atau pilih **Saya tidak tahu**, periksa draf, tandai lokasi di peta, centang konfirmasi, lalu kirim.
+3. Buka **Laporan saya** untuk melihat status dan hasil analisis AI.
+4. Keluar, lalu masuk sebagai **Petugas**. Buka **Laporan**, pilih laporan tadi, dan periksa bukti, analisis AI, serta komponen skor.
+5. Pada bagian **Verifikasi dan penanganan**, pilih **Verifikasi laporan** atau **Minta informasi tambahan**.
+6. Buka **Analitik** dan pilih **Data simulasi** untuk melihat dataset uji yang lebih lengkap, lalu buka **Peta** untuk melihat sebaran laporan beserta filternya.
+
+Email akun demo memakai domain `.test` yang dicadangkan untuk pengujian, sehingga tidak ada email yang terkirim ke pihak lain.

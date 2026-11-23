@@ -19,3 +19,6 @@ supabase/.branches/
 
 # Rendered demo video, subtitles and recording assets (large files, not source)
 demo-video/
+
+# Proposal copy for the jury (contains demo-account passwords)
+submission/
