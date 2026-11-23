@@ -3,7 +3,7 @@ import type { AdminSettingsResponse } from '../../../shared/types/admin-api'
 import { NEARBY_RADIUS_KM, NEARBY_WINDOW_DAYS, PRIORITY_THRESHOLDS, SCORING_WEIGHTS } from '#shared/constants/scoring'
 
 definePageMeta({ middleware: 'auth', layout: 'admin' })
-useSeoMeta({ title: 'Pengaturan — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Pengaturan — RimbaGuard', robots: 'noindex' })
 const requestFetch = useRequestFetch()
 const { data, status, error, refresh } = await useAsyncData('admin-settings', () => requestFetch<AdminSettingsResponse>('/api/admin/settings'))
 // The session is the single source of the account shown here, so the header,

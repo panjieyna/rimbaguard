@@ -1,4 +1,4 @@
-# Skrip demo RimbaGuard AI (data simulasi)
+# Skrip demo RimbaGuard (data simulasi)
 
 Panduan rekaman video demo 3–5 menit. Seluruh demo memakai **data simulasi berlabel**, bukan kejadian nyata. Jangan mengarang laporan nyata, statistik, atau publikasi untuk demo.
 

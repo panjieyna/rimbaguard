@@ -16,3 +16,6 @@ Thumbs.db
 supabase/.temp/
 supabase/.branches/
 
+
+# Rendered demo video, subtitles and recording assets (large files, not source)
+demo-video/

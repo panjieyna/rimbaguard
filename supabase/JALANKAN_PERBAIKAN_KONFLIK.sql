@@ -1,4 +1,4 @@
--- RIMBAGUARD AI: PERBAIKAN KONFLIK HTTP 409
+-- RIMBAGUARD: PERBAIKAN KONFLIK HTTP 409
 -- Salin SELURUH isi file ini ke Supabase SQL Editor -> New query -> Run.
 -- Prasyarat: migrasi fondasi 001 dan pelaporan 002 sudah terpasang.
 -- Mengganti hanya kode konflik bisnis pada lima fungsi; data dan izin dipertahankan.

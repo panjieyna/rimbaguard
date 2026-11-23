@@ -5,7 +5,7 @@ import { MAP_DATASETS, MAP_DATASET_LABELS, MAP_PRIORITY_FILTERS, MAP_PRIORITY_FI
 import { QUEUE_SCOPES, QUEUE_SCOPE_LABELS } from '#shared/constants/workflow'
 
 definePageMeta({ middleware: 'auth', layout: 'admin' })
-useSeoMeta({ title: 'Laporan Masuk — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Laporan Masuk — RimbaGuard', robots: 'noindex' })
 const route = useRoute()
 const KEYS = ['scope', 'category', 'priority', 'dataset'] as const
 // A string key changes only when the filters change.

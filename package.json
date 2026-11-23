@@ -1,5 +1,5 @@
 {
-  "name": "rimbaguard-ai",
+  "name": "rimbaguard",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -17,7 +17,7 @@
     "test:watch": "vitest",
     "test:smoke": "node scripts/smoke-foundation.mjs",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test tests/e2e/public.spec.ts tests/e2e/auth-layout.spec.ts tests/e2e/account-navigation.spec.ts tests/e2e/accessibility.spec.ts",
+    "test:e2e:ui": "playwright test tests/e2e/public.spec.ts tests/e2e/hero-motion.spec.ts tests/e2e/scroll-reveal.spec.ts tests/e2e/auth-layout.spec.ts tests/e2e/account-navigation.spec.ts tests/e2e/report-thumbnails.spec.ts tests/e2e/accessibility.spec.ts",
     "test:e2e:prepare": "node scripts/prepare-e2e-account.mjs",
     "test:e2e:prepare-officer": "node scripts/prepare-e2e-officer.mjs",
     "check:services": "node scripts/check-services.mjs",
@@ -44,6 +44,7 @@
     "@types/leaflet": "^1.9.0",
     "@types/leaflet.markercluster": "1.5.6",
     "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "4.1.12",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.9.0",
     "vitest": "^4.0.0",

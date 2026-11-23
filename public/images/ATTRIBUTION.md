@@ -1,3 +1,15 @@
+# Reporting workflow landscape v2 — 21 November 2026
+
+`workflow-landscape-v2.webp` and `workflow-landscape-v2-640.webp` are responsive derivatives of a new fictional forest illustration generated with the built-in OpenAI **imagegen** tool. The fallback CLI was not used.
+
+- Original generated dimensions: 1536 × 1024 px, RGBA with transparency. The prompt requested a roughly square composition; the actual delivered landscape dimensions are recorded here.
+- Preparation: proportionally resized to 1280 × 853 and 640 × 427 px, encoded as WebP at quality 88 and 85. Transparency is preserved; no upscaling, cropping, background replacement or composite elements were applied. File sizes: 162,340 and 57,768 bytes.
+- Previous usage: an illustrated layout trial for `app/components/landing/ReportingWorkflow.vue`. The user subsequently chose a minimalist layout without artwork on 21 November 2026. These derivatives and their prompt are retained as an archive; the homepage no longer references them. There are no people or text embedded in the illustration.
+- It is decorative artwork, not a real named location, report photograph, satellite observation or AI analysis result. Layout inspiration was the Gojek section supplied by the user; no Gojek branding or media is used.
+- Exact generation prompt:
+
+> Use case: illustration-story. Asset type: a standalone transparent-background editorial landscape illustration for the HOW IT WORKS section of RimbaGuard, an Indonesian community forest-reporting website. Primary request: a modern, restrained tropical forest landscape, WITHOUT PEOPLE. This asset sits in the LEFT column, while native HTML heading, three reporting steps, and a report button sit in a separate RIGHT column. Generate only the illustration, no webpage or text. Scene: a thoughtfully composed cluster of tropical broadleaf trees over two or three softly rolling forested hills, a narrow warm-ivory footpath curving gently from the foreground into the trees, a few understated ferns at the base, and subtle distant sage-green ridgelines. Style: polished flat editorial illustration with clean organic silhouettes, simple bold leaf groupings, restrained minimal shading, crisp edges and very subtle texture; grown-up, calm, welcoming, not a children's cartoon and not photorealistic. Palette limited to deep forest green #173D32, evergreen #285C48, muted leaf green #4B8065, pale sage #D7E4D5, and warm ivory #FAFAF7. Composition: a balanced roughly square standalone vignette, wider than tall in its main landscape mass, varied tree canopy heights, graceful open negative space above the treetops, entirely visible foreground/hill silhouette; no rectangular sky, panel, enclosing circle or border. Actual transparent alpha everywhere outside the organic silhouette, especially the upper and side areas, so it sits naturally on an ivory website background. The forest should feel substantial at 500px desktop width but retain clear shapes at 280px mobile width. No humans, no person with phone, no animals, no flags, no corporate logos, no Gojek elements, no labels, no lettering, no UI, no pins, no numbers, no watermark, no cyan clouds, no orange/yellow accents, no glowing effects. This is a fictional decorative landscape, not a real named location, satellite image, or evidence of any incident.
+
 # About page forest — 17 November 2026
 
 `about-rainforest.webp` and `about-rainforest-768.webp` are WebP derivatives of a new fictional forest scene generated with the built-in OpenAI image generation tool (not the fallback CLI). They replace the wide panorama in the About introduction only.
@@ -11,7 +23,7 @@
 
 # Reporting workflow forest
 
-`workflow-forest.webp` is a fictional illustrated forest generated with the built-in OpenAI image generation tool on 16 November 2026. It is a separate decorative layer behind the reporting character; report steps, icons, buttons and privacy information are native page content. It is not a photograph, location record or environmental observation.
+`workflow-forest.webp` is a fictional illustrated forest generated with the built-in OpenAI image generation tool on 16 November 2026. It previously appeared behind the reporting character. On 21 November 2026 the landscape was removed from the homepage layout to match the video hero; the existing asset and its provenance are retained here. Report steps, icons, buttons and privacy information are native page content. This asset is not a photograph, location record or environmental observation.
 
 - Asset preparation: resized to 1000 × 1250 px and compressed to WebP; alpha transparency is preserved. The page adds responsive positioning and edge masks.
 - Final generation prompt:
@@ -22,7 +34,7 @@
 
 `reporting-character.webp` is a fictional cartoon character generated with the built-in OpenAI image generation tool on 16 November 2026. Its alpha channel is preserved; there is no rectangular photo background. It illustrates community reporting and does not depict a real reporter or an AI result.
 
-- Used in `app/components/landing/ReportingWorkflow.vue` with a single entrance animation, disabled for reduced-motion preferences. The surrounding steps are native page content, not text baked into the image.
+- Previously used in `app/components/landing/ReportingWorkflow.vue`. The character was removed from the homepage at the user's request on 21 November 2026; the asset and generation record are retained here. The current workflow uses native text, icons and controls.
 - Asset preparation: transparent outer padding trimmed, resized to 371 × 1200 px, and compressed to WebP with transparency preserved.
 - Final generation prompt:
 
@@ -34,8 +46,21 @@
 
 - Brief: a horizontal panorama of tropical broadleaf forest, a winding river, and misty hills, with natural colors and no people, text, or incident claims.
 - This is an AI illustration of a fictional landscape. It does not depict a named real location and is not environmental evidence, satellite data, or a report photograph.
-- The asset is used as a decorative landing background, in the split-screen authentication layout, and in the About page introduction. Its AI provenance is documented here and in README; at the user's request, asset captions are omitted from the page. No external photographer attribution or Creative Commons license is claimed for this asset.
+- The panorama was previously the landing background and remains part of the split-screen authentication artwork. The current homepage uses the licensed video described below. Its AI provenance is documented here and in README; at the user's request, asset captions are omitted from the page. No external photographer attribution or Creative Commons license is claimed for this generated asset.
 - Changes after generation: resized and compressed to WebP; narrower screens use a landscape display crop.
+
+# Homepage forest video — 20 November 2026
+
+`public/videos/rainforest-canopy-1080.mp4` and `rainforest-canopy-720.mp4` are website derivatives of **Drone Footage of Trees and Forest** by **Mikhail Nilov**, Pexels video **6989121**.
+
+- Source: https://www.pexels.com/video/drone-footage-of-trees-and-forest-6989121/
+- Original video: https://videos.pexels.com/video-files/6989121/6989121-hd_1920_1080_25fps.mp4
+- License: Pexels License, https://www.pexels.com/license/ (verified 20 November 2026). Website use and modification are permitted; no endorsement by the creator or Pexels is implied.
+- Preparation: first eight seconds, resized/encoded as silent H.264 MP4 at 1920 × 1080 and 1280 × 720, with a short dissolve into the initial frame for looping. Outputs are approximately 1.28 MB and 0.69 MB.
+- `rainforest-motion-poster.jpg` and `rainforest-motion-poster-768.jpg` are downloaded from the video's Pexels thumbnail at https://images.pexels.com/videos/6989121/pexels-photo-6989121.jpeg with width/compression parameters. The same license applies.
+- This is decorative stock footage. It is not a report photograph, live monitoring, satellite imagery, or evidence of an environmental incident. No named location is inferred.
+- Playback is muted and inline, with no visible playback controls at the user's request (21 November 2026). It pauses out of view or while the tab is hidden. Reduced-motion and data-saving preferences keep the poster without downloading video.
+- Navigation/hero layout reference supplied by the user: https://www.gojek.io/. The implementation uses RimbaGuard branding, Indonesian navigation and its existing functions.
 
 # Previously used forest photograph
 

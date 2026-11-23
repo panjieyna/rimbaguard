@@ -2,10 +2,10 @@
 import type { AdminDashboardResponse } from '../../../shared/types/admin-api'
 import { REPORT_STATUS_LABELS, THREAT_CATEGORY_LABELS } from '#shared/constants/domain'
 import { ANALYTICS_DATASETS, ANALYTICS_DATASET_LABELS, STATUS_DISPLAY_ORDER } from '#shared/constants/workflow'
-import { timeBuckets } from '~/utils/analytics'
+import { formatDateRange, timeBuckets } from '~/utils/analytics'
 
 definePageMeta({ middleware: 'auth', layout: 'admin' })
-useSeoMeta({ title: 'Ringkasan Petugas — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Ringkasan Petugas — RimbaGuard', robots: 'noindex' })
 const route = useRoute()
 const dataset = computed(() => route.query.dataset === 'simulation' ? 'simulation' : 'real')
 const requestFetch = useRequestFetch()
@@ -22,11 +22,11 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
 
 
 <template>
-  <div class="admin-page">
+  <div class="admin-page dashboard-page">
     <AdminPageHeader title="Ringkasan" description="Pantau laporan masuk, tentukan prioritas pemeriksaan, dan ikuti perkembangan penanganan.">
-      <nav aria-label="Pilihan data" class="inline-flex max-w-full rounded-xl border border-line bg-white p-1">
-        <NuxtLink v-for="option in ANALYTICS_DATASETS" :key="option" :to="{ query: option === 'real' ? {} : { dataset: option } }" class="flex min-h-11 items-center rounded-lg px-4 text-sm font-medium" :class="dataset === option ? 'bg-forest-900 text-white' : 'text-charcoal/75 hover:bg-sage-100'" :aria-current="dataset === option ? 'page' : undefined">{{ ANALYTICS_DATASET_LABELS[option] }}</NuxtLink>
-      </nav>
+      <div class="dashboard-data"><p class="mb-2 text-sm font-medium text-[#526057]">Sumber laporan</p><nav aria-label="Pilihan data" class="inline-flex max-w-full rounded-full border border-[#DCE3D8] bg-white p-1">
+        <NuxtLink v-for="option in ANALYTICS_DATASETS" :key="option" :to="{ query: option === 'real' ? {} : { dataset: option } }" class="flex min-h-11 items-center rounded-full px-4 text-sm font-medium" :class="dataset === option ? 'bg-forest-900 text-white' : 'text-charcoal/75 hover:bg-sage-100'" :aria-current="dataset === option ? 'page' : undefined">{{ ANALYTICS_DATASET_LABELS[option] }}</NuxtLink>
+      </nav></div>
     </AdminPageHeader>
     <p v-if="dataset === 'simulation'" class="notice font-medium">Menampilkan data simulasi untuk pengujian dan demo. Angka ini tidak termasuk laporan nyata.</p>
 
@@ -37,11 +37,11 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
       <section aria-labelledby="summary-title">
         <h2 id="summary-title" class="sr-only">Kondisi laporan saat ini</h2>
         <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 min-[87.5rem]:grid-cols-5">
-          <AdminStatTile label="Total laporan" :value="summary.total" hint="Seluruh laporan pada pilihan data ini." icon="reports" />
+          <AdminStatTile label="Total laporan" :value="summary.total" hint="Semua laporan pada pilihan data ini." icon="reports" featured />
           <AdminStatTile label="Menunggu verifikasi" :value="summary.pendingVerification" hint="Siap diperiksa petugas." icon="clock" tone="amber" :to="`/admin/reports?scope=pending_verification${dataset === 'simulation' ? '&dataset=simulation' : ''}`" />
-          <AdminStatTile label="Prioritas tinggi" :value="summary.highPriority" hint="Laporan aktif yang perlu didahulukan." icon="alert" tone="red" :to="`/admin/reports?priority=high${dataset === 'simulation' ? '&dataset=simulation' : ''}`" />
+          <AdminStatTile label="Prioritas tinggi" :value="summary.highPriority" hint="Perlu didahulukan pemeriksaannya." icon="alert" tone="red" :to="`/admin/reports?priority=high${dataset === 'simulation' ? '&dataset=simulation' : ''}`" />
           <AdminStatTile label="Telah diverifikasi" :value="summary.verified" hint="Termasuk ditindaklanjuti dan selesai." icon="shield" />
-          <AdminStatTile label="Selesai ditangani" :value="summary.resolved" :hint="`${summary.rejected} laporan ditolak dicatat terpisah.`" icon="check" />
+          <AdminStatTile label="Selesai ditangani" :value="summary.resolved" :hint="`${summary.rejected} laporan ditolak dihitung terpisah.`" icon="check" />
         </dl>
       </section>
 
@@ -53,7 +53,7 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
       <section class="admin-panel overflow-hidden" aria-labelledby="queue-title">
         <div class="admin-panel-header">
           <div><h2 id="queue-title" class="admin-section-title">Antrean prioritas</h2><p class="admin-muted mt-1">{{ data.queueTotal.toLocaleString('id-ID') }} laporan aktif · lima teratas berdasarkan skor</p></div>
-          <NuxtLink :to="queueLink({})" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-forest-700 hover:underline">Lihat semua laporan<AdminIcon name="arrow-right" class="size-4" /></NuxtLink>
+          <NuxtLink :to="queueLink({})" class="button-secondary">Lihat semua laporan<AdminIcon name="arrow-right" class="size-4" /></NuxtLink>
         </div>
         <div v-if="!data.queue.length" class="admin-empty"><AdminIcon name="check" class="mx-auto mb-3 size-8 text-forest-500" /><p class="font-medium text-forest-900">Antrean aktif kosong</p><p class="mt-1">Tidak ada laporan aktif yang menunggu penanganan.</p></div>
         <AdminQueueList v-else :reports="data.queue" caption="Lima laporan aktif dengan prioritas tertinggi" />
@@ -61,7 +61,7 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
 
       <section aria-labelledby="charts-title">
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div><h2 id="charts-title" class="admin-section-title">Laporan masuk 30 hari terakhir</h2><p class="admin-muted mt-1">{{ data.analytics.rangeTotal.toLocaleString('id-ID') }} laporan · {{ data.analytics.range.from }} – {{ data.analytics.range.to }} WIB</p></div>
+          <div><h2 id="charts-title" class="admin-section-title">Laporan masuk 30 hari terakhir</h2><p class="admin-muted mt-1">{{ data.analytics.rangeTotal.toLocaleString('id-ID') }} laporan · {{ formatDateRange(data.analytics.range.from, data.analytics.range.to) }} WIB</p></div>
           <NuxtLink :to="{ path: '/admin/analytics', query: dataset === 'simulation' ? { dataset } : {} }" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-forest-700 hover:underline">Buka analitik<AdminIcon name="arrow-right" class="size-4" /></NuxtLink>
         </div>
         <div v-if="rangeEmpty" class="admin-panel admin-empty"><AdminIcon name="analytics" class="mx-auto mb-3 size-8 text-forest-500" /><p>Belum ada laporan masuk dalam 30 hari terakhir.</p><p class="admin-muted mt-1">Grafik akan muncul setelah ada laporan pada rentang ini.</p></div>
@@ -72,10 +72,15 @@ const queueLink = (query: Record<string, string>) => ({ path: '/admin/reports', 
         </div>
       </section>
 
-      <section class="flex flex-wrap items-center justify-between gap-5 rounded-2xl border border-[#D9E4D5] bg-[#EAF0E9] p-5 sm:p-6" aria-labelledby="actions-title">
-        <div><h2 id="actions-title" class="text-lg font-semibold text-forest-900">Lanjutkan pemeriksaan</h2><p class="mt-1 text-sm leading-6 text-forest-900/75">Buka antrean verifikasi atau lihat sebaran laporan.</p></div>
-        <div class="flex flex-wrap gap-3"><NuxtLink :to="{ path: '/admin/map', query: dataset === 'simulation' ? { dataset } : {} }" class="button-secondary"><AdminIcon name="map" class="size-5" />Buka peta ancaman</NuxtLink><NuxtLink :to="queueLink({ scope: 'pending_verification' })" class="button-primary">Kelola verifikasi<AdminIcon name="arrow-right" class="size-4" /></NuxtLink></div>
-      </section>
     </template>
   </div>
 </template>
+
+<style scoped>
+.dashboard-page :deep(.admin-page-header > div:first-child) { flex: 1 1 30rem; }
+.dashboard-data { min-width: 0; }
+@media (min-width: 80rem) {
+  .dashboard-page :deep(.admin-page-header) { flex-wrap: nowrap; align-items: flex-start; }
+  .dashboard-data { flex-shrink: 0; padding-top: 0.25rem; }
+}
+</style>

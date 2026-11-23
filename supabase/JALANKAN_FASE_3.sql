@@ -1,4 +1,4 @@
--- RIMBAGUARD AI: FASE 3 — PENYIMPANAN ANALISIS AI
+-- RIMBAGUARD: FASE 3 — PENYIMPANAN ANALISIS AI
 -- Jalankan SELURUH isi file ini di Supabase SQL Editor -> New query -> Run.
 -- Prasyarat: migrasi 001, 002 dan 003 sudah terpasang.
 -- Menambah RPC analisis atomik; tidak membuat akun, laporan, atau hasil AI nyata.

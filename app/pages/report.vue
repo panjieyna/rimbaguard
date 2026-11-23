@@ -1,11 +1,11 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
-useSeoMeta({ title: 'Laporkan Ancaman — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Laporkan Ancaman — RimbaGuard', robots: 'noindex' })
 const { data: session } = await useAuth()
 </script>
 
 <template>
-  <div class="page-container compose-page">
+  <div class="page-container max-w-7xl compose-page">
     <header class="compose-header">
       <p class="eyebrow">Laporan masyarakat</p>
       <h1>Sampaikan yang Anda lihat.</h1>
@@ -19,15 +19,12 @@ const { data: session } = await useAuth()
 </template>
 
 <style scoped>
-.compose-page { padding-top: 2.5rem; padding-bottom: 4rem; }
-.compose-header { border: 1px solid #D0DCC9; border-radius: 1.25rem; background: #E5EDDF; padding: 1.5rem; }
-.compose-header h1 { margin-top: 0.75rem; font-size: 2.125rem; line-height: 1.2; letter-spacing: -0.035em; font-weight: 600; color: #173D32; }
-.compose-intro { max-width: 46rem; margin-top: 1rem; font-size: 1.0625rem; line-height: 1.75rem; color: #465C49; }
-.compose-layout { min-width: 0; margin-top: 2rem; }
+.compose-page { padding-top: 2rem; padding-bottom: 3rem; }
+.compose-header h1 { margin-top: 0.75rem; font-size: clamp(2rem,3.2vw,2.5rem); line-height: 1.2; letter-spacing: -0.03em; font-weight: 600; color: #173D32; }
+.compose-intro { max-width: 49rem; margin-top: 0.875rem; font-size: 1rem; line-height: 1.75rem; color: #526057; }
+.compose-layout { min-width: 0; margin-top: 1.75rem; }
 @media (min-width: 40rem) {
-  .compose-page { padding-top: 3rem; }
-  .compose-header { padding: 2rem; }
-  .compose-header h1 { font-size: 2.75rem; }
+  .compose-page { padding-top: 2.5rem; padding-bottom: 4rem; }
   .compose-intro { font-size: 1.125rem; line-height: 1.875rem; }
 }
 </style>

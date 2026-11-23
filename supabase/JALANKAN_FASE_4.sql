@@ -1,4 +1,4 @@
--- RIMBAGUARD AI: FASE 4 — PRIORITAS ANCAMAN DAN PETA
+-- RIMBAGUARD: FASE 4 — PRIORITAS ANCAMAN DAN PETA
 -- Jalankan SELURUH isi file ini di Supabase SQL Editor -> New query -> Run.
 -- Prasyarat: migrasi 001, 002, 003 dan 004 sudah terpasang.
 -- Menambah perhitungan skor prioritas v1, penanda kesegaran skor, serta proyeksi peta petugas dan publik.

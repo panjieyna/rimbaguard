@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({ middleware: 'auth' })
-useSeoMeta({ title: 'Akun Saya — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Akun Saya — RimbaGuard', robots: 'noindex' })
 const { data: session } = await useAuth()
 // Officers manage the same account from their own workspace.
 if (session.value?.user?.role === 'admin') await navigateTo('/admin/settings', { replace: true })

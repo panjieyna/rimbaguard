@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ReportListResponse } from '../../../shared/types/report-api'
 definePageMeta({ middleware: 'auth' })
-useSeoMeta({ title: 'Laporan Saya — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Laporan Saya — RimbaGuard', robots: 'noindex' })
 const { data: session } = await useAuth()
 const page = ref(1)
 const requestFetch = useRequestFetch()
@@ -9,7 +9,7 @@ const { data, status, error, refresh } = await useAsyncData('reports-list', () =
 </script>
 
 <template>
-  <div class="page-container reports-page">
+  <div class="page-container max-w-7xl reports-page">
     <div class="reports-header">
       <div><p class="eyebrow">Ruang laporan</p><h1>{{ session?.user?.role === 'admin' ? 'Semua laporan' : 'Laporan saya' }}</h1><p class="reports-intro">Ikuti status pemeriksaan dan lengkapi informasi ketika diperlukan.</p></div>
       <NuxtLink to="/report" class="button-primary reports-create"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>Buat laporan</NuxtLink>
@@ -30,28 +30,27 @@ const { data, status, error, refresh } = await useAsyncData('reports-list', () =
 </template>
 
 <style scoped>
-.reports-page { padding-top: 2.5rem; padding-bottom: 3.5rem; }
-.reports-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; border: 1px solid #D0DCC9; border-radius: 1.25rem; background: #E5EDDF; padding: 1.5rem; }
+.reports-page { padding-top: 2rem; padding-bottom: 3rem; }
+.reports-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; }
 .reports-header > div { flex: 1 1 28rem; min-width: 0; }
-.reports-header h1 { margin-top: 0.625rem; font-size: 2.25rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.035em; color: #173D32; }
-.reports-intro { margin-top: 0.875rem; max-width: 37rem; font-size: 1.0625rem; line-height: 1.75rem; color: #465C49; }
-.reports-create { flex-shrink: 0; }
-.reports-history { margin-top: 2.25rem; }
-.reports-list-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
-.reports-list-heading h2 { font-size: 1.375rem; font-weight: 600; line-height: 1.875rem; color: #173D32; }
-.reports-list-heading p { margin-top: 0.375rem; font-size: 1rem; line-height: 1.625rem; color: #53624F; }
-.reports-total { font-size: 0.9375rem; font-weight: 500; line-height: 1.5rem; color: #36523B; }
-.reports-list { display: grid; gap: 1.125rem; }
+.reports-header h1 { margin-top: 0.75rem; font-size: clamp(2rem,3.2vw,2.5rem); font-weight: 600; line-height: 1.2; letter-spacing: -0.03em; color: #173D32; }
+.reports-intro { margin-top: 0.875rem; max-width: 40rem; font-size: 1rem; line-height: 1.75rem; color: #526057; }
+.reports-create { flex-shrink: 0; border-radius: 999px; }
+.reports-history { margin-top: 2rem; }
+.reports-list-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; border-top: 1px solid #DCE3D8; padding-top: 1.5rem; }
+.reports-list-heading h2 { font-size: 1.25rem; font-weight: 600; line-height: 1.875rem; color: #173D32; }
+.reports-list-heading p { margin-top: 0.375rem; font-size: 1rem; line-height: 1.625rem; color: #526057; }
+.reports-total { font-size: 0.9375rem; font-weight: 500; line-height: 1.5rem; color: #285C48; }
+.reports-list { display: grid; gap: 1rem; }
 .reports-list > li { min-width: 0; }
-.reports-empty { margin-top: 2rem; border: 1px solid #D8E0D1; border-radius: 1rem; background: #F0F3EA; padding: 2rem 1.5rem; }
+.reports-empty { margin-top: 2rem; border: 1px solid #DCE3D8; border-radius: 0.75rem; background: white; padding: 2rem 1.5rem; }
 .reports-empty p { max-width: 40rem; }
-.reports-pagination { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid #D9E1D3; padding-top: 1.5rem; }
-.reports-pagination > span { grid-row: 1; grid-column: 1 / -1; text-align: center; font-size: 1rem; color: #465C49; }
-.reports-pagination .button-secondary { background: #EEF2E8; border-color: #D0DCC9; }
+.reports-empty .button-primary { border-radius: 999px; }
+.reports-pagination { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 1rem; margin-top: 1.5rem; border-top: 1px solid #DCE3D8; padding-top: 1.5rem; }
+.reports-pagination > span { grid-row: 1; grid-column: 1 / -1; text-align: center; font-size: 1rem; color: #526057; }
+.reports-pagination .button-secondary { border-radius: 999px; background: white; }
 @media (min-width: 40rem) {
-  .reports-page { padding-top: 3rem; padding-bottom: 4rem; }
-  .reports-header { padding: 2rem; }
-  .reports-header h1 { font-size: 2.75rem; }
+  .reports-page { padding-top: 2.5rem; padding-bottom: 4rem; }
   .reports-intro { font-size: 1.125rem; line-height: 1.875rem; }
   .reports-pagination { grid-template-columns: auto 1fr auto; }
   .reports-pagination > span { grid-row: auto; grid-column: auto; }

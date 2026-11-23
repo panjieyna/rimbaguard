@@ -147,18 +147,18 @@ function restart() {
 </template>
 
 <style scoped>
-.draft-assistant { min-width: 0; border: 1px solid #C9D9C3; border-radius: 1rem; background: #EDF3E7; padding: 1.25rem; color: #173D32; }
+.draft-assistant { min-width: 0; border: 1px solid #DCE3D8; border-radius: 0.75rem; background: white; padding: 1.25rem; color: #173D32; }
 .assistant-heading { display: flex; gap: 0.875rem; align-items: flex-start; }
-.assistant-icon { display: flex; width: 2.75rem; height: 2.75rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 0.75rem; background: #D6E5CD; color: #285C48; }
+.assistant-icon { display: none; width: 2.5rem; height: 2.5rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 50%; background: #EAF0E9; color: #285C48; }
 .assistant-eyebrow { font-size: 0.875rem; font-weight: 600; line-height: 1.5rem; color: #46643F; }
 .assistant-heading h2 { margin-top: 0.25rem; font-size: 1.5rem; line-height: 1.3; font-weight: 600; letter-spacing: -0.025em; }
-.assistant-heading div > p:last-child { margin-top: 0.75rem; font-size: 1rem; line-height: 1.75rem; color: #465C43; }
+.assistant-heading div > p:last-child { max-width: 48rem; margin-top: 0.75rem; font-size: 1rem; line-height: 1.75rem; color: #526057; }
 .assistant-source,.assistant-questions { display: grid; min-width: 0; gap: 1.25rem; margin-top: 1.5rem; }
-.assistant-photo { display: block; width: 100%; max-height: 20rem; border: 1px solid #CAD9C3; border-radius: 0.75rem; object-fit: contain; background: #DDE6D7; }
-.assistant-source input[type=file] { border-style: dashed; background: #FAFCF7; padding: 1rem; }
+.assistant-photo { display: block; width: 100%; max-height: 20rem; border: 1px solid #DCE3D8; border-radius: 0.5rem; object-fit: contain; background: #F7F9F4; }
+.assistant-source input[type=file] { border-style: dashed; background: #FAFAF7; padding: 1rem; }
 .assistant-source input[type=file]::file-selector-button { min-height: 2.75rem; margin-right: 0.75rem; border: 0; border-radius: 0.5rem; background: #DDE8D5; padding: 0.5rem 0.75rem; font-weight: 600; color: #173D32; cursor: pointer; }
 .assistant-source .button-primary,.assistant-questions > .button-primary { justify-self: start; }
-.assistant-restore,.assistant-saved { margin-top: 1.5rem; border: 1px solid #CBD8C4; border-radius: 0.75rem; padding: 1rem; background: #E2EBD9; font-size: 0.9375rem; line-height: 1.625rem; }
+.assistant-restore,.assistant-saved { margin-top: 1.5rem; border: 1px solid #DCE3D8; border-radius: 0.5rem; padding: 1rem; background: #F6F8F3; font-size: 0.9375rem; line-height: 1.625rem; }
 .assistant-restore > div,.assistant-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 0.75rem; }
 .assistant-saved { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-bottom: 1.5rem; }
 .assistant-evidence { display: grid; min-width: 0; gap: 1.25rem; }
@@ -176,6 +176,6 @@ function restart() {
 .assistant-progress { margin-top: 1.5rem; border-left: 3px solid #61815A; padding-left: 0.875rem; line-height: 1.75rem; }
 .assistant-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid #D0DDC8; padding-top: 1rem; font-size: 0.9375rem; line-height: 1.625rem; color: #52634A; }
 .assistant-footer button { min-height: 2.75rem; }
-@media (min-width: 40rem) { .draft-assistant { padding: 1.75rem; } .assistant-evidence { grid-template-columns: minmax(0,0.85fr) minmax(0,1.15fr); } }
-@media (max-width: 39.999rem) { .assistant-source .button-primary,.assistant-questions > .button-primary { justify-self: stretch; } .assistant-heading { display: block; } .assistant-icon { margin-bottom: 1rem; } }
+@media (min-width: 40rem) { .draft-assistant { padding: 1.75rem; } .assistant-icon { display: flex; } .assistant-evidence { grid-template-columns: minmax(0,0.85fr) minmax(0,1.15fr); } }
+@media (max-width: 39.999rem) { .assistant-source .button-primary,.assistant-questions > .button-primary { justify-self: stretch; } .assistant-heading { display: block; } }
 </style>

@@ -3,7 +3,7 @@ import { loginSchema } from '#shared/schemas/auth'
 import type { SessionUser } from '../../shared/types/domain'
 import { getFieldErrors, readApiError } from '~/utils/api-error'
 definePageMeta({ layout: 'auth' })
-useSeoMeta({ title: 'Masuk — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Masuk — RimbaGuard', robots: 'noindex' })
 const route = useRoute()
 const { data: session, refresh } = await useAuth()
 if (session.value?.user) await navigateTo(session.value.user.role === 'admin' ? '/admin/dashboard' : '/reports')

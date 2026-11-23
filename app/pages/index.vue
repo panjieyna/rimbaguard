@@ -3,13 +3,15 @@ import type { PublicStatistics } from '../../shared/types/domain'
 import type { PublicMapResponse } from '../../shared/types/map-api'
 import type { ThreatMapPoint } from '~/types/map'
 import { THREAT_CATEGORY_LABELS } from '#shared/constants/domain'
-useSeoMeta({ title: 'RimbaGuard AI — Bersama Menjaga Hutan Tropis' })
+useSeoMeta({ title: 'RimbaGuard — Bersama Menjaga Hutan Tropis' })
+const pageRoot = ref<HTMLElement>()
+useScrollReveal(pageRoot)
 const { data: statistics, status, error, refresh } = await useFetch<PublicStatistics>('/api/public/statistics', { key: 'public-statistics' })
 const metrics = computed(() => statistics.value ? [
   { value: statistics.value.totalReports, label: 'Laporan diterima' },
   { value: statistics.value.verifiedReports, label: 'Telah diverifikasi' },
-  { value: statistics.value.inProgressReports, label: 'Sedang ditindaklanjuti' },
-  { value: statistics.value.namedLocations, label: 'Lokasi bernama dilaporkan' },
+  { value: statistics.value.inProgressReports, label: 'Dalam penanganan' },
+  { value: statistics.value.namedLocations, label: 'Nama lokasi tercatat' },
 ] : [])
 // The preview is supplementary; it loads after hydration and never blocks SSR.
 const { data: mapPreview, status: mapStatus, error: mapError } = useLazyFetch<PublicMapResponse>('/api/public/map', { key: 'landing-map', server: false })
@@ -33,35 +35,35 @@ onBeforeUnmount(() => previewObserver?.disconnect())
 </script>
 
 <template>
-  <div>
-    <section class="pb-8 sm:pb-10" aria-labelledby="hero-title">
-      <div class="landing-hero relative isolate mx-3 overflow-hidden rounded-[1.75rem] bg-forest-900 sm:mx-5 sm:rounded-[2.5rem] lg:mx-6">
-        <img src="/images/rainforest-panorama-2172.webp" srcset="/images/rainforest-panorama-768.webp 768w, /images/rainforest-panorama-1280.webp 1280w, /images/rainforest-panorama-2172.webp 2172w" sizes="(min-width: 2172px) 100vw, 2172px" alt="" aria-hidden="true" width="2172" height="724" fetchpriority="high" decoding="async" class="landing-hero-image absolute inset-0 h-full w-full object-cover">
+  <div ref="pageRoot">
+    <section aria-labelledby="hero-title">
+      <div class="landing-hero relative isolate overflow-hidden bg-forest-900">
+        <LandingHeroMotion />
         <div class="landing-hero-shade absolute inset-0" aria-hidden="true" />
-        <div class="landing-hero-content page-container relative flex flex-col justify-center pt-28 pb-16 sm:pt-32 sm:pb-20 lg:py-32">
-          <div class="max-w-[38rem] text-white">
+        <div class="landing-hero-content page-container relative flex flex-col justify-center">
+          <div class="max-w-[44rem] text-white">
             <p class="text-sm leading-6 font-medium tracking-[0.1em] text-white/90 uppercase">Perlindungan hutan, bersama.</p>
-            <h1 id="hero-title" class="mt-5 text-[2.25rem] leading-[1.15] font-semibold tracking-[-0.025em] sm:text-[3rem] lg:text-[3.5rem]">Bersama menjaga<br class="hidden sm:block"> hutan kita.</h1>
-            <p class="mt-6 max-w-[34rem] text-lg leading-8 text-white/95">Mulai dari foto dan cerita Anda. Asisten AI membantu melengkapi informasi dan menyiapkan draf laporan untuk Anda periksa sebelum dikirim kepada petugas.</p>
+            <h1 id="hero-title" class="hero-title mt-5 font-semibold tracking-[-0.035em]">Bersama menjaga<br> hutan kita.</h1>
+            <p class="mt-6 max-w-[34rem] text-lg leading-8 text-white/95">Ceritakan pengamatan Anda. Asisten AI membantu melengkapi laporan, lalu petugas memeriksa dan menindaklanjutinya.</p>
             <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <NuxtLink to="/report" class="button-primary min-h-13 bg-white font-semibold text-forest-900 hover:bg-sage-100 focus-visible:outline-white active:bg-white">Laporkan ancaman <span aria-hidden="true">↗</span></NuxtLink>
-              <NuxtLink to="/map" class="button-secondary min-h-13 border-white/60 bg-transparent text-white hover:bg-white/10 focus-visible:outline-white active:bg-white/15">Lihat peta laporan</NuxtLink>
+              <NuxtLink to="/report" class="button-primary min-h-13 rounded-full bg-white font-semibold text-forest-900 hover:bg-sage-100 focus-visible:outline-white active:bg-white">Laporkan ancaman <span aria-hidden="true">↗</span></NuxtLink>
+              <NuxtLink to="/map" class="button-secondary min-h-13 rounded-full border-white/60 bg-transparent text-white hover:bg-white/10 focus-visible:outline-white active:bg-white/15">Lihat peta laporan</NuxtLink>
             </div>
-            <p class="mt-5 max-w-[33rem] text-sm leading-6 text-white/90">Foto dan lokasi rinci disimpan privat. AI membantu analisis awal; keputusan tetap di tangan petugas.</p>
+            <p class="mt-5 max-w-[33rem] text-sm leading-6 text-white/90">Foto dan lokasi rinci tetap privat. Setiap laporan ditinjau petugas.</p>
           </div>
         </div>
       </div>
     </section>
-    <section class="border-y border-line bg-white py-9" aria-labelledby="platform-statistics"><div class="page-container">
-      <div class="mb-6"><h2 id="platform-statistics" class="eyebrow">Aktivitas platform</h2></div>
-      <p v-if="status === 'pending'" role="status" class="body-copy">Memuat statistik…</p>
-      <div v-else-if="error" role="status" class="flex flex-wrap items-center gap-4 text-sm"><p>Statistik belum dapat dimuat.</p><button type="button" class="text-link min-h-11" @click="refresh()">Coba kembali</button></div>
-      <dl v-else-if="statistics" class="grid grid-cols-2 gap-x-7 gap-y-8 lg:grid-cols-4"><div v-for="metric in metrics" :key="metric.label"><dd class="text-4xl font-semibold tracking-tight text-forest-900">{{ metric.value.toLocaleString('id-ID') }}</dd><dt class="mt-2 text-sm leading-6 text-charcoal/80">{{ metric.label }}</dt></div></dl>
+    <section class="platform-activity" aria-labelledby="platform-statistics"><div data-scroll-reveal class="page-container max-w-7xl activity-layout">
+      <div class="activity-introduction"><h2 id="platform-statistics" class="text-sm leading-6 font-semibold tracking-[0.09em] text-[#D6E4D7] uppercase">Aktivitas platform</h2><p class="mt-2 text-base leading-7 text-white lg:max-w-52">Ringkasan laporan masyarakat.</p></div>
+      <p v-if="status === 'pending'" role="status" class="activity-feedback">Memuat statistik…</p>
+      <div v-else-if="error" role="status" class="activity-feedback flex flex-wrap items-center gap-3"><p>Statistik belum dapat dimuat.</p><button type="button" class="min-h-11 font-medium underline underline-offset-4 focus-visible:outline-white" @click="refresh()">Coba kembali</button></div>
+      <dl v-else-if="statistics" class="activity-metrics"><div v-for="metric in metrics" :key="metric.label" class="activity-metric"><dt class="activity-label">{{ metric.label }}</dt><dd class="activity-value">{{ metric.value.toLocaleString('id-ID') }}</dd></div></dl>
     </div></section>
     <LandingReportingWorkflow />
     <section class="border-t border-line bg-sage-100/45 py-14 sm:py-16" aria-labelledby="map-preview">
-      <div class="page-container grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
-        <div class="max-w-xl"><p class="eyebrow">Peta laporan publik</p><h2 id="map-preview" class="mt-4 text-3xl font-semibold tracking-tight text-forest-900">Lihat pengamatan yang telah ditinjau.</h2><p class="mt-4 body-copy">Peta hanya menampilkan ringkasan yang disetujui petugas. Koordinat publik ditampilkan sebagai perkiraan untuk menjaga privasi.</p><NuxtLink to="/map" class="button-secondary mt-7">Buka peta laporan <span aria-hidden="true">↗</span></NuxtLink></div>
+      <div class="page-container max-w-7xl grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center">
+        <div data-scroll-reveal class="max-w-xl"><p class="eyebrow">Peta laporan publik</p><h2 id="map-preview" class="mt-4 text-3xl font-semibold tracking-tight text-forest-900">Lihat pengamatan yang telah ditinjau.</h2><p class="mt-4 body-copy">Peta hanya menampilkan ringkasan yang disetujui petugas. Koordinat publik ditampilkan sebagai perkiraan untuk menjaga privasi.</p><NuxtLink to="/map" class="button-secondary mt-7">Buka peta laporan <span aria-hidden="true">↗</span></NuxtLink></div>
         <div class="min-w-0">
           <div ref="previewSlot">
             <ClientOnly>
@@ -82,15 +84,27 @@ onBeforeUnmount(() => previewObserver?.disconnect())
 </template>
 
 <style scoped>
-.landing-hero-image { object-position: 64% center; }
-.landing-hero-shade { background: rgb(6 29 21 / 68%); }
-.landing-hero-content { min-height: 40rem; }
+.landing-hero-shade { background: rgb(6 29 21 / 66%); }
+.landing-hero-content { max-width: 80rem; min-height: 100svh; padding-top: 9rem; padding-bottom: 7rem; }
+.hero-title { font-size: clamp(2.75rem, 6vw, 5rem); line-height: 1.08; }
+.platform-activity { border-top: 1px solid #315749; background: #12372B; color: white; padding-block: 2rem; }
+.activity-layout { display: grid; gap: 1.5rem; }
+.activity-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem 1.25rem; }
+.activity-metric { display: flex; min-width: 0; flex-direction: column; padding-left: 1rem; border-left: 1px solid #557364; }
+.activity-label { order: 2; margin-top: 0.5rem; color: #E2EAE2; font-size: 0.9375rem; line-height: 1.5rem; }
+.activity-value { font-size: clamp(2.25rem, 3.5vw, 3rem); line-height: 1.1; font-weight: 600; letter-spacing: -0.025em; font-variant-numeric: tabular-nums; }
+.activity-feedback { color: #E2EAE2; font-size: 1rem; line-height: 1.75rem; }
+@media (min-width: 40rem) {
+  .activity-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .activity-metric { padding-left: 1.5rem; }
+}
 
 @media (min-width: 1024px) {
-  .landing-hero-image { object-position: center; }
   .landing-hero-shade {
-    background: linear-gradient(90deg, rgb(6 29 21 / 84%) 0%, rgb(6 29 21 / 68%) 48%, rgb(6 29 21 / 24%) 100%);
+    background: linear-gradient(180deg, rgb(6 29 21 / 50%) 0%, transparent 45%), linear-gradient(90deg, rgb(6 29 21 / 82%) 0%, rgb(6 29 21 / 60%) 50%, rgb(6 29 21 / 25%) 100%);
   }
-  .landing-hero-content { min-height: min(46rem, calc(100svh - 4rem)); }
+  .landing-hero-content { padding-top: 10rem; padding-bottom: 8rem; }
+  .platform-activity { padding-block: 2.5rem; }
+  .activity-layout { grid-template-columns: minmax(0, 0.9fr) minmax(0, 3.1fr); align-items: center; gap: 2rem; }
 }
 </style>

@@ -6,7 +6,7 @@ import { CATEGORY_SOURCE_LABELS } from '#shared/constants/scoring'
 import { formatReportDate } from '~/utils/dates'
 
 definePageMeta({ middleware: 'auth', layout: 'admin' })
-useSeoMeta({ title: 'Peta Petugas — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Peta Petugas — RimbaGuard', robots: 'noindex' })
 const route = useRoute()
 const FILTER_KEYS = ['category', 'priority', 'status', 'from', 'to', 'dataset'] as const
 const UNVERIFIED = new Set(['pending_analysis', 'analysis_failed', 'pending_verification', 'needs_more_information'])

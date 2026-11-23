@@ -14,7 +14,7 @@ for (const view of views) {
       const identity = page.getByRole('complementary', { name: 'RimbaGuard', exact: true })
       await expect(main.getByRole('heading', { level: 1 })).toHaveText(view.heading)
       await expect(main.getByRole('button', { name: view.submit, exact: true })).toBeEnabled()
-      await expect(identity.getByRole('link', { name: 'RimbaGuard AI, beranda' })).toBeVisible()
+      await expect(identity.getByRole('link', { name: 'RimbaGuard, beranda' })).toBeVisible()
       const artwork = identity.locator('img')
       await expect.poll(() => artwork.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true)
 

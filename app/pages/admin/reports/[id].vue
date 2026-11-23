@@ -4,7 +4,7 @@ import { THREAT_CATEGORY_LABELS } from '#shared/constants/domain'
 import { formatReportDate } from '~/utils/dates'
 
 definePageMeta({ middleware: 'auth', layout: 'admin' })
-useSeoMeta({ title: 'Tinjau Laporan — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Tinjau Laporan — RimbaGuard', robots: 'noindex' })
 const route = useRoute()
 const id = computed(() => String(route.params.id))
 const requestFetch = useRequestFetch()

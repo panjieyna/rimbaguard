@@ -3,7 +3,7 @@ import { registerSchema } from '#shared/schemas/auth'
 import type { SessionUser } from '../../shared/types/domain'
 import { getFieldErrors, readApiError } from '~/utils/api-error'
 definePageMeta({ layout: 'auth' })
-useSeoMeta({ title: 'Daftar — RimbaGuard AI', robots: 'noindex' })
+useSeoMeta({ title: 'Daftar — RimbaGuard', robots: 'noindex' })
 const { data: session, refresh } = await useAuth()
 if (session.value?.user) await navigateTo('/reports')
 const form = reactive({ fullName: '', email: '', password: '' })

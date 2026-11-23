@@ -7,7 +7,7 @@ import {
 } from '../constants/domain'
 
 export const userRoleSchema = z.enum(USER_ROLES)
-export const threatCategorySchema = z.enum(THREAT_CATEGORIES)
+export const threatCategorySchema = z.enum(THREAT_CATEGORIES, { error: 'Pilih kategori ancaman yang tersedia.' })
 export const reportStatusSchema = z.enum(REPORT_STATUSES)
 export const priorityLevelSchema = z.enum(PRIORITY_LEVELS)
 export const uuidSchema = z.uuid('ID harus berupa UUID yang valid.')

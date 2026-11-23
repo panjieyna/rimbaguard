@@ -1,4 +1,4 @@
-# RimbaGuard AI implementation plan
+# RimbaGuard implementation plan
 
 Planning baseline: 14 November 2026, Asia/Jakarta. Source of product requirements: [PRD.md](PRD.md), version 1.0.
 
@@ -417,6 +417,111 @@ This is a bounded design refinement. It does not mark the remaining Phase 6 rele
 - [x] Preserve shared links, pagination, approximate coordinates and existing protected API projections. Add focus movement to selected details/back to the list and clipboard failure feedback. The shared filter's optional `expanded` prop leaves the admin's default behavior intact.
 - [x] Direct inspection: initial page at 1440/768/375/320 px and expanded filters at 1440/1024/768/320 px have no horizontal overflow or browser runtime errors. Applying a category, resetting filters and recovering from an invalid query work. The live public dataset is empty; a positive published-report selection journey was not rerun, and no reports were published or edited during this pass.
 - [ ] Automated regression coverage remains deferred during design work; no test files or suites were changed/run.
+
+## Public navigation and video hero — 21 November 2026
+
+- [x] Follow the user's Gojek.io layout reference: transparent fixed homepage navigation, solid forest background after scrolling or opening the mobile menu, full-width video hero, readable Inter typography and working report/map actions. Keep the account disclosure and logout separate from primary navigation.
+- [x] Replace the homepage photograph with licensed Pexels forest footage by Mikhail Nilov, served locally as silent eight-second 1080p (1.28 MB) / 720p (0.69 MB) loops with responsive posters. Preserve source/license details in `public/images/ATTRIBUTION.md`, README and proposal.
+- [x] Provide suspension outside the viewport/hidden tabs, poster fallback on failure, and no automatic video download for reduced-motion or data-saving preferences. The visible pause/play control was subsequently removed at the user's request on 21 November 2026.
+- [x] Verify actual playback, pause/resume, mobile video dimensions, keyboard navigation, fallback and account/logout behavior: 22 relevant browser scenarios passed, including automated accessibility checks. Isolated typecheck and production build passed. Direct final officer navigation checks at 1280/1440 px show no overflow; update the actual homepage capture in `docs/assets/home-hero.png`.
+- [x] Resume only the requested design work. Delcom CI/CD setup remains deferred by the user; this change does not deploy or push the repository.
+
+## Video controls and profile photo restoration — 21 November 2026
+
+- [x] Remove the visible homepage video pause/play control and unused state/styles as requested. Retain silent looping, automatic suspension, image fallback and reduced-motion/data-saving preferences; update the related regression tests and asset documentation.
+- [x] Follow the user's final clarification: restore the original full-circle photo presentation, using `object-fit: cover` with no inner padding. Restore the original center-square browser preparation and 256 × 256 WebP normalization, including the existing validation and metadata removal. Preview and saved avatars share the same circular appearance for citizens and officers.
+- [x] Remove the temporary regression tests and documentation for the superseded uncropped-photo behavior. The visible video control remains removed as requested.
+
+## Homepage workflow and activity alignment — 21 November 2026
+
+- [x] Connect the video hero to a compact forest-green activity band with readable real counts, consistent column dividers, responsive grouping and simpler labels. Preserve the statistics API, zero values, loading/error messages and retry behavior.
+- [x] Remove the illustrated forest backdrop, invitation card and, following the user's final review, the phone-user character. Use a clean ivory section, consistent three-step rows, thin dividers, a working report action and plain privacy text. Align the report button/privacy note with the introduction and remove the illustration's reserved space. Retain Inter and the forest palette.
+- [x] Verify isolated typecheck and production build, plus 17 existing public/video browser scenarios. Direct visual and automated accessibility inspection at 1440/1024/768/375/320 px shows no horizontal overflow or axe WCAG 2.2 A/AA violations in the changed sections. Controlled statistics failure shows a clear message without invented counts, and retry restores the actual four values. No reports, photos, emails or Gemini requests are created by these checks.
+- [x] After removing the character, rerun the three targeted workflow/navigation checks, the five-width visual/accessibility/statistics-recovery inspection and production build. All pass; the report button and privacy note now align with the introduction.
+
+## Illustrated workflow composition — 21 November 2026
+
+- [x] Apply the user's approved layout trial: a contained forest landscape on the left, with the heading, three reporting steps, report action and plain privacy note on the right. Stack the content on phones and retain the forest/ivory palette, original destinations and real platform statistics.
+- [x] Generate a new landscape without people, text or brand elements using built-in imagegen. Save transparent WebP derivatives at `public/images/workflow-landscape-v2.webp` and `workflow-landscape-v2-640.webp`; record actual dimensions, preparation and the exact prompt in `public/images/ATTRIBUTION.md`.
+- [x] Three targeted browser workflow scenarios pass. Visual/accessibility inspection at 1440/1024/768/375/320 px shows no overflow or automated WCAG A/AA violations in the changed sections; statistics failure/retry still works with actual data. No reports, uploads, emails or Gemini requests are created.
+- [x] Isolated typecheck and production build pass for the final composition; active development types remain unchanged.
+- [x] Follow the user's size/spacing review: align the desktop illustration to the top of the heading column, enlarge it into the available left margin without covering text or clipping the artwork, and increase its tablet/mobile size. Direct inspection at 1920/1440/1024/768/375/320 px confirms top alignment on desktop and no horizontal overflow; production build passes.
+
+## Final minimalist reporting workflow — 21 November 2026
+
+- [x] Follow the user's final direction: remove the landscape illustration and its reserved space. Use a balanced two-column text layout with a clear heading, short introduction, report action and plain privacy note on the left, and three numbered steps on the right. Stack the sections on phones.
+- [x] Simplify the instructions to adding a photo/story, checking the AI-assisted draft, then submitting and tracking officer review. Remove redundant benefit statements, duplicate visual markers and unused component data/styles; retain Inter, the forest/ivory palette and genuine activity statistics.
+- [x] Update existing workflow checks and asset documentation to reflect the final layout. Keep former generated artwork archived without loading it on the homepage.
+- [x] Final verification passes: 17 public/video browser scenarios, isolated typecheck and production build. Direct checks at 1440/1024/768/375/320 px find no horizontal overflow or automated WCAG A/AA violations in the changed sections. Statistics error/retry restores actual values; report navigation works. No reports, uploads, emails or Gemini requests are created.
+
+## Public map visual alignment — 21 November 2026
+
+- [x] Match the homepage's minimalist direction: align the content with the 80rem navigation container, replace the large sage introduction with a concise plain header, remove its duplicate creation action, and use a compact native filter disclosure.
+- [x] Present the map and report list in one white workspace with thin borders, subtle rounding, readable Inter typography and forest-green accents. Keep creation available through navigation and a secondary empty-state action. Match the SSR loading footprint to the responsive map height; preserve query filters, selection, sharing, pagination and privacy projections.
+- [x] Two existing public-map browser scenarios pass against the actual API, including filter validation, simulation exclusion and private-report non-disclosure. Collapsed and expanded-filter views at 1920/1440/1024/768/375/320 px align with the navbar and show no horizontal overflow or automated WCAG A/AA violations.
+- [x] Invalid-date recovery and service-failure retry work. Selected-report rendering, focus restoration and keyboard marker selection pass with an explicitly labeled browser-only simulation; it is neither saved nor published. The real public dataset remains empty, so no live published-report journey is claimed. No database writes, uploads, emails or Gemini calls occur during these checks.
+- [x] Isolated typecheck, production build and patch validation pass; the main development server remains running at port 3000.
+
+## About and citizen-report visual alignment — 21 November 2026
+
+- [x] Align `/about`, `/reports`, `/report` and `/reports/:id` with the final homepage and public map: shared content width, plain ivory introductions, Inter typography, restrained white surfaces and forest-green pill actions. Keep the existing About photograph and readable workflow/privacy sections; simplify report cards, the three-step form, assistant and detail sidebar without changing report permissions or submission behavior.
+- [x] Fix a validation issue discovered during mobile inspection: missing or invalid categories now show a short Indonesian instruction instead of raw enum values. Allow error text to wrap so long messages cannot widen the form.
+- [x] Inspect all four pages at 1440/768/375/320 px: 16 layout checks pass with aligned headings and no horizontal overflow. Seven existing browser navigation/accessibility scenarios, 54 contract unit tests, isolated typecheck and production build pass. Verify local photo preview, invalid submission and browser-emulated GPS without creating reports, uploading evidence or calling Gemini. Physical-device GPS accuracy is outside this inspection.
+- [x] Preserve the running development server, existing data, simulation labels and previous changes. Delcom deployment and GitHub publishing remain deferred.
+
+## Citizen report-card photos — 21 November 2026
+
+- [x] Follow the 22 November thumbnail review: preserve the whole evidence image with centered contain fitting and a neutral background, including the readable SIMULASI PENGUJIAN fixture text. Keep original evidence unchanged. Landscape/portrait edge-preservation tests, the existing thumbnail/privacy browser scenarios and desktop/mobile visual inspection pass; no report writes or AI calls occur.
+
+- [x] Show the report's actual evidence thumbnail in `/reports`: photo beside the content on desktop, above it on phones, lazy loading, fixed dimensions and a clear failure message that keeps the detail link available. Preserve status, ownership, pagination and simulation labels.
+- [x] Add authenticated `GET /api/reports/:id/thumbnail`, reusing the officer image service as `report-evidence.ts`. Authorize with the current user's report RLS and ownership before privileged Storage reads; return a bounded WebP with `private, no-store`, without exposing Storage paths or signed URLs. Keep officer thumbnail/full-photo access restricted by `requireAdmin`; no migration is required.
+- [x] Pass 25 focused unit checks and two read-only browser scenarios covering actual stored QA photos, 1440/1024/768/375/320 px layouts, accessibility, image failure/detail navigation, anonymous 401, unrelated-user 404, malformed ID 422 and officer thumbnail/full-photo regression. Isolated typecheck/build pass; inspect desktop/mobile captures. No reports, uploads or AI calls are created.
+
+## Admin visual alignment — 22 November 2026
+
+- [x] Align the shared status dot to the center of the first text line and prevent it from shrinking into an oval. Preserve existing colors and labels. Read-only checks cover 14 statuses at 1920/1440/375/320 px and a wrapped label; production build passes.
+
+- [x] Refine the shared officer navigation, page headers, panels and actions to match the public forest/ivory design: narrower forest sidebar, pill navigation/actions, sticky contextual header, restrained borders and consistent Inter hierarchy. Preserve all five destinations and separate account/logout controls.
+- [x] Redesign dashboard summary cards with a forest-green total, muted semantic accents and a compact mobile layout. Improve priority-queue headings, report titles and review actions; retain actual counts, data selection, evidence previews and existing review links. Format the actual date range for readability and remove the redundant bottom action panel.
+- [x] Isolated typecheck and production build pass. Existing officer accessibility regression passes for dashboard, queue, report detail, map, analytics and settings. Direct inspection covers all five primary pages at 1920/1440/1024/768/375/320 px (30 checks) without horizontal overflow or runtime errors. Real/simulation counts match the API; account Escape/focus restoration, mobile navigation and full-photo viewing work after hydration. No report mutations, uploads or Gemini calls occur.
+
+## Analytics content design — 22 November 2026
+
+- [x] Follow the user's subsequent review: revert the equal-height category/handling panels. Restore independent content heights and the original disclosure positions; retain the rest of the Analytics redesign.
+
+- [x] Refine period/source controls into a compact filter row. Present selected-period volume in a forest-green summary beside three plain-language insights, followed by a readable trend and responsive category/handling panels. Separate all-time figures in a subdued strip with explicit scope labels; preserve expandable data tables and reading guidance.
+- [x] Preserve actual calculations, query filters and officer permissions. All eight real/simulation and 7/30/90/365-day combinations match API figures; daily/weekly/monthly chart labels remain appropriate. Inspect 1920/1440/1280/1024/768/375/320 px layouts and expanded tables at 1440/768/375/320 px without overflow. Automated WCAG A/AA inspection, isolated typecheck and production build pass. Browser-only controlled empty/error responses show the intended states and retry restores actual data; no reports, uploads or Gemini calls are created.
+
+## Public scroll animation — 22 November 2026
+
+- [x] Record the user's confirmation that the submission deadline was extended to 23 November. Deployment remains on hold until the user's next deployment instruction.
+- [x] Add restrained, once-only fade/rise reveals to below-the-fold homepage statistics, reporting introduction/steps, map introduction and About information. Keep the hero's first paint, interactive maps, navigation, forms and actual statistics stable. Use native IntersectionObserver, bounded staggering and a short initial scroll-settle check; disconnect observers/listeners and clear timers on cleanup. Honor reduced motion, immediate keyboard focus and no-JavaScript/observer fallbacks without new dependencies.
+- [x] Verify 24 public/video/scroll browser scenarios plus the existing public accessibility scenario. Route-to-route reveals, preference changes, keyboard actions and SSR/observer fallbacks pass. Direct inspection at 1920/1440/1024/768/375/320 px shows no horizontal overflow or automated WCAG A/AA violations after reveal; statistics remain unchanged. Isolated typecheck and final production build pass. No reports, uploads, emails or Gemini requests are created.
+
+## Product name — 22 November 2026
+
+- [x] Use RimbaGuard consistently in the brand, accessible labels, page titles, package/lock metadata, PRD, documentation, SQL header comments and proposal/wireframe assets. Preserve AI feature names, prompts, credentials, permissions and technical behavior. A source scan finds no previous brand variants.
+- [x] Pass 21 existing public/auth-layout browser scenarios and the public accessibility scenario, isolated typecheck and production build. Inspect seven representative public/auth/citizen/officer routes and five public viewport widths; refresh three actual proposal captures dated 22 November. No reports, uploads, emails or Gemini requests are created. Deployment remains paused as requested.
+
+## Competition proposal PDF — 22 November 2026
+
+- [x] Re-read the official guidebook/template and inspect its A4, 1-inch margins and Times New Roman 12 pt formatting. Preserve every required section 1.1–4.2.
+- [x] Use the supplied team identities, with the user's corrected chair: Panji Ananda Lumbantoruan (chair), Daniel Simanjuntak, Jose Simon Harris Purba, Martulut Simbolon; Institut Teknologi Del. Website/video links and demo-account fields remain blank at the user's request; this is a review edition.
+- [x] Re-run the current unit suite: 370 tests in 23 files passed. Keep historical browser/provider/SQL evidence dated and separate from this run; no invented field research or environmental-impact figures.
+- [x] Capture the current local UI at 2x scale using retained QA identities. No report submission or new Gemini generation. Correct the analysis-panel capture after map layout settles. A transport diagnostic printed QA session headers; the QA officer's sessions were revoked and the helper now reports only safe errors.
+- [x] Build the PDF from the editable Markdown source using an offline Playwright/Chromium renderer and existing Sharp dependency. Include actual UI, vector architecture/flow/wireframes, automatic contents/figure page references, source attribution, AI disclosures and rubric mapping.
+- [x] Export `docs/ITRUSH26_semogabisamagang_RimbaGuard.pdf`: 27 A4 pages and 15 figures; all required sections are present, fonts are embedded, and the PDF has bookmarks and a tagged structure. Inspect rendered pages and correct overflow, stray paragraphs and clipped screenshots before handoff.
+- [ ] Complete submission links and intentional demo credentials on the private submission copy, verify production, and supply the separate signed declaration/video. PDF export does not resume deployment, publish the repository or submit the entry.
+
+## Originality declaration and chair correction — 23 November 2026
+
+- [x] Read and download the original declaration template linked by the guidebook. Preserve the required declaration clauses, page dimensions, margins and styling; replace all sample identities, work title and unrelated AI-use examples.
+- [x] Use the user's corrected chair, Panji Ananda Lumbantoruan; Daniel Simanjuntak is a member. Update the editable proposal and rebuild its 27-page PDF; verify the chair/member roles in extracted cover text.
+- [x] Fill the declaration with the supplied programme, contact details and signing place/date, Sitoluama, 23 November 2026. The user confirms the template's originality and competition-history declarations are accurate. Do not create a signature or stamp.
+- [x] Select the AI-use checkbox and disclose Gemini, Codex/ChatGPT, Claude Code and image generation consistently with the README. List Supabase and OpenStreetMap separately as non-AI services.
+- [x] Produce `docs/ITRUSH26_semogabisamagang_Surat_Orisinalitas_RimbaGuard.docx`. Validate all member NIMs, chair, programme/contact/date, unchanged required clauses, checked option, six disclosure entries, unique paragraph IDs, original margins and absence of foreign sample data.
+- [x] Inspect a two-page layout approximation generated from OOXML. Word opened a filled build read-only, but its native preview export stalled; close all task-owned Word instances. Do not present the approximation as a successful native Word export.
+- [ ] Team review, signature and actual meterai remain manual completion steps before submission. No publication, repository push or competition submission was performed.
 
 ## External setup needed before live phase gates
 

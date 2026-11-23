@@ -74,6 +74,15 @@ describe('report input', () => {
     expect(reportSchema.safeParse({ ...validReport, category: 'confirmed_illegal_logging' }).success).toBe(false)
   })
 
+  it.each(['', undefined, 'confirmed_illegal_logging'])
+  ('gives a readable category error without exposing internal enum values: %s', (category) => {
+    const result = reportSchema.safeParse({ ...validReport, category })
+    expect(result.success).toBe(false)
+    if (result.success) throw new Error('Invalid category unexpectedly accepted')
+    expect(result.error.issues.find(issue => issue.path[0] === 'category')?.message)
+      .toBe('Pilih kategori ancaman yang tersedia.')
+  })
+
   it('rejects invalid validation-clock configuration', () => {
     expect(() => createReportSchema(new Date('invalid'))).toThrow(TypeError)
   })

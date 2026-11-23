@@ -1,4 +1,4 @@
--- RIMBAGUARD AI: FASE 5 — ALUR KERJA PETUGAS
+-- RIMBAGUARD: FASE 5 — ALUR KERJA PETUGAS
 -- Jalankan SELURUH isi file ini di Supabase SQL Editor -> New query -> Run.
 -- Prasyarat: migrasi 001 sampai 005 sudah terpasang (termasuk JALANKAN_FASE_4.sql).
 -- Menambah publikasi, koreksi kategori petugas, catatan internal, antrean prioritas, dan analitik.

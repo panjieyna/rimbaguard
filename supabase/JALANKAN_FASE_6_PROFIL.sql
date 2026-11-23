@@ -1,4 +1,4 @@
--- RIMBAGUARD AI: FASE 6 — FOTO PROFIL
+-- RIMBAGUARD: FASE 6 — FOTO PROFIL
 -- Jalankan SELURUH isi file ini di Supabase SQL Editor -> New query -> Run.
 -- Prasyarat: migrasi 001 sampai 006 sudah terpasang (termasuk JALANKAN_FASE_5.sql).
 -- Memastikan bucket privat `profile-photos` dan menambah kebijakan pengaman yang hanya mengizinkan server.

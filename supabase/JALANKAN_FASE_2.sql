@@ -1,4 +1,4 @@
--- RIMBAGUARD AI: JALANKAN FASE 2
+-- RIMBAGUARD: JALANKAN FASE 2
 -- Salin SELURUH isi file ini ke Supabase SQL Editor -> New query -> Run.
 -- Prasyarat: migrasi fondasi 20261114000100 sudah terpasang.
 -- File ini memasang migrasi 002 dan menjalankan 29 pengujian dalam satu transaksi.

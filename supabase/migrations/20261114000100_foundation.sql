@@ -1,4 +1,4 @@
--- RimbaGuard AI foundation. Apply to a Supabase project through migrations.
+-- RimbaGuard foundation. Apply to a Supabase project through migrations.
 -- No demonstration accounts, incident records, or credentials are seeded.
 
 create schema if not exists private;

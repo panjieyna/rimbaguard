@@ -5,7 +5,7 @@
     <style>text{font-family:Arial,sans-serif;fill:#24342d}.heading{font-size:22px;font-weight:700}.label{font-size:16px}.small{font-size:14px;fill:#526057}.frame{fill:#fff;stroke:#53645a;stroke-width:2}.block{fill:#f2f4ef;stroke:#8d9a91;stroke-width:1.5}.button{fill:#dfe8dc;stroke:#53645a;stroke-width:1.5}.line{stroke:#a5afa7;stroke-width:2}</style>
   </defs>
   <rect width="1200" height="820" fill="#fafbf8"/>
-  <text x="30" y="42" class="heading">RimbaGuard AI — wireframe halaman utama</text>
+  <text x="30" y="42" class="heading">RimbaGuard — wireframe halaman utama</text>
   <text x="30" y="69" class="small">Dokumentasi struktur layar. Isi dinamis mengikuti data dan izin pengguna.</text>
   <g transform="translate(30 105)">
     <text y="0" class="heading">01 / Beranda</text>
@@ -13,7 +13,7 @@
     <rect x="14" y="38" width="332" height="44" class="block"/>
     <text x="26" y="65" class="label">Logo · Navigasi · Akun</text>
     <rect x="14" y="98" width="332" height="190" class="block"/>
-    <text x="32" y="138" class="label">Foto hutan horizontal</text>
+    <text x="32" y="138" class="label">Video hutan horizontal</text>
     <text x="32" y="172" class="label">Judul dan pengenalan</text>
     <rect x="32" y="204" width="180" height="46" rx="5" class="button"/>
     <text x="48" y="234" class="label">Mulai melapor</text>

@@ -1,6 +1,6 @@
-# Arsitektur RimbaGuard AI
+# Arsitektur RimbaGuard
 
-RimbaGuard AI menerima laporan ancaman hutan dari masyarakat, menyusun analisis awal dengan AI, menghitung prioritas pemeriksaan secara transparan, dan membantu petugas memverifikasi serta menindaklanjuti laporan. AI dan skor hanya membantu urutan pemeriksaan; keputusan tetap di tangan petugas.
+RimbaGuard menerima laporan ancaman hutan dari masyarakat, menyusun analisis awal dengan AI, menghitung prioritas pemeriksaan secara transparan, dan membantu petugas memverifikasi serta menindaklanjuti laporan. AI dan skor hanya membantu urutan pemeriksaan; keputusan tetap di tangan petugas.
 
 ## Komponen
 

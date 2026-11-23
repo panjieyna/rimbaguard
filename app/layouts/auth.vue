@@ -32,7 +32,7 @@
       </main>
 
       <footer class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-line pt-4 text-sm leading-6 text-charcoal/70">
-        <p>© 2026 RimbaGuard AI</p>
+        <p>© 2026 RimbaGuard</p>
         <NuxtLink to="/about" class="inline-flex min-h-11 items-center text-forest-700 hover:underline underline-offset-4">Tentang RimbaGuard</NuxtLink>
       </footer>
     </div>

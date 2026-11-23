@@ -1,5 +1,5 @@
 # PRODUCT REQUIREMENTS DOCUMENT (PRD)
-# RIMBAGUARD AI
+# RIMBAGUARD
 ### Intelligent Tropical Forest Protection & Early Warning Platform
 
 **Document Version:** 1.0  
@@ -16,7 +16,7 @@
 
 ## 1.1 Product Name
 
-**RimbaGuard AI**
+**RimbaGuard**
 
 Tagline:
 
@@ -24,7 +24,7 @@ Tagline:
 
 ## 1.2 Product Description
 
-RimbaGuard AI merupakan platform perlindungan hutan berbasis Artificial Intelligence yang dirancang untuk membantu masyarakat dan petugas konservasi mengidentifikasi, menganalisis, memprioritaskan, serta menindaklanjuti laporan ancaman terhadap hutan.
+RimbaGuard merupakan platform perlindungan hutan berbasis Artificial Intelligence yang dirancang untuk membantu masyarakat dan petugas konservasi mengidentifikasi, menganalisis, memprioritaskan, serta menindaklanjuti laporan ancaman terhadap hutan.
 
 Platform ini mengintegrasikan:
 
@@ -35,7 +35,7 @@ Platform ini mengintegrasikan:
 - Incident Verification and Response Management.
 - Environmental Intelligence Dashboard.
 
-RimbaGuard AI berfokus pada proses mengubah laporan masyarakat menjadi informasi yang terstruktur dan dapat digunakan sebagai dasar pemeriksaan oleh petugas.
+RimbaGuard berfokus pada proses mengubah laporan masyarakat menjadi informasi yang terstruktur dan dapat digunakan sebagai dasar pemeriksaan oleh petugas.
 
 ## 1.3 Problem Statement
 
@@ -51,7 +51,7 @@ Beberapa permasalahan yang ingin diselesaikan:
 
 ## 1.4 Proposed Solution
 
-RimbaGuard AI menyediakan sistem terintegrasi dengan alur:
+RimbaGuard menyediakan sistem terintegrasi dengan alur:
 
 **Report → AI Analysis → Threat Prioritization → Map Visualization → Human Verification → Response Tracking.**
 
@@ -70,9 +70,9 @@ Tujuan utama:
 
 ## 1.6 Product Positioning
 
-RimbaGuard AI bukan sekadar aplikasi pelaporan lingkungan.
+RimbaGuard bukan sekadar aplikasi pelaporan lingkungan.
 
-RimbaGuard AI adalah:
+RimbaGuard adalah:
 
 **An AI-powered forest incident intelligence and response management platform.**
 
@@ -190,13 +190,13 @@ Jangan menampilkan fitur simulasi sebagai data pemantauan aktual.
 
 **Route:** `/`
 
-Tujuan: memperkenalkan RimbaGuard AI dan mengarahkan masyarakat untuk membuat laporan.
+Tujuan: memperkenalkan RimbaGuard dan mengarahkan masyarakat untuk membuat laporan.
 
 ## A.1 Hero Section
 
 Konten:
 
-- Brand RimbaGuard AI.
+- Brand RimbaGuard.
 - Headline: "Protecting Our Forests Starts With Awareness."
 - Deskripsi singkat mengenai perlindungan hutan berbasis AI.
 - Primary CTA: "Laporkan Ancaman".
@@ -433,7 +433,7 @@ API key disimpan pada server environment variables.
 
 # MODULE E — SMART THREAT PRIORITIZATION
 
-Ini adalah fitur pembeda utama RimbaGuard AI.
+Ini adalah fitur pembeda utama RimbaGuard.
 
 ## E.1 Objective
 
@@ -789,7 +789,7 @@ Semua tindakan penting harus tersimpan dan dapat dilihat pada detail laporan.
 
 Ini merupakan salah satu aspek paling penting.
 
-RimbaGuard AI harus memiliki tampilan yang minimalis, modern, profesional, dan terasa seperti produk teknologi lingkungan yang benar-benar digunakan oleh organisasi konservasi.
+RimbaGuard harus memiliki tampilan yang minimalis, modern, profesional, dan terasa seperti produk teknologi lingkungan yang benar-benar digunakan oleh organisasi konservasi.
 
 **Jangan membuat website dengan tampilan AI slop.**
 
@@ -1331,7 +1331,7 @@ The MVP is considered complete only if:
 
 # 12. COMPETITION ALIGNMENT
 
-RimbaGuard AI must demonstrate a clear relationship between its functionality and the competition evaluation criteria discussed in the project brief.
+RimbaGuard must demonstrate a clear relationship between its functionality and the competition evaluation criteria discussed in the project brief.
 
 | Evaluation Component | Weight | RimbaGuard Implementation |
 |---|---:|---|
@@ -1473,7 +1473,7 @@ Use a modular Nuxt 4 structure.
 Recommended:
 
 ```text
-rimbaguard-ai/
+rimbaguard/
 │
 ├── app/
 │   ├── assets/
@@ -1648,7 +1648,7 @@ Do not claim environmental impact such as hectares of forest saved or illegal lo
 
 # 18. FINAL PRODUCT DEFINITION
 
-RimbaGuard AI is a community-powered, AI-assisted forest protection platform that helps transform environmental incident reports into structured, prioritized, and verifiable conservation information.
+RimbaGuard is a community-powered, AI-assisted forest protection platform that helps transform environmental incident reports into structured, prioritized, and verifiable conservation information.
 
 Its main differentiator is:
 
@@ -1670,4 +1670,4 @@ ADMIN VERIFICATION
 ↓  
 RESPONSE TRACKING
 
-**END OF PRD — RIMBAGUARD AI VERSION 1.0**
+**END OF PRD — RIMBAGUARD VERSION 1.0**

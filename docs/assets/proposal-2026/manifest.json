@@ -1,0 +1,282 @@
+{
+  "capturedAt": "2026-11-22",
+  "status": "Actual local UI captures; production deployment not assessed",
+  "outputScale": 2,
+  "reportMutations": 0,
+  "aiGenerationRequests": 0,
+  "captures": [
+    {
+      "name": "home-desktop",
+      "route": "/",
+      "file": "docs/assets/proposal-2026/home-desktop.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "imagePixels": {
+        "width": 2560,
+        "height": 1800
+      },
+      "sha256": "c5f943d1c17e48e1997a1a78dbaab0a0e64885b747086f0c7bdcc3d58e1e27ee"
+    },
+    {
+      "name": "workflow-desktop",
+      "route": "/",
+      "file": "docs/assets/proposal-2026/workflow-desktop.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "imagePixels": {
+        "width": 2560,
+        "height": 1088
+      },
+      "sha256": "61d9e72aa35693d7ab3ee5a85ea11d7e5a553542ee0a4232676d876909d78716"
+    },
+    {
+      "name": "login-desktop",
+      "route": "/login",
+      "file": "docs/assets/proposal-2026/login-desktop.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "imagePixels": {
+        "width": 2560,
+        "height": 1800
+      },
+      "sha256": "221812b170dffe7a28d1b697325d43d6e7df6ab008249c93403027f04de25304"
+    },
+    {
+      "name": "map-public",
+      "route": "/map",
+      "file": "docs/assets/proposal-2026/map-public.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "imagePixels": {
+        "width": 2560,
+        "height": 1800
+      },
+      "sha256": "cb3d702f59bb741b2d8bea26094011d3ad2582aa8bb16b04121b4bf518e3dc42"
+    },
+    {
+      "name": "home-mobile",
+      "route": "/",
+      "file": "docs/assets/proposal-2026/home-mobile.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "imagePixels": {
+        "width": 780,
+        "height": 1688
+      },
+      "sha256": "fd466f3bdff827ecd29d00844e9e8ae312dceaf872d619a97c893c725dbfe5b2"
+    },
+    {
+      "name": "assistant-desktop",
+      "route": "/report",
+      "file": "docs/assets/proposal-2026/assistant-desktop.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 1100,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2040,
+        "height": 1498
+      },
+      "sha256": "599c9301b2997a6d27ffeb7ff8113217587006380a4db051c8bfdfeeabdc7e80"
+    },
+    {
+      "name": "report-mobile",
+      "route": "/report",
+      "file": "docs/assets/proposal-2026/report-mobile.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": false,
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "imagePixels": {
+        "width": 780,
+        "height": 1688
+      },
+      "sha256": "a79f1076d614628ceb34ec589ecdbc45466e4490fc43d5788208139f509d8f0c"
+    },
+    {
+      "name": "citizen-reports",
+      "route": "/reports",
+      "file": "docs/assets/proposal-2026/citizen-reports.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1100,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2200,
+        "height": 2000
+      },
+      "sha256": "edc608b655fdbc482a16e3533ff4b6aa88fbcad33b80aae285b71e59c88f0496"
+    },
+    {
+      "name": "officer-dashboard",
+      "route": "/admin/dashboard?dataset=simulation",
+      "file": "docs/assets/proposal-2026/officer-dashboard.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2880,
+        "height": 2000
+      },
+      "sha256": "d404e764e67ca0708f340a694e461a2855992bf4d3e4ecaa2236396ca26a6bea"
+    },
+    {
+      "name": "officer-queue",
+      "route": "/admin/dashboard?dataset=simulation",
+      "file": "docs/assets/proposal-2026/officer-queue.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2256,
+        "height": 2494
+      },
+      "sha256": "9cefec36244f601dc01cd8d25bcd1312eebb6281c28bb6798681dc984c64c0c9"
+    },
+    {
+      "name": "officer-analytics",
+      "route": "/admin/analytics?dataset=simulation",
+      "file": "docs/assets/proposal-2026/officer-analytics.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2880,
+        "height": 2000
+      },
+      "sha256": "3de7c6eb9dcc8ed5ed1114d93d567abfb12cb79f1d805e2fa6e103ec092f78e8"
+    },
+    {
+      "name": "officer-handling",
+      "route": "/admin/analytics?dataset=simulation",
+      "file": "docs/assets/proposal-2026/officer-handling.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2256,
+        "height": 1286
+      },
+      "sha256": "0712e3c456ae7fd6a39aef0ec55be00e56db7991883c90fd0bb915beac199bae"
+    },
+    {
+      "name": "officer-map",
+      "route": "/admin/map?dataset=simulation",
+      "file": "docs/assets/proposal-2026/officer-map.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "imagePixels": {
+        "width": 2880,
+        "height": 2000
+      },
+      "sha256": "161c4e7bb99570a967e4863c76aef5e1f80787997157222060251dbc423c0bd3"
+    },
+    {
+      "name": "analysis-persisted",
+      "route": "/admin/reports/[simulation-id]",
+      "file": "docs/assets/proposal-2026/analysis-persisted.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1920,
+        "height": 1200
+      },
+      "imagePixels": {
+        "width": 1464,
+        "height": 1834
+      },
+      "sha256": "7aadd34c56dfd9ae9a2b2bcc1fd4e8085825ccb591cf42497c0bf007edb355d8",
+      "captureNote": "Recaptured after map initialization and stable panel bounds, with no new AI generation"
+    },
+    {
+      "name": "priority-explanation",
+      "route": "/admin/reports/[simulation-id]",
+      "file": "docs/assets/proposal-2026/priority-explanation.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1600,
+        "height": 1100
+      },
+      "imagePixels": {
+        "width": 1464,
+        "height": 1628
+      },
+      "sha256": "4b694b1c58c852d4139ad94b3e20bdfda4b4402a9b75827dbc057e053533d3c5"
+    },
+    {
+      "name": "officer-review",
+      "route": "/admin/reports/[simulation-id]",
+      "file": "docs/assets/proposal-2026/officer-review.png",
+      "date": "2026-11-22",
+      "source": "actual local browser",
+      "simulation": true,
+      "viewport": {
+        "width": 1600,
+        "height": 1100
+      },
+      "imagePixels": {
+        "width": 760,
+        "height": 6010
+      },
+      "sha256": "4282214453c534aceb849dc58cf15fbb4fd9709a55df082402d243b06f9d3abd"
+    }
+  ]
+}

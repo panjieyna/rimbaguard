@@ -42,17 +42,11 @@ for (const width of [375, 1440]) {
     const steps = workflow.getByRole('list', { name: 'Tahapan pelaporan RimbaGuard' }).getByRole('listitem')
     await expect(steps).toHaveCount(3)
     await expect(steps.getByRole('heading', { level: 3 })).toHaveText([
-      /Kirim pengamatan Anda/, /AI membantu analisis awal/, /Petugas meninjau laporan/,
+      /Tambahkan foto dan cerita/, /Periksa draf laporan/, /Kirim dan pantau laporan/,
     ])
-    for (const image of await workflow.locator('img').all()) {
-      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)
-    }
-    const backgrounds = await steps.evaluateAll(elements => elements.map(element => ({
-      row: getComputedStyle(element).backgroundColor,
-      icon: getComputedStyle(element.querySelector('svg')!.parentElement!).backgroundColor,
-    })))
-    expect(new Set(backgrounds.map(item => item.row)).size).toBe(1)
-    expect(new Set(backgrounds.map(item => item.icon)).size).toBe(1)
+    await expect(workflow.locator('img')).toHaveCount(0)
+    const backgrounds = await steps.evaluateAll(elements => elements.map(element => getComputedStyle(element).backgroundColor))
+    expect(new Set(backgrounds).size).toBe(1)
     await expect(page.getByText(/Ilustrasi AI|Ilustrasi hutan tropis|Data simulasi tidak dihitung/i)).toHaveCount(0)
     await expect(workflow.getByText('Foto dan lokasi rinci Anda disimpan privat.')).toBeVisible()
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
@@ -67,9 +61,8 @@ test('workflow respects reduced motion without hiding its content', async ({ pag
   const workflow = page.getByRole('region', { name: /Dari ponsel Anda/ })
   await workflow.scrollIntoViewIfNeeded()
   await expect(workflow.getByRole('link', { name: 'Mulai buat laporan', exact: true })).toBeVisible()
-  const character = workflow.locator('img').last()
-  await expect(character).toBeVisible()
-  expect(await character.evaluate(element => getComputedStyle(element).animationName)).toBe('none')
+  await expect(workflow.getByRole('heading', { level: 2 })).toBeVisible()
+  await expect(workflow.getByRole('list', { name: 'Tahapan pelaporan RimbaGuard' })).toBeVisible()
 })
 
 test('keyboard can skip navigation', async ({ page }) => {

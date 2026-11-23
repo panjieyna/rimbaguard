@@ -8,8 +8,7 @@ import { getServiceDatabase } from '../utils/supabase'
 import { apiError } from '../utils/response'
 import { detectImageMime, MAX_IMAGE_PIXELS } from '../utils/image-validation'
 
-export async function readAdminEvidence(event: H3Event, user: SessionUser, reportId: string, size: 'thumbnail' | 'full') {
-  if (user.role !== 'admin') throw apiError(403, 'ADMIN_REQUIRED', 'Akses ini hanya tersedia bagi petugas.')
+export async function readReportEvidence(event: H3Event, user: SessionUser, reportId: string, size: 'thumbnail' | 'full') {
   // Authorize through the current user's RLS before the privileged Storage read.
   // The request accepts a report ID, never a client-supplied object path or URL.
   const report = await getPermittedReport(event, user, reportId)
@@ -27,7 +26,7 @@ export async function readAdminEvidence(event: H3Event, user: SessionUser, repor
 
     const thumbnail = await sharp(bytes, { limitInputPixels: MAX_IMAGE_PIXELS, animated: false, failOn: 'error' })
       .rotate()
-      .resize({ width: 384, height: 288, fit: 'cover', withoutEnlargement: true })
+      .resize({ width: 384, height: 288, fit: 'contain', background: '#F1F4EE', withoutEnlargement: true })
       .webp({ quality: 78 })
       .toBuffer()
     return { bytes: thumbnail, mime: 'image/webp' as const }

@@ -23,7 +23,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'id' },
-      title: 'RimbaGuard AI — Perlindungan Hutan Berbasis Komunitas',
+      title: 'RimbaGuard — Perlindungan Hutan Berbasis Komunitas',
       meta: [
         { name: 'description', content: 'Laporan masyarakat, analisis awal AI, dan verifikasi petugas untuk membantu perlindungan hutan tropis.' },
         { name: 'theme-color', content: '#173D32' },

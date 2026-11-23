@@ -5,7 +5,7 @@ import type { MapFilterValues, ThreatMapPoint } from '~/types/map'
 import { PUBLIC_REPORT_STATUSES, REPORT_STATUS_LABELS, THREAT_CATEGORY_LABELS } from '#shared/constants/domain'
 import { formatReportDate } from '~/utils/dates'
 
-useSeoMeta({ title: 'Peta Laporan — RimbaGuard AI', description: 'Peta laporan ancaman hutan yang telah ditinjau dan dipublikasikan petugas.' })
+useSeoMeta({ title: 'Peta Laporan — RimbaGuard', description: 'Peta laporan ancaman hutan yang telah ditinjau dan dipublikasikan petugas.' })
 const route = useRoute()
 const FILTER_KEYS = ['category', 'priority', 'status', 'from', 'to'] as const
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
@@ -71,18 +71,17 @@ watch(selectedId, async () => {
 </script>
 
 <template>
-  <div class="public-map-page mx-auto w-full max-w-[1360px] px-5 py-10 sm:px-8 sm:py-12 lg:px-10">
+  <div class="public-map-page page-container max-w-7xl py-8 sm:py-10">
     <header class="public-map-header">
       <div>
-        <p class="eyebrow">Laporan yang dibagikan kepada publik</p>
+        <p class="eyebrow">Peta laporan publik</p>
         <h1>Peta laporan masyarakat</h1>
-        <p>Lihat perkiraan lokasi dan perkembangan laporan yang telah ditinjau serta dipublikasikan petugas.</p>
+        <p>Lihat perkiraan lokasi laporan yang telah ditinjau petugas.</p>
       </div>
-      <NuxtLink to="/report" class="button-primary">Buat laporan<span aria-hidden="true">↗</span></NuxtLink>
     </header>
 
     <details class="public-map-filters" :open="filterOpen" @toggle="filterOpen = ($event.target as HTMLDetailsElement).open">
-      <summary><span><strong>Saring laporan</strong><span class="filter-description">Kategori, prioritas, status, atau tanggal</span></span><span class="filter-toggle">{{ hasFilters ? 'Filter aktif' : 'Opsional' }}<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span></summary>
+      <summary><span class="filter-label"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg><strong>Saring laporan</strong><span class="filter-description">Kategori, prioritas, status, tanggal</span></span><span class="filter-toggle">{{ hasFilters ? 'Filter aktif' : filterOpen ? 'Tutup' : 'Buka' }}<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg></span></summary>
       <MapFilters :statuses="PUBLIC_REPORT_STATUSES" :values="filters" expanded @apply="applyFilters" />
     </details>
 
@@ -95,8 +94,8 @@ watch(selectedId, async () => {
       <section class="public-map-canvas" aria-labelledby="map-canvas-title">
         <div class="map-canvas-heading"><h2 id="map-canvas-title">Lokasi laporan</h2><p>{{ points.length ? 'Pilih titik pada peta atau pilih laporan dari daftar untuk membaca ringkasannya.' : 'Titik akan muncul setelah laporan dipublikasikan petugas.' }}</p></div>
         <ClientOnly>
-          <MapThreatMap :points="points" :selected-id="selected?.id" label="Peta lokasi laporan" height-class="h-[380px] sm:h-[480px] lg:h-[540px]" @select="select" />
-          <template #fallback><p class="notice h-[420px] sm:h-[520px] lg:h-[620px]">Memuat peta…</p></template>
+          <MapThreatMap :points="points" :selected-id="selected?.id" label="Peta lokasi laporan" height-class="h-[360px] sm:h-[440px] lg:h-[min(60svh,560px)] lg:min-h-[400px]" @select="select" />
+          <template #fallback><p class="map-loading h-[360px] sm:h-[440px] lg:h-[min(60svh,560px)] lg:min-h-[400px]">Memuat peta…</p></template>
         </ClientOnly>
         <details v-if="points.length" class="map-key"><summary>Arti warna dan kelompok titik</summary><MapLegend /><p>Warna menunjukkan prioritas pemeriksaan, bukan kepastian kejadian.</p></details>
         <p class="map-privacy"><LandingWorkflowIcon name="lock" class="size-4" /><span>Titik menunjukkan perkiraan lokasi. Foto dan koordinat rinci tetap privat.</span></p>
@@ -123,7 +122,7 @@ watch(selectedId, async () => {
         <section v-else>
           <p v-if="selectionMissing" role="status" class="notice mb-4">Laporan publik tersebut tidak ditemukan atau belum dipublikasikan.</p>
           <div class="map-list-heading"><h2 ref="listHeading" tabindex="-1">Daftar laporan</h2><p role="status">{{ data.total.toLocaleString('id-ID') }} laporan{{ hasFilters ? ' sesuai filter' : ' publik' }}</p></div>
-          <div v-if="!data.reports.length" class="map-empty"><span class="map-empty-icon"><LandingWorkflowIcon name="clipboard" /></span><h3>{{ hasFilters ? 'Tidak ada hasil yang sesuai' : 'Belum ada laporan publik' }}</h3><p>{{ hasFilters ? 'Coba ubah atau hapus filter untuk melihat laporan lainnya.' : 'Laporan baru tidak langsung muncul di peta. Petugas perlu meninjau dan menyetujui publikasinya terlebih dahulu.' }}</p><button v-if="hasFilters" type="button" class="button-secondary" @click="applyFilters({})">Hapus filter</button><template v-else><NuxtLink to="/report" class="button-primary">Buat laporan</NuxtLink><NuxtLink to="/reports" class="text-link">Pantau laporan saya</NuxtLink></template></div>
+          <div v-if="!data.reports.length" class="map-empty"><span class="map-empty-icon"><LandingWorkflowIcon name="clipboard" /></span><h3>{{ hasFilters ? 'Tidak ada hasil yang sesuai' : 'Belum ada laporan publik' }}</h3><p>{{ hasFilters ? 'Coba ubah atau hapus filter untuk melihat laporan lainnya.' : 'Laporan akan muncul di sini setelah ditinjau dan disetujui petugas untuk publik.' }}</p><button v-if="hasFilters" type="button" class="button-secondary" @click="applyFilters({})">Hapus filter</button><template v-else><NuxtLink to="/report" class="button-secondary">Buat laporan <span aria-hidden="true">↗</span></NuxtLink><NuxtLink to="/reports" class="text-link">Pantau laporan saya</NuxtLink></template></div>
           <ul v-else class="mt-3 max-h-[560px] divide-y divide-line overflow-y-auto border-y border-line">
             <li v-for="report in data.reports" :key="report.id">
               <button type="button" class="public-map-list-item" @click="select(report.id)">
@@ -146,59 +145,64 @@ watch(selectedId, async () => {
 </template>
 
 <style scoped>
-.public-map-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem; border: 1px solid #D0DCC9; border-radius: 1.25rem; background: #E5EDDF; padding: 1.5rem; }
-.public-map-header > div { flex: 1 1 35rem; min-width: 0; }
-.public-map-header h1 { margin-top: 0.75rem; font-size: 2rem; line-height: 1.2; font-weight: 600; letter-spacing: -0.03em; color: #173D32; }
-.public-map-header div > p:last-child { max-width: 43rem; margin-top: 0.875rem; font-size: 1.0625rem; line-height: 1.875rem; color: #465C49; }
-.public-map-filters { margin-top: 1.5rem; border: 1px solid #D4DECE; border-radius: 1rem; background: #EFF3E9; }
-.public-map-filters > summary { display: flex; min-height: 4.5rem; align-items: center; justify-content: space-between; gap: 1rem; border-radius: 1rem; padding: 1rem 1.25rem; cursor: pointer; list-style: none; color: #173D32; }
+.public-map-header { max-width: 54rem; }
+.public-map-header h1 { margin-top: 0.75rem; font-size: clamp(2rem, 3.2vw, 2.5rem); line-height: 1.2; font-weight: 600; letter-spacing: -0.03em; color: #173D32; }
+.public-map-header div > p:last-child { max-width: 48rem; margin-top: 0.875rem; font-size: 1rem; line-height: 1.75rem; color: #4F5B53; }
+.public-map-filters { margin-top: 1.5rem; border-block: 1px solid #DCE3D8; }
+.public-map-filters > summary { display: flex; min-height: 3.5rem; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.75rem; cursor: pointer; list-style: none; color: #173D32; }
 .public-map-filters > summary::-webkit-details-marker { display: none; }
-.public-map-filters summary strong { font-size: 1.0625rem; font-weight: 600; line-height: 1.625rem; }
-.filter-description { display: block; margin-top: 0.125rem; font-size: 0.875rem; line-height: 1.5rem; color: #52634B; }
-.filter-toggle { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 500; color: #465F3D; }
+.filter-label { display: flex; min-width: 0; align-items: center; gap: 0.625rem; }
+.filter-label > svg { flex-shrink: 0; }
+.public-map-filters summary strong { font-size: 1rem; line-height: 1.5rem; font-weight: 600; }
+.filter-description { display: none; color: #526057; font-size: 0.875rem; line-height: 1.5rem; }
+.filter-toggle { display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.5rem; font-size: 0.875rem; line-height: 1.5rem; font-weight: 500; color: #285C48; }
 .filter-toggle svg { flex-shrink: 0; }
 .public-map-filters[open] .filter-toggle svg { transform: rotate(180deg); }
-.public-map-filters :deep(form) { border: 0; border-top: 1px solid #D4DECE; border-radius: 0 0 1rem 1rem; background: transparent; padding: 1.25rem; }
+.public-map-filters :deep(form) { border: 0; border-top: 1px solid #E5E8E3; border-radius: 0; background: transparent; padding: 1.25rem 0; }
 .public-map-filters :deep(form > div) { margin-top: 0; grid-template-columns: minmax(0, 1fr); align-items: end; }
 .public-map-filters :deep(form > div > div:last-child) { grid-column: auto; }
-.public-map-filters :deep(.form-input) { min-width: 0; border-color: #BECDB7; border-radius: 0.625rem; }
-.public-map-workspace { display: grid; min-width: 0; gap: 1.5rem; align-items: start; margin-top: 1.5rem; }
-.public-map-canvas { min-width: 0; border: 1px solid #D1DDCB; border-radius: 1rem; background: #F3F6ED; }
-.map-canvas-heading { padding: 1.25rem; }
-.map-canvas-heading h2, .map-list-heading h2 { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; color: #173D32; }
-.map-canvas-heading p { margin-top: 0.375rem; font-size: 0.9375rem; line-height: 1.625rem; color: #50604B; }
+.public-map-filters :deep(.form-input) { min-width: 0; border-color: #CBD5C8; border-radius: 0.5rem; }
+.public-map-filters :deep(.button-primary), .public-map-filters :deep(.button-secondary) { border-radius: 999px; }
+.public-map-workspace { display: grid; min-width: 0; align-items: stretch; margin-top: 1.25rem; overflow: clip; border: 1px solid #DCE3D8; border-radius: 1rem; background: white; }
+.public-map-canvas { min-width: 0; }
+.map-canvas-heading, .map-list-heading { padding: 1rem 1.25rem; }
+.map-canvas-heading h2, .map-list-heading h2 { font-size: 1.125rem; line-height: 1.75rem; font-weight: 600; color: #173D32; }
+.map-canvas-heading p { margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.5rem; color: #526057; }
 .public-map-canvas :deep(.leaflet-container) { border: 0; border-radius: 0; }
 .public-map-canvas :deep(.form-hint) { padding: 0 1.25rem; }
-.map-key { margin: 1rem 1.25rem 0; border-bottom: 1px solid #D9E1D2; padding-bottom: 0.75rem; }
+.map-loading { padding: 1rem 1.25rem; background: #EAF0E9; color: #526057; font-size: 1rem; line-height: 1.75rem; }
+.map-key { margin: 0.75rem 1.25rem 0; border-bottom: 1px solid #E5E8E3; padding-bottom: 0.75rem; }
 .map-key summary { min-height: 2.75rem; align-content: center; cursor: pointer; font-size: 0.9375rem; font-weight: 500; color: #285C48; }
-.map-key > p { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.5rem; color: #50604B; }
-.map-privacy { display: flex; align-items: flex-start; gap: 0.5rem; padding: 1rem 1.25rem; font-size: 0.875rem; line-height: 1.5rem; color: #50604B; }
+.map-key > p { margin-top: 0.75rem; font-size: 0.875rem; line-height: 1.5rem; color: #526057; }
+.map-privacy { display: flex; align-items: flex-start; gap: 0.5rem; padding: 1rem 1.25rem; font-size: 0.875rem; line-height: 1.5rem; color: #526057; }
 .map-privacy > svg { margin-top: 0.25rem; flex-shrink: 0; }
-.public-map-list { min-width: 0; border: 1px solid #D4DECE; border-radius: 1rem; background: #F0F2E8; }
-.map-list-heading { border-bottom: 1px solid #D8E0D0; padding: 1.25rem; }
-.map-list-heading p { margin-top: 0.375rem; font-size: 0.9375rem; line-height: 1.5rem; color: #52634B; }
+.public-map-list { min-width: 0; border-top: 1px solid #DCE3D8; }
+.map-list-heading { border-bottom: 1px solid #E5E8E3; }
+.map-list-heading p { margin-top: 0.25rem; font-size: 0.875rem; line-height: 1.5rem; color: #526057; }
 .map-empty { padding: 1.5rem 1.25rem; }
-.map-empty-icon { display: flex; width: 2.75rem; height: 2.75rem; align-items: center; justify-content: center; border-radius: 0.75rem; background: #DDE7D5; color: #285C48; }
-.map-empty h3 { margin-top: 1.25rem; font-size: 1.25rem; font-weight: 600; line-height: 1.75rem; color: #173D32; }
-.map-empty > p { margin-top: 0.75rem; font-size: 1rem; line-height: 1.75rem; color: #50604B; }
-.map-empty > .button-primary, .map-empty > .button-secondary { margin-top: 1.5rem; width: 100%; }
-.map-empty > .text-link { display: flex; min-height: 2.75rem; align-items: center; justify-content: center; margin-top: 0.5rem; font-size: 1rem; }
-.public-map-selected { padding: 1.25rem; }
+.map-empty-icon { display: flex; width: 2.5rem; height: 2.5rem; align-items: center; justify-content: center; border-radius: 50%; background: #EAF0E9; color: #285C48; }
+.map-empty h3 { margin-top: 1rem; font-size: 1.125rem; font-weight: 600; line-height: 1.75rem; color: #173D32; }
+.map-empty > p { margin-top: 0.625rem; font-size: 1rem; line-height: 1.75rem; color: #526057; }
+.map-empty > .button-secondary { margin-top: 1.25rem; border-radius: 999px; }
+.map-empty > .text-link { display: flex; min-height: 2.75rem; align-items: center; width: fit-content; margin-top: 0.5rem; font-size: 0.9375rem; }
+.public-map-selected { padding: 1rem 1.25rem 1.25rem; scroll-margin-top: 7rem; }
+.public-map-selected .button-secondary { border-radius: 999px; }
 .public-map-selected dl { font-size: 1rem; line-height: 1.75rem; }
 .public-map-selected .body-copy { font-size: 1rem; line-height: 1.75rem; }
+.map-list-heading h2 { scroll-margin-top: 7rem; }
 .public-map-list-item { display: block; width: 100%; min-height: 2.75rem; padding: 1.25rem; text-align: left; color: #173D32; }
-.public-map-list-item:hover { background: #E4ECDD; }
+.public-map-list-item:hover { background: #F3F6F0; }
 .public-map-detail-link { display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.875rem; font-size: 0.9375rem; font-weight: 600; color: #285C48; }
 .public-map-list nav { flex-wrap: wrap; padding: 0 1.25rem 1.25rem; }
+.public-map-list nav .button-secondary { border-radius: 999px; }
 @media (min-width: 40rem) {
-  .public-map-header { padding: 2rem; }
-  .public-map-header h1 { font-size: 2.5rem; }
-  .public-map-header div > p:last-child { font-size: 1.125rem; }
-  .public-map-filters > summary { padding: 1rem 1.5rem; }
+  .public-map-header div > p:last-child { font-size: 1.125rem; line-height: 1.875rem; }
+  .filter-description { display: block; margin-left: 0.5rem; }
   .public-map-filters :deep(form > div) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 64rem) {
   .public-map-workspace { grid-template-columns: minmax(0, 1fr) 21rem; }
+  .public-map-list { border-top: 0; border-left: 1px solid #DCE3D8; }
   .public-map-filters :deep(form > div) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 </style>

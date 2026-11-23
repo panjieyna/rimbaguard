@@ -1,4 +1,4 @@
-# API RimbaGuard AI
+# API RimbaGuard
 
 Ringkasan endpoint server Nuxt untuk pelaporan, asisten AI, prioritas, peta, akun, dan alur kerja petugas. Semua endpoint berada di origin aplikasi yang sama dengan halaman. Browser tidak pernah menerima kunci Supabase atau Gemini.
 
@@ -54,6 +54,7 @@ Setiap laporan memiliki `revision`. Aksi petugas mengirim `expectedRevision`. Bi
 | POST | `/api/uploads/finalize` | Memeriksa byte, format, dan ukuran sebenarnya, lalu menyegel bukti sebagai JPEG tanpa metadata |
 | POST | `/api/reports` | Membuat laporan; wajib `Idempotency-Key` (UUID). Field `status`, `role`, skor, atau hasil AI ditolak |
 | GET | `/api/reports` | Laporan milik sendiri (petugas: semua laporan), berhalaman |
+| GET | `/api/reports/:id/thumbnail` | Thumbnail foto bukti WebP maksimal 384 × 288, menampilkan gambar utuh di tengah dengan latar netral tanpa crop. Memerlukan sesi pemilik atau petugas; laporan orang lain dijawab `404`. Respons `private, no-store` tanpa URL Storage atau path bukti |
 | GET | `/api/reports/:id` | Detail; laporan orang lain dijawab `404`. Pelapor tidak menerima skor, catatan internal, atau kode kegagalan AI |
 | PATCH | `/api/reports/:id` | Koreksi pemilik selama `pending_analysis`, `analysis_failed`, `pending_verification`, atau `needs_more_information`, dengan `expectedRevision` |
 | POST | `/api/reports/:id/analyze` | Memulai atau mengulang analisis AI; dibatasi 10 per pengguna dan 3 per laporan per 10 menit |
@@ -65,7 +66,7 @@ Setiap laporan memiliki `revision`. Aksi petugas mengirim `expectedRevision`. Bi
 | GET | `/api/admin/dashboard?dataset=real\|simulation` | Ringkasan, 5 laporan aktif teratas, dan analitik 30 hari |
 | GET | `/api/admin/reports?scope=&category=&priority=&dataset=&page=` | Antrean prioritas, 20 per halaman |
 | GET | `/api/admin/reports/:id` | Detail tinjauan: bukti, analisis AI, skor, audit dengan nama petugas, aksi yang diizinkan |
-| GET | `/api/admin/reports/:id/evidence?size=thumbnail\|full` | Foto privat sebagai gambar biner; default thumbnail WebP 384 × 288, full memakai foto bukti tersimpan |
+| GET | `/api/admin/reports/:id/evidence?size=thumbnail\|full` | Foto privat sebagai gambar biner; default thumbnail WebP maksimal 384 × 288 tanpa crop, full memakai foto bukti tersimpan |
 | PATCH | `/api/admin/reports/:id/status` | Ubah status sesuai matriks |
 | PUT | `/api/admin/reports/:id/publication` | Publikasikan atau perbarui ringkasan publik |
 | DELETE | `/api/admin/reports/:id/publication` | Tarik publikasi |
