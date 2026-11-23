@@ -98,7 +98,7 @@ Dokumen lengkap: [PRD](PRD.md), [rencana implementasi](IMPLEMENTATION_PLAN.md), 
 Setiap push ke branch `main` memicu pipeline Jenkins pada [Jenkinsfile](Jenkinsfile):
 
 1. **Checkout** kode dari GitHub.
-2. **Install & Test**: `npm ci` lalu 370 unit test Vitest di container `node:24-alpine`. Deploy dibatalkan bila ada tes yang gagal.
+2. **Install & Test**: `npm ci` lalu 371 unit test Vitest di container `node:24-alpine`. Deploy dibatalkan bila ada tes yang gagal.
 3. **Package**: aplikasi dibungkus tanpa `node_modules`, `.env`, dan hasil build lokal.
 4. **Publish** artefak ke Jenkins.
 5. **Deploy**: Delcom mengunduh artefak, menjalankan `npm run build` dan `npm start`, lalu pipeline memantau status hingga berhasil.
@@ -147,7 +147,7 @@ Buat key di [Google AI Studio](https://aistudio.google.com/apikey) dan isi `GEMI
 
 ```powershell
 npm.cmd run typecheck
-npm.cmd run test              # 370 unit test (juga dijalankan Jenkins pada setiap deploy)
+npm.cmd run test              # 371 unit test (juga dijalankan Jenkins pada setiap deploy)
 npm.cmd run build
 npm.cmd run check:services    # koneksi dan skema Supabase
 npm.cmd run check:reporting   # ledger unggahan dan RPC statistik

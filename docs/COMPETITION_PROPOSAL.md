@@ -171,7 +171,7 @@ Pengembangan dilakukan bertahap: fondasi; aplikasi publik dan pelaporan; integra
 
 Source code dipisahkan menjadi halaman/komponen, kontrak bersama, handler API, service, utilitas keamanan, dan migrasi database. Pemisahan ini membuat aturan domain dapat diuji tanpa bergantung pada tampilan, dan skema TypeScript/Zod dipakai bersama oleh browser dan server.
 
-**Pengujian dan deployment berkelanjutan.** Setiap push ke branch `main` memicu pipeline Jenkins: memasang dependensi, menjalankan **370 unit test**, membungkus aplikasi, lalu meminta Delcom melakukan redeploy. Deploy otomatis dibatalkan bila ada satu tes yang gagal. Uji browser dan integrasi layanan nyata dijalankan terpisah; ringkasannya ada pada Lampiran A.
+**Pengujian dan deployment berkelanjutan.** Setiap push ke branch `main` memicu pipeline Jenkins: memasang dependensi, menjalankan **371 unit test**, membungkus aplikasi, lalu meminta Delcom melakukan redeploy. Deploy otomatis dibatalkan bila ada satu tes yang gagal. Uji browser dan integrasi layanan nyata dijalankan terpisah; ringkasannya ada pada Lampiran A.
 
 <!-- page: features -->
 ## BAB III — PERANCANGAN WEBSITE
@@ -318,7 +318,7 @@ Tampilan ponsel menggunakan susunan satu kolom, menu ringkas, serta tombol dan l
 
 RimbaGuard menghubungkan pengamatan masyarakat dengan pemeriksaan dan penanganan petugas dalam satu alur. Kontribusi utamanya adalah AI yang melengkapi konteks laporan, pemisahan sumber informasi, konfirmasi pelapor, prioritas yang dapat dijelaskan, serta riwayat keputusan. Keputusan verifikasi tetap berada di tangan manusia.
 
-Aplikasi telah berjalan di [ifs24044-rimbaguard.s1if.cloud](https://ifs24044-rimbaguard.s1if.cloud) dengan HTTPS, dan seluruh fitur pada Bab III dapat dicoba menggunakan akun demo di Lampiran D. Setiap perubahan kode melewati **370 unit test** dalam pipeline Jenkins sebelum di-deploy, dilengkapi uji browser, uji aksesibilitas, dan uji integrasi Gemini serta Supabase nyata.
+Aplikasi telah berjalan di [ifs24044-rimbaguard.s1if.cloud](https://ifs24044-rimbaguard.s1if.cloud) dengan HTTPS, dan seluruh fitur pada Bab III dapat dicoba menggunakan akun demo di Lampiran D. Setiap perubahan kode melewati **371 unit test** dalam pipeline Jenkins sebelum di-deploy, dilengkapi uji browser, uji aksesibilitas, dan uji integrasi Gemini serta Supabase nyata.
 
 ### 4.2 Saran
 
@@ -366,7 +366,7 @@ RimbaGuard adalah alat bantu pelaporan dan pemeriksaan, bukan pemantauan satelit
 |---|---|
 | Website live | 23 November: HTTPS dengan sertifikat Let's Encrypt aktif; layanan Supabase dan Gemini terhubung; kedua akun demo berhasil masuk, dan akun petugas dapat membuka ringkasan, antrean laporan, peta, serta analitik. |
 | Pipeline CI/CD | 23 November: Jenkins menjalankan Checkout, Install & Test, Package, Publish, dan Deploy hingga status berhasil di Delcom. |
-| Unit test | 370 tes dalam 23 berkas lulus dengan Vitest, dijalankan ulang otomatis pada setiap deploy. |
+| Unit test | 371 tes dalam 23 berkas lulus dengan Vitest, dijalankan ulang otomatis pada setiap deploy. |
 | Pemeriksaan tipe dan build | 22 November: `nuxt typecheck` lulus. 23 November: build produksi lulus di server Delcom. |
 | Regresi publik dan autentikasi | 22 November: 21 skenario browser lulus untuk halaman publik dan tata letak autentikasi. |
 | Aksesibilitas | 22 November: pemindaian axe lintas halaman pada beberapa lebar layar lulus. |
@@ -432,4 +432,4 @@ Juri dapat mencoba RimbaGuard secara langsung melalui tautan dan akun berikut. K
 5. Pada bagian **Verifikasi dan penanganan**, pilih **Verifikasi laporan** atau **Minta informasi tambahan**.
 6. Buka **Analitik** dan pilih **Data simulasi** untuk melihat dataset uji yang lebih lengkap, lalu buka **Peta** untuk melihat sebaran laporan beserta filternya.
 
-Email akun demo memakai domain `.test` yang dicadangkan untuk pengujian, sehingga tidak ada email yang terkirim ke pihak lain.
+Untuk penjurian, gunakan kedua akun demo di atas. Pendaftaran akun baru tetap tersedia, tetapi pengiriman email konfirmasinya sedang dibatasi oleh layanan email bawaan Supabase. Email akun demo memakai domain `.test` yang dicadangkan untuk pengujian, sehingga tidak ada email yang terkirim ke pihak lain.

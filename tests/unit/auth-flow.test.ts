@@ -26,6 +26,12 @@ describe('safe authentication results', () => {
     expect(safeAuthFailure({ code: 'weak_password' }, 'register').code).toBe('PASSWORD_REQUIREMENTS')
     expect(safeAuthFailure({ code: 'signup_disabled' }, 'register').code).toBe('REGISTRATION_UNAVAILABLE')
   })
+  it('explains a recipient refused by the default mailer instead of reporting an outage', () => {
+    const failure = safeAuthFailure({ code: 'email_address_not_authorized', status: 400 }, 'register')
+    expect(failure).toMatchObject({ statusCode: 422, code: 'REGISTRATION_EMAIL_RESTRICTED' })
+    expect(failure.message).toContain('akun demo')
+    expect(safeAuthFailure({ code: 'email_address_not_authorized' }, 'login').code).toBe('AUTH_UNAVAILABLE')
+  })
 })
 
 describe('role-based auth redirects', () => {

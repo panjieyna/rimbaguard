@@ -34,6 +34,10 @@ export function safeAuthFailure(error: AuthProviderFailure, operation: 'login' |
   if (operation === 'register' && (error.code === 'signup_disabled' || error.code === 'email_provider_disabled')) {
     return { statusCode: 503, code: 'REGISTRATION_UNAVAILABLE', message: 'Pendaftaran belum tersedia. Silakan coba kembali setelah layanan diaktifkan.' }
   }
+  // Supabase's built-in mailer only delivers to the project's team; other addresses are refused.
+  if (operation === 'register' && error.code === 'email_address_not_authorized') {
+    return { statusCode: 422, code: 'REGISTRATION_EMAIL_RESTRICTED', message: 'Email konfirmasi belum dapat dikirim ke alamat ini karena pendaftaran akun baru sedang dibatasi. Silakan masuk menggunakan akun demo yang disediakan.' }
+  }
   return { statusCode: 503, code: 'AUTH_UNAVAILABLE', message: 'Layanan autentikasi belum dapat dihubungi. Silakan coba kembali.' }
 }
 
